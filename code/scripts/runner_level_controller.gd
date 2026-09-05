@@ -6,6 +6,7 @@ const L01PromptCatalogModel = preload("res://scripts/l01_prompt_catalog.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
+const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 
 const WARNING_SECONDS := 2.5
 const RESPONSE_SECONDS := 2.0
@@ -47,6 +48,8 @@ var is_session_ended := false
 
 
 func _ready() -> void:
+	session_config = SessionSetupStoreModel.get_session_config()
+	input_adapter = InputAdapterModel.new(session_config.affected_side)
 	prompt_director.connect("prompt_state_changed", _on_prompt_state_changed)
 	warning_timer.timeout.connect(_on_warning_timer_timeout)
 	response_timer.timeout.connect(_on_response_timer_timeout)

@@ -3,6 +3,8 @@ extends SceneTree
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
 const PATIENT_SETUP_SCENE_PATH := "res://scenes/patient_setup.tscn"
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
+const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
+const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const RUNNER_LEVEL_PATH := "res://scenes/levels/runner_level.tscn"
 const SESSION_SETUP_STORE_PATH := "res://scripts/session_setup_store.gd"
 const SessionConfigModel = preload("res://scripts/session_config.gd")
@@ -17,6 +19,8 @@ func _init() -> void:
 func _run() -> void:
 	_expect(ResourceLoader.exists(PATIENT_SETUP_SCENE_PATH), "Patient Setup scene exists")
 	_expect(ResourceLoader.exists(CONTROLLER_CHECK_SCENE_PATH), "Controller Check scene exists")
+	_expect(ResourceLoader.exists(TUTORIAL_SCENE_PATH), "Tutorial scene exists")
+	_expect(ResourceLoader.exists(READY_SCENE_PATH), "Ready scene exists")
 	_expect(ResourceLoader.exists(SESSION_SETUP_STORE_PATH), "Session setup store exists")
 	if not failures.is_empty():
 		_finish()
@@ -26,7 +30,7 @@ func _run() -> void:
 	store_script.call("reset")
 	_test_main_menu_route()
 	await _test_setup_persists_supervised_session_config(store_script)
-	await _test_controller_check_routes_to_l01(store_script)
+	await _test_controller_check_tutorial_ready_routes(store_script)
 	_finish()
 
 
@@ -37,6 +41,9 @@ func _test_main_menu_route() -> void:
 	_expect(dashboard.has_method("get_patient_setup_scene_path"), "Main Menu exposes the Patient Setup route")
 	if dashboard.has_method("get_patient_setup_scene_path"):
 		_expect_equal(dashboard.call("get_patient_setup_scene_path"), PATIENT_SETUP_SCENE_PATH, "Start Session routes to Patient Setup")
+	_expect(dashboard.has_method("get_tutorial_scene_path"), "Main Menu exposes the Tutorial route")
+	if dashboard.has_method("get_tutorial_scene_path"):
+		_expect_equal(dashboard.call("get_tutorial_scene_path"), TUTORIAL_SCENE_PATH, "Tutorial button routes to Tutorial")
 	dashboard.free()
 
 
@@ -62,17 +69,48 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	await process_frame
 
 
-func _test_controller_check_routes_to_l01(store_script: GDScript) -> void:
+func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> void:
 	var controller_check: Control = (load(CONTROLLER_CHECK_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(controller_check)
 	await process_frame
 	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
-	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Use Keyboard Fallback")
+	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Continue to Tutorial")
 	_expect_button(controller_check, ^"Panel/Margin/Content/BackButton", "Back")
-	_expect(controller_check.has_method("get_runner_scene_path"), "Controller Check exposes the L01 route")
-	if controller_check.has_method("get_runner_scene_path"):
-		_expect_equal(controller_check.call("get_runner_scene_path"), RUNNER_LEVEL_PATH, "Keyboard fallback starts L01")
+	_expect(controller_check.has_method("get_tutorial_scene_path"), "Controller Check exposes the Tutorial route")
+	if controller_check.has_method("get_tutorial_scene_path"):
+		_expect_equal(controller_check.call("get_tutorial_scene_path"), TUTORIAL_SCENE_PATH, "Keyboard fallback continues to Tutorial")
 	controller_check.queue_free()
+	await process_frame
+
+	var tutorial: Control = (load(TUTORIAL_SCENE_PATH) as PackedScene).instantiate()
+	root.add_child(tutorial)
+	await process_frame
+	_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "MOVE LEFT", "Tutorial begins with one action")
+	_expect_node(tutorial, ^"Panel/Margin/Content/ActionCard/ActionIconLabel", "Tutorial action icon")
+	_expect_button(tutorial, ^"Panel/Margin/Content/PreviousButton", "Previous")
+	_expect_button(tutorial, ^"Panel/Margin/Content/NextButton", "Next")
+	_expect_button(tutorial, ^"Panel/Margin/Content/SkipButton", "Skip Tutorial")
+	_expect_button(tutorial, ^"Panel/Margin/Content/PauseTutorialButton", "Pause Tutorial")
+	_expect(tutorial.has_method("show_action_index"), "Tutorial can show one planned action at a time")
+	if tutorial.has_method("show_action_index"):
+		tutorial.call("show_action_index", 2)
+		_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "JUMP", "Tutorial can preview Jump without a countdown")
+	_expect(tutorial.has_method("get_ready_scene_path"), "Tutorial exposes the Ready route")
+	if tutorial.has_method("get_ready_scene_path"):
+		_expect_equal(tutorial.call("get_ready_scene_path"), READY_SCENE_PATH, "Tutorial continues to Ready")
+	tutorial.queue_free()
+	await process_frame
+
+	var ready: Control = (load(READY_SCENE_PATH) as PackedScene).instantiate()
+	root.add_child(ready)
+	await process_frame
+	_expect_label(ready, ^"Panel/Margin/Content/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
+	_expect_button(ready, ^"Panel/Margin/Content/StartSessionButton", "Start L01 Session")
+	_expect_button(ready, ^"Panel/Margin/Content/BackButton", "Back to Tutorial")
+	_expect(ready.has_method("get_runner_scene_path"), "Ready screen exposes the L01 route")
+	if ready.has_method("get_runner_scene_path"):
+		_expect_equal(ready.call("get_runner_scene_path"), RUNNER_LEVEL_PATH, "Ready screen starts L01")
+	ready.queue_free()
 	await process_frame
 
 	var runner: Node = (load(RUNNER_LEVEL_PATH) as PackedScene).instantiate()

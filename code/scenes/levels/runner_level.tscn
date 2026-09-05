@@ -1,6 +1,10 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
+[ext_resource type="Script" path="res://scripts/player_controller.gd" id="2_player"]
 
 [node name="RunnerLevel" type="Node2D"]
+script = ExtResource("1_runner")
 
 [node name="LevelWorld" type="Node2D" parent="."]
 
@@ -56,16 +60,19 @@ color = Color(0.969, 0.729, 0.318, 0.92)
 
 [node name="Player" type="Node2D" parent="."]
 position = Vector2(240, 226)
+script = ExtResource("2_player")
 
 [node name="Shadow" type="Polygon2D" parent="Player"]
 polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)
 color = Color(0.012, 0.035, 0.047, 0.55)
 
-[node name="PlaceholderBody" type="Polygon2D" parent="Player"]
+[node name="Visual" type="Node2D" parent="Player"]
+
+[node name="PlaceholderBody" type="Polygon2D" parent="Player/Visual"]
 polygon = PackedVector2Array(-10, 11, -8, -12, -4, -20, 4, -20, 8, -12, 10, 11, 5, 15, -5, 15)
 color = Color(0.941, 0.42, 0.298, 1)
 
-[node name="PlaceholderHead" type="Polygon2D" parent="Player"]
+[node name="PlaceholderHead" type="Polygon2D" parent="Player/Visual"]
 polygon = PackedVector2Array(-6, -23, -3, -27, 3, -27, 6, -23, 4, -18, -4, -18)
 color = Color(1, 0.78, 0.545, 1)
 
@@ -128,4 +135,3 @@ offset_bottom = 43.0
 theme_override_colors/font_color = Color(0.945, 0.957, 0.91, 1)
 theme_override_font_sizes/font_size = 13
 text = "Pause"
-

@@ -209,15 +209,25 @@ theme_override_colors/font_color = Color(0.839, 0.925, 0.875, 1)
 theme_override_font_sizes/font_size = 12
 text = "L01 · Barangay Morning"
 
-[node name="ProgressPlaceholder" type="Label" parent="HUD/HUDRoot"]
+[node name="ProgressLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 31.0
-offset_right = 160.0
+offset_right = 116.0
 offset_bottom = 49.0
 theme_override_colors/font_color = Color(0.349, 0.667, 0.612, 1)
 theme_override_font_sizes/font_size = 11
-text = "Reps: 0 / 10"
+text = "Reps: 0 / 40"
+
+[node name="NeutralMissLabel" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 118.0
+offset_top = 31.0
+offset_right = 164.0
+offset_bottom = 49.0
+theme_override_colors/font_color = Color(0.58, 0.75, 0.71, 1)
+theme_override_font_sizes/font_size = 9
+text = "Misses: 0"
 
 [node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0

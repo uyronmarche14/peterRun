@@ -4,6 +4,8 @@ extends Node2D
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const L01PromptCatalogModel = preload("res://scripts/l01_prompt_catalog.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
+const SessionConfigModel = preload("res://scripts/session_config.gd")
+const SessionResultModel = preload("res://scripts/session_result.gd")
 
 const WARNING_SECONDS := 2.5
 const RESPONSE_SECONDS := 2.0
@@ -14,12 +16,16 @@ signal named_action_received(action_name: StringName)
 
 var input_adapter := InputAdapterModel.new()
 var l01_prompt_catalog := L01PromptCatalogModel.new()
+var session_config := SessionConfigModel.new()
+var session_result := SessionResultModel.new()
 var _sequence_index := 0
 var is_gameplay_paused := false
 var is_session_ended := false
 
 @onready var player: PlayerController = $Player
 @onready var prompt_director: Node = $PromptDirector
+@onready var progress_label: Label = $HUD/HUDRoot/ProgressLabel
+@onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
 @onready var crate_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt
@@ -50,6 +56,7 @@ func _ready() -> void:
 	end_level_button.pressed.connect(end_level_neutrally)
 	end_session_button.pressed.connect(end_session_neutrally)
 	return_button.pressed.connect(return_to_dashboard)
+	_update_progress_hud()
 	_schedule_next_l01_prompt()
 
 
@@ -113,9 +120,13 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		PromptDirectorModel.State.RESOLVED:
 			warning_timer.stop()
 			response_timer.stop()
+			_record_prompt_resolution(action_name, resolution)
 			var resolved_text := "Nice step!" if resolution == PromptDirectorModel.Resolution.SUCCESS else "Take your time."
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
+			if session_result.has_met_targets(session_config):
+				_show_neutral_end_overlay("L01 complete", "The planned repetitions are complete. Review the session with the therapist.")
+				return
 			resolve_timer.start(RESOLVED_SECONDS)
 		PromptDirectorModel.State.IDLE:
 			_hide_l01_props()
@@ -139,6 +150,24 @@ func _hide_l01_props() -> void:
 	crate_prompt.visible = false
 	puddle_prompt.visible = false
 	laundry_line_prompt.visible = false
+
+
+func _record_prompt_resolution(action_name: StringName, resolution: int) -> void:
+	if resolution == PromptDirectorModel.Resolution.SUCCESS:
+		session_result.record_success(action_name)
+	else:
+		session_result.record_neutral_miss()
+	_update_progress_hud()
+
+
+func _update_progress_hud() -> void:
+	var completed_repetitions := 0
+	var target_repetitions := 0
+	for action_name in SessionConfigModel.ACTIONS:
+		completed_repetitions += session_result.get_completed(action_name)
+		target_repetitions += session_config.get_target(action_name)
+	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
+	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
 
 
 func _on_warning_timer_timeout() -> void:

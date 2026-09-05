@@ -33,7 +33,11 @@ func _run() -> void:
 		level.call("_on_prompt_state_changed", 3, &"slide", 2)
 		_expect_equal(result.get_completed(&"slide"), 0, "Wrong action records no repetition")
 		_expect_equal(result.neutral_misses, 1, "Wrong action records one neutral miss")
-		_expect_equal(level.get_node(^"HUD/HUDRoot/NeutralMissLabel").text, "Misses: 1", "Miss count is visible")
+
+		level.call("_on_prompt_state_changed", 3, &"move_right", 2)
+		_expect_equal(result.get_completed(&"move_right"), 0, "No-input timeout records no repetition")
+		_expect_equal(result.neutral_misses, 2, "No-input timeout records a neutral miss")
+		_expect_equal(level.get_node(^"HUD/HUDRoot/NeutralMissLabel").text, "Misses: 2", "Miss count is visible")
 
 		level.call("_on_prompt_state_changed", 3, &"move_left", 1)
 		level.call("_on_prompt_state_changed", 3, &"move_right", 1)

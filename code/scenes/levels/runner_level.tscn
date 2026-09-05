@@ -1,0 +1,131 @@
+[gd_scene format=3]
+
+[node name="RunnerLevel" type="Node2D"]
+
+[node name="LevelWorld" type="Node2D" parent="."]
+
+[node name="Sky" type="Polygon2D" parent="LevelWorld"]
+polygon = PackedVector2Array(0, 0, 480, 0, 480, 270, 0, 270)
+color = Color(0.035, 0.141, 0.196, 1)
+
+[node name="DistantHills" type="Polygon2D" parent="LevelWorld"]
+polygon = PackedVector2Array(0, 106, 72, 74, 136, 102, 214, 62, 300, 101, 378, 70, 480, 112, 480, 164, 0, 164)
+color = Color(0.075, 0.278, 0.29, 1)
+
+[node name="Horizon" type="Polygon2D" parent="LevelWorld"]
+polygon = PackedVector2Array(0, 119, 480, 119, 480, 172, 0, 172)
+color = Color(0.098, 0.37, 0.337, 1)
+
+[node name="RoadAndLanes" type="Node2D" parent="LevelWorld"]
+
+[node name="RoadSurface" type="Polygon2D" parent="LevelWorld/RoadAndLanes"]
+polygon = PackedVector2Array(90, 78, 390, 78, 480, 270, 0, 270)
+color = Color(0.102, 0.145, 0.169, 1)
+
+[node name="RoadEdgeLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+points = PackedVector2Array(90, 78, 0, 270)
+width = 2.0
+default_color = Color(0.855, 0.678, 0.302, 0.85)
+
+[node name="RoadEdgeRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+points = PackedVector2Array(390, 78, 480, 270)
+width = 2.0
+default_color = Color(0.855, 0.678, 0.302, 0.85)
+
+[node name="LaneLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+points = PackedVector2Array(165, 78, 118, 270)
+width = 2.0
+default_color = Color(0.349, 0.667, 0.612, 0.65)
+
+[node name="LaneCenter" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+points = PackedVector2Array(240, 78, 240, 270)
+width = 2.0
+default_color = Color(0.349, 0.667, 0.612, 0.65)
+
+[node name="LaneRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+points = PackedVector2Array(315, 78, 362, 270)
+width = 2.0
+default_color = Color(0.349, 0.667, 0.612, 0.65)
+
+[node name="PromptWorldAnchor" type="Marker2D" parent="LevelWorld"]
+position = Vector2(240, 104)
+
+[node name="PromptSilhouette" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor"]
+polygon = PackedVector2Array(-18, 18, -18, -8, -8, -18, 8, -18, 18, -8, 18, 18)
+color = Color(0.969, 0.729, 0.318, 0.92)
+
+[node name="Player" type="Node2D" parent="."]
+position = Vector2(240, 226)
+
+[node name="Shadow" type="Polygon2D" parent="Player"]
+polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)
+color = Color(0.012, 0.035, 0.047, 0.55)
+
+[node name="PlaceholderBody" type="Polygon2D" parent="Player"]
+polygon = PackedVector2Array(-10, 11, -8, -12, -4, -20, 4, -20, 8, -12, 10, 11, 5, 15, -5, 15)
+color = Color(0.941, 0.42, 0.298, 1)
+
+[node name="PlaceholderHead" type="Polygon2D" parent="Player"]
+polygon = PackedVector2Array(-6, -23, -3, -27, 3, -27, 6, -23, 4, -18, -4, -18)
+color = Color(1, 0.78, 0.545, 1)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="HUDRoot" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="ColorRect" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 53.0
+color = Color(0.024, 0.078, 0.106, 0.9)
+mouse_filter = 2
+
+[node name="LevelLabel" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 188.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0.839, 0.925, 0.875, 1)
+theme_override_font_sizes/font_size = 12
+text = "L01 · Barangay Morning"
+
+[node name="ProgressPlaceholder" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 31.0
+offset_right = 160.0
+offset_bottom = 49.0
+theme_override_colors/font_color = Color(0.349, 0.667, 0.612, 1)
+theme_override_font_sizes/font_size = 11
+text = "Reps: 0 / 10"
+
+[node name="PromptPlaceholder" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 14.0
+offset_right = 320.0
+offset_bottom = 38.0
+theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+text = "NEXT ACTION"
+
+[node name="PauseButton" type="Button" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 10.0
+offset_right = 468.0
+offset_bottom = 43.0
+theme_override_colors/font_color = Color(0.945, 0.957, 0.91, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pause"
+

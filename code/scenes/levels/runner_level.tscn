@@ -58,6 +58,85 @@ position = Vector2(240, 104)
 [node name="PromptSilhouette" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor"]
 polygon = PackedVector2Array(-18, 18, -18, -8, -8, -18, 8, -18, 18, -8, 18, 18)
 color = Color(0.969, 0.729, 0.318, 0.92)
+visible = false
+
+[node name="L01PromptProps" type="Node2D" parent="LevelWorld/PromptWorldAnchor"]
+
+[node name="CratePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+visible = false
+
+[node name="CrateBody" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+polygon = PackedVector2Array(-20, 17, -20, -17, 20, -17, 20, 17)
+color = Color(0.67, 0.365, 0.173, 1)
+
+[node name="CrateCross" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+points = PackedVector2Array(-18, -15, 18, 15, 18, -15, -18, 15)
+width = 2.0
+default_color = Color(1, 0.784, 0.42, 0.9)
+
+[node name="CrateLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+offset_left = -24.0
+offset_top = 20.0
+offset_right = 24.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(1, 0.88, 0.59, 1)
+theme_override_font_sizes/font_size = 9
+text = "CRATE"
+horizontal_alignment = 1
+
+[node name="PuddlePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+visible = false
+
+[node name="PuddleShape" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
+polygon = PackedVector2Array(-27, 10, -20, 3, -5, -2, 10, 0, 26, 8, 19, 14, 4, 17, -14, 15)
+color = Color(0.22, 0.61, 0.83, 1)
+
+[node name="PuddleHighlight" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
+points = PackedVector2Array(-14, 7, -3, 3, 9, 5)
+width = 2.0
+default_color = Color(0.78, 0.94, 1, 0.9)
+
+[node name="PuddleLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
+offset_left = -26.0
+offset_top = 20.0
+offset_right = 26.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "PUDDLE"
+horizontal_alignment = 1
+
+[node name="LaundryLinePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+visible = false
+
+[node name="Line" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+points = PackedVector2Array(-28, -8, 28, -8)
+width = 2.0
+default_color = Color(0.96, 0.76, 0.37, 1)
+
+[node name="LeftPost" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+points = PackedVector2Array(-28, -9, -28, 17)
+width = 2.0
+default_color = Color(0.79, 0.5, 0.24, 1)
+
+[node name="RightPost" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+points = PackedVector2Array(28, -9, 28, 17)
+width = 2.0
+default_color = Color(0.79, 0.5, 0.24, 1)
+
+[node name="Cloth" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+polygon = PackedVector2Array(-12, -8, 12, -8, 8, 7, -8, 7)
+color = Color(0.95, 0.4, 0.39, 1)
+
+[node name="LaundryLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+offset_left = -35.0
+offset_top = 20.0
+offset_right = 35.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(1, 0.85, 0.53, 1)
+theme_override_font_sizes/font_size = 9
+text = "LAUNDRY"
+horizontal_alignment = 1
 
 [node name="Player" type="Node2D" parent="."]
 position = Vector2(240, 226)
@@ -119,16 +198,27 @@ theme_override_colors/font_color = Color(0.349, 0.667, 0.612, 1)
 theme_override_font_sizes/font_size = 11
 text = "Reps: 0 / 10"
 
-[node name="PromptPlaceholder" type="Label" parent="HUD/HUDRoot"]
+[node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 170.0
-offset_top = 14.0
+offset_top = 7.0
 offset_right = 320.0
-offset_bottom = 38.0
+offset_bottom = 27.0
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 text = "NEXT ACTION"
+
+[node name="PromptStateLabel" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 28.0
+offset_right = 320.0
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.35, 0.78, 0.66, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+text = "GET READY"
 
 [node name="PauseButton" type="Button" parent="HUD/HUDRoot"]
 layout_mode = 0
@@ -139,3 +229,17 @@ offset_bottom = 43.0
 theme_override_colors/font_color = Color(0.945, 0.957, 0.91, 1)
 theme_override_font_sizes/font_size = 13
 text = "Pause"
+
+[node name="PromptTimers" type="Node" parent="."]
+
+[node name="WarningTimer" type="Timer" parent="PromptTimers"]
+one_shot = true
+wait_time = 2.5
+
+[node name="ResponseTimer" type="Timer" parent="PromptTimers"]
+one_shot = true
+wait_time = 2.0
+
+[node name="ResolveTimer" type="Timer" parent="PromptTimers"]
+one_shot = true
+wait_time = 0.75

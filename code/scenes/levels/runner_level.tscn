@@ -197,6 +197,12 @@ script = ExtResource("4_world_motion")
 polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)
 color = Color(0.012, 0.035, 0.047, 0.55)
 
+[node name="SlideStreak" type="Line2D" parent="Player"]
+visible = false
+points = PackedVector2Array(-29, 13, -17, 13, -11, 11)
+width = 2.0
+default_color = Color(1, 0.75, 0.32, 0.78)
+
 [node name="Visual" type="Node2D" parent="Player"]
 
 [node name="PlaceholderBody" type="Polygon2D" parent="Player/Visual"]

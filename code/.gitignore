@@ -1,0 +1,9 @@
+# Godot generated data
+.godot/
+
+# Local ComfyUI output may be large; keep selected references documented instead.
+art/_references/**/outputs/
+
+# Godot exports and local editor settings
+exports/
+*.tmp

@@ -1,0 +1,15 @@
+# Godot editor caches and imported artifacts
+**/.godot/
+*.import
+
+# Local exports and test evidence that may contain machine-specific output
+exports/
+test_evidence/
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+*.tmp

@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxPanel"]
+bg_color = Color(0.0392157, 0.113725, 0.14902, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.968627, 0.709804, 0.196078, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.168627, 0.219608, 1)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.1
+anchor_top = 0.12
+anchor_right = 0.9
+anchor_bottom = 0.88
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxPanel")
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.831373, 0.352941, 1)
+theme_override_font_sizes/font_size = 34
+text = "PETER RUN"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.866667, 0.941176, 0.890196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Original 2D 2.5D lane-runner foundation — L01 Barangay Morning is next."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Divider" type="HSeparator" parent="Panel/Margin/Content"]
+layout_mode = 2
+
+[node name="InputTitle" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.372549, 0.85098, 0.760784, 1)
+theme_override_font_sizes/font_size = 18
+text = "Development input map"
+
+[node name="InputMap" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.862745, 1)
+theme_override_font_sizes/font_size = 16
+text = "A = Move Left    D = Move Right    W = Jump    S = Slide    P = Pause"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Note" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.866667, 0.941176, 0.890196, 1)
+theme_override_font_sizes/font_size = 14
+text = "This is a technical foundation, not a clinical test build. ESP32 and therapist validation are still required."
+horizontal_alignment = 1
+autowrap_mode = 2

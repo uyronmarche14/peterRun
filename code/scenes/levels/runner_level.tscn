@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="Script" path="res://scripts/player_controller.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/prompt_director.gd" id="3_prompt_director"]
 
 [node name="RunnerLevel" type="Node2D"]
 script = ExtResource("1_runner")
@@ -61,6 +62,9 @@ color = Color(0.969, 0.729, 0.318, 0.92)
 [node name="Player" type="Node2D" parent="."]
 position = Vector2(240, 226)
 script = ExtResource("2_player")
+
+[node name="PromptDirector" type="Node" parent="."]
+script = ExtResource("3_prompt_director")
 
 [node name="Shadow" type="Polygon2D" parent="Player"]
 polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)

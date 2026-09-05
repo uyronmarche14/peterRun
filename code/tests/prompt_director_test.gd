@@ -33,6 +33,7 @@ func _test_prompt_state_transitions() -> void:
 	_expect(director.clear_resolved_prompt(), "Resolved prompt can be cleared")
 	_expect_equal(director.state, 0, "Cleared prompt returns to idle")
 	_expect_equal(director.current_action, &"", "Cleared prompt has no active action")
+	director.free()
 
 
 func _test_one_active_prompt_rule() -> void:
@@ -46,6 +47,7 @@ func _test_one_active_prompt_rule() -> void:
 	_expect(not director.schedule(&"slide"), "Second prompt is rejected until resolved prompt is cleared")
 	_expect(director.clear_resolved_prompt(), "Resolved prompt clears explicitly")
 	_expect(director.schedule(&"slide"), "A new prompt can be scheduled only after clear")
+	director.free()
 
 
 func _test_neutral_resolution_paths() -> void:
@@ -62,6 +64,8 @@ func _test_neutral_resolution_paths() -> void:
 	_expect(expired_director.expire_active_prompt(), "No-input prompt can expire")
 	_expect_equal(expired_director.resolution, 2, "Expired prompt resolves neutrally")
 	_expect(not expired_director.receive_action(&"move_right"), "Resolved prompt ignores later actions")
+	wrong_action_director.free()
+	expired_director.free()
 
 
 func _test_runner_level_contains_director() -> void:
@@ -72,7 +76,7 @@ func _test_runner_level_contains_director() -> void:
 	if director != null:
 		_expect(director.has_method("schedule"), "RunnerLevel director can schedule a prompt")
 		_expect(director.has_method("receive_action"), "RunnerLevel director receives named actions")
-	level.queue_free()
+	level.free()
 
 
 func _new_director() -> Variant:

@@ -8,6 +8,7 @@ signal named_action_received(action_name: StringName)
 var input_adapter := InputAdapterModel.new()
 
 @onready var player: PlayerController = $Player
+@onready var prompt_director: Node = $PromptDirector
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -30,4 +31,5 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		return
 
 	named_action_received.emit(logical_action)
+	prompt_director.call("receive_action", logical_action)
 	player.handle_action(logical_action)

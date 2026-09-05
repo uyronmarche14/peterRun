@@ -19,6 +19,7 @@ func _run() -> void:
 
 	_test_lane_state_bounds_and_action_recovery()
 	await _test_runner_scene_named_action_bridge()
+	await _test_clear_slide_pose()
 	_finish()
 
 
@@ -84,6 +85,32 @@ func _test_runner_scene_named_action_bridge() -> void:
 		_expect_equal(player.get("action_state"), 0, "Neutral jump animation returns the scene player to idle")
 
 	level.queue_free()
+
+
+func _test_clear_slide_pose() -> void:
+	var packed_scene: PackedScene = load(RUNNER_LEVEL_PATH)
+	var level := packed_scene.instantiate()
+	root.add_child(level)
+	await process_frame
+
+	var player := level.get_node_or_null(^"Player") as Node2D
+	var slide_streak := level.get_node_or_null(^"Player/SlideStreak") as Line2D
+	_expect(slide_streak != null, "Player includes a slide motion streak")
+	if player != null:
+		_expect(player.call("handle_action", &"slide"), "Player accepts a slide action from idle")
+		await create_timer(0.16).timeout
+		var visual := player.get_node_or_null(^"Visual") as Node2D
+		_expect(visual != null and visual.position.x >= 4.0, "Slide pose moves forward clearly")
+		_expect(visual != null and visual.position.y >= 5.0, "Slide pose stays low and grounded")
+		_expect(visual != null and visual.rotation <= -0.05, "Slide pose leans forward")
+		_expect(slide_streak != null and slide_streak.visible, "Slide streak is visible during the glide")
+		await create_timer(0.4).timeout
+		_expect_equal(player.get("action_state"), 0, "Slide animation returns to idle")
+		_expect(visual != null and is_zero_approx(visual.rotation), "Slide pose resets its rotation")
+		_expect(slide_streak != null and not slide_streak.visible, "Slide streak hides after the glide")
+
+	level.queue_free()
+	await process_frame
 
 
 func _expect(condition: bool, message: String) -> void:

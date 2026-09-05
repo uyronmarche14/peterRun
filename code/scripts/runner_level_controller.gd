@@ -27,8 +27,10 @@ var is_session_ended := false
 @onready var prompt_director: Node = $PromptDirector
 @onready var progress_label: Label = $HUD/HUDRoot/ProgressLabel
 @onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
+@onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
+@onready var prompt_backdrop: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop
 @onready var crate_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt
 @onready var puddle_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt
 @onready var laundry_line_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt
@@ -140,6 +142,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 
 func _show_l01_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
 	prompt_action_label.text = l01_prompt_catalog.get_action_label(action_name)
+	prompt_icon_label.text = _get_prompt_icon(action_name)
 	prompt_state_label.text = state_text
 	prompt_state_label.add_theme_color_override("font_color", state_color)
 
@@ -147,12 +150,28 @@ func _show_l01_prompt(action_name: StringName, state_text: String, state_color: 
 	crate_prompt.visible = prop_id == &"crate"
 	puddle_prompt.visible = prop_id == &"puddle"
 	laundry_line_prompt.visible = prop_id == &"laundry_line"
+	prompt_backdrop.visible = prop_id != &""
 
 
 func _hide_l01_props() -> void:
 	crate_prompt.visible = false
 	puddle_prompt.visible = false
 	laundry_line_prompt.visible = false
+	prompt_backdrop.visible = false
+	prompt_icon_label.text = "•"
+
+
+func _get_prompt_icon(action_name: StringName) -> String:
+	match action_name:
+		&"move_left":
+			return "‹"
+		&"move_right":
+			return "›"
+		&"jump":
+			return "▲"
+		&"slide":
+			return "▼"
+	return "•"
 
 
 func _record_prompt_resolution(action_name: StringName, resolution: int) -> void:

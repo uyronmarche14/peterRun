@@ -1,9 +1,21 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="Script" path="res://scripts/player_controller.gd" id="2_player"]
 [ext_resource type="Script" path="res://scripts/prompt_director.gd" id="3_prompt_director"]
 [ext_resource type="Script" path="res://scripts/world_motion_controller.gd" id="4_world_motion"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxPromptCard"]
+bg_color = Color(0.027, 0.11, 0.145, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.75, 0.32, 0.82)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
 
 [node name="RunnerLevel" type="Node2D"]
 script = ExtResource("1_runner")
@@ -80,6 +92,18 @@ visible = false
 
 [node name="L01PromptProps" type="Node2D" parent="LevelWorld/PromptWorldAnchor"]
 
+[node name="PromptBackdrop" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+visible = false
+
+[node name="Glow" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop"]
+polygon = PackedVector2Array(-42, 0, -24, -22, 24, -22, 42, 0, 24, 22, -24, 22)
+color = Color(0.018, 0.098, 0.125, 0.86)
+
+[node name="Frame" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop"]
+points = PackedVector2Array(-36, 0, -20, -17, 20, -17, 36, 0, 20, 17, -20, 17, -36, 0)
+width = 1.5
+default_color = Color(1, 0.75, 0.32, 0.72)
+
 [node name="CratePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
 visible = false
 
@@ -93,6 +117,7 @@ width = 2.0
 default_color = Color(1, 0.784, 0.42, 0.9)
 
 [node name="CrateLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+visible = false
 offset_left = -24.0
 offset_top = 20.0
 offset_right = 24.0
@@ -115,6 +140,7 @@ width = 2.0
 default_color = Color(0.78, 0.94, 1, 0.9)
 
 [node name="PuddleLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
+visible = false
 offset_left = -26.0
 offset_top = 20.0
 offset_right = 26.0
@@ -147,6 +173,7 @@ polygon = PackedVector2Array(-12, -8, 12, -8, 8, 7, -8, 7)
 color = Color(0.95, 0.4, 0.39, 1)
 
 [node name="LaundryLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
+visible = false
 offset_left = -35.0
 offset_top = 20.0
 offset_right = 35.0
@@ -199,6 +226,27 @@ offset_bottom = 53.0
 color = Color(0.024, 0.078, 0.106, 0.9)
 mouse_filter = 2
 
+[node name="PromptCard" type="Panel" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 4.0
+offset_right = 326.0
+offset_bottom = 49.0
+theme_override_styles/panel = SubResource("StyleBoxPromptCard")
+mouse_filter = 2
+
+[node name="PromptIconLabel" type="Label" parent="HUD/HUDRoot/PromptCard"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 28.0
+offset_bottom = 37.0
+theme_override_colors/font_color = Color(1, 0.8, 0.39, 1)
+theme_override_font_sizes/font_size = 20
+text = "•"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="LevelLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 12.0
@@ -231,9 +279,9 @@ text = "Misses: 0"
 
 [node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 170.0
 offset_top = 7.0
-offset_right = 320.0
+offset_left = 190.0
+offset_right = 318.0
 offset_bottom = 27.0
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
 theme_override_font_sizes/font_size = 13
@@ -242,7 +290,7 @@ text = "NEXT ACTION"
 
 [node name="PromptStateLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 170.0
+offset_left = 190.0
 offset_top = 28.0
 offset_right = 320.0
 offset_bottom = 46.0

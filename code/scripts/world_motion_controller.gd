@@ -3,8 +3,9 @@ extends Node
 
 const ROAD_DASH_SPEED := 18.0
 const ROAD_DASH_LOOP_DISTANCE := 28.0
-const PROMPT_APPROACH_SPEED := 8.0
-const PROMPT_APPROACH_DISTANCE := 18.0
+const PROMPT_APPROACH_DURATION := 2.5
+const PROMPT_APPROACH_DISTANCE := 34.0
+const PROMPT_APPROACH_SCALE := 0.22
 
 var is_motion_paused := false
 var motion_distance := 0.0
@@ -26,10 +27,10 @@ func _process(delta: float) -> void:
 
 	if _prompt_is_visible:
 		_prompt_elapsed += delta
-		var approach_distance := minf(_prompt_elapsed * PROMPT_APPROACH_SPEED, PROMPT_APPROACH_DISTANCE)
-		prompt_anchor.position.y = 104.0 + approach_distance
-		var scale_increase := approach_distance / PROMPT_APPROACH_DISTANCE * 0.14
-		prompt_anchor.scale = Vector2.ONE * (1.0 + scale_increase)
+		var normalized_time := clampf(_prompt_elapsed / PROMPT_APPROACH_DURATION, 0.0, 1.0)
+		var eased_time := normalized_time * normalized_time * (3.0 - 2.0 * normalized_time)
+		prompt_anchor.position.y = 104.0 + PROMPT_APPROACH_DISTANCE * eased_time
+		prompt_anchor.scale = Vector2.ONE * (1.0 + PROMPT_APPROACH_SCALE * eased_time)
 
 
 func set_motion_paused(should_pause: bool) -> void:

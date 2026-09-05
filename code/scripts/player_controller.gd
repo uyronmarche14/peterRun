@@ -5,8 +5,9 @@ const PlayerLaneStateModel = preload("res://scripts/player_lane_state.gd")
 
 const LANE_X := [128.0, 240.0, 352.0]
 const LANE_TWEEN_SECONDS := 0.16
-const ACTION_RISE_SECONDS := 0.14
-const ACTION_RETURN_SECONDS := 0.20
+const JUMP_HEIGHT := -22.0
+const ACTION_RISE_SECONDS := 0.18
+const ACTION_RETURN_SECONDS := 0.24
 
 var _lane_state := PlayerLaneStateModel.new()
 var _lane_tween: Tween
@@ -66,7 +67,7 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 	_action_tween.set_ease(Tween.EASE_OUT)
 
 	if action_name == &"jump":
-		_action_tween.tween_property(visual, ^"position:y", -13.0, ACTION_RISE_SECONDS)
+		_action_tween.tween_property(visual, ^"position:y", JUMP_HEIGHT, ACTION_RISE_SECONDS)
 		_action_tween.tween_property(visual, ^"position:y", 0.0, ACTION_RETURN_SECONDS)
 	else:
 		_action_tween.tween_property(visual, ^"scale", Vector2(1.18, 0.68), ACTION_RISE_SECONDS)

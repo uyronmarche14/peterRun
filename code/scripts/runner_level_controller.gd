@@ -54,13 +54,15 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is not InputEventAction:
-		return
-	if not InputAdapterModel.ACCEPTED_ACTIONS.has(event.action):
-		return
-
-	receive_input(event.action, event.pressed, Time.get_ticks_msec() / 1000.0)
-	get_viewport().set_input_as_handled()
+	for action_name in InputAdapterModel.ACCEPTED_ACTIONS:
+		if event.is_action_pressed(action_name):
+			receive_input(action_name, true, Time.get_ticks_msec() / 1000.0)
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_released(action_name):
+			receive_input(action_name, false, Time.get_ticks_msec() / 1000.0)
+			get_viewport().set_input_as_handled()
+			return
 
 
 func receive_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:

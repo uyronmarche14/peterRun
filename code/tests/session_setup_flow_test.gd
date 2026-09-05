@@ -95,6 +95,10 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	if tutorial.has_method("show_action_index"):
 		tutorial.call("show_action_index", 2)
 		_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "JUMP", "Tutorial can preview Jump without a countdown")
+		tutorial.call("toggle_tutorial_pause")
+		_expect_equal(tutorial.get("is_tutorial_paused"), true, "Tutorial pauses visibly without automatic progression")
+		_expect_button(tutorial, ^"Panel/Margin/Content/PauseTutorialButton", "Resume Tutorial")
+		tutorial.call("toggle_tutorial_pause")
 	_expect(tutorial.has_method("get_ready_scene_path"), "Tutorial exposes the Ready route")
 	if tutorial.has_method("get_ready_scene_path"):
 		_expect_equal(tutorial.call("get_ready_scene_path"), READY_SCENE_PATH, "Tutorial continues to Ready")

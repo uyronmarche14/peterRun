@@ -1,8 +1,8 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/controller_check_controller.gd" id="1_check"]
+[ext_resource type="Script" path="res://scripts/ready_screen_controller.gd" id="1_ready"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxCheck"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxReady"]
 bg_color = Color(0.039, 0.114, 0.149, 0.97)
 border_width_left = 2
 border_width_top = 2
@@ -14,14 +14,14 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[node name="ControllerCheck" type="Control"]
+[node name="Ready" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_check")
+script = ExtResource("1_ready")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -36,63 +36,63 @@ mouse_filter = 2
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.1
-anchor_top = 0.15
-anchor_right = 0.9
-anchor_bottom = 0.85
+anchor_left = 0.11
+anchor_top = 0.16
+anchor_right = 0.89
+anchor_bottom = 0.84
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxCheck")
+theme_override_styles/panel = SubResource("StyleBoxReady")
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 14
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
 
 [node name="Content" type="VBoxContainer" parent="Panel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
 theme_override_font_sizes/font_size = 20
-text = "Controller Check"
+text = "Ready When You Are"
 horizontal_alignment = 1
 
-[node name="ControllerStatus" type="Label" parent="Panel/Margin/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 14
-text = "Keyboard fallback ready"
-horizontal_alignment = 1
-
-[node name="StatusDetail" type="Label" parent="Panel/Margin/Content"]
+[node name="Guidance" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
 theme_override_font_sizes/font_size = 10
-text = "Use A / D / W / S during the session. MOVE Controller hardware must be verified separately before supervised use."
+text = "The therapist can start, pause, or end the session at any time."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="SafetyNote" type="Label" parent="Panel/Margin/Content"]
+[node name="SessionDetails" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="KeyboardNote" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.855, 0.824, 1)
 theme_override_font_sizes/font_size = 9
-text = "Each input is debounced. Pause remains available throughout play."
+text = "Keyboard fallback: A / D / W / S. Missed prompts stay neutral."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="KeyboardFallbackButton" type="Button" parent="Panel/Margin/Content"]
+[node name="StartSessionButton" type="Button" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
-text = "Continue to Tutorial"
+text = "Start L01 Session"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
-text = "Back"
+text = "Back to Tutorial"

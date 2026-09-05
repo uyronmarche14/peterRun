@@ -1,0 +1,159 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial_controller.gd" id="1_tutorial"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxTutorial"]
+bg_color = Color(0.039, 0.114, 0.149, 0.97)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.969, 0.71, 0.196, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxActionCard"]
+bg_color = Color(0.027, 0.11, 0.145, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.78, 0.66, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Tutorial" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tutorial")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027, 0.169, 0.22, 1)
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.07
+anchor_top = 0.03
+anchor_right = 0.93
+anchor_bottom = 0.97
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTutorial")
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Title" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
+theme_override_font_sizes/font_size = 19
+text = "Movement Tutorial"
+horizontal_alignment = 1
+
+[node name="Guidance" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
+theme_override_font_sizes/font_size = 9
+text = "Review one movement at a time before the session."
+horizontal_alignment = 1
+
+[node name="ProgressLabel" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="ActionCard" type="Panel" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxActionCard")
+
+[node name="ActionIconLabel" type="Label" parent="Panel/Margin/Content/ActionCard"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 13.0
+offset_right = 48.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(1, 0.8, 0.39, 1)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActionLabel" type="Label" parent="Panel/Margin/Content/ActionCard"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 10.0
+offset_right = 315.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="InstructionLabel" type="Label" parent="Panel/Margin/Content/ActionCard"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 34.0
+offset_right = 315.0
+offset_bottom = 61.0
+theme_override_colors/font_color = Color(0.88, 0.94, 0.9, 1)
+theme_override_font_sizes/font_size = 9
+autowrap_mode = 2
+
+[node name="TutorialStatus" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.79, 0.73, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+
+[node name="PreviousButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 19)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Previous"
+
+[node name="NextButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 21)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Next"
+
+[node name="SkipButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 19)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Skip Tutorial"
+
+[node name="PauseTutorialButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 19)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Pause Tutorial"
+
+[node name="BackButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 19)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Back"

@@ -11,6 +11,7 @@ const ACTION_RETURN_SECONDS := 0.20
 var _lane_state := PlayerLaneStateModel.new()
 var _lane_tween: Tween
 var _action_tween: Tween
+var is_gameplay_paused := false
 
 @onready var visual: Node2D = $Visual
 
@@ -30,6 +31,9 @@ func _ready() -> void:
 
 
 func handle_action(action_name: StringName) -> bool:
+	if is_gameplay_paused:
+		return false
+
 	var accepted := _lane_state.handle_action(action_name)
 	if not accepted:
 		return false
@@ -75,6 +79,15 @@ func _finish_action_animation() -> void:
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
 	_lane_state.finish_action()
+
+
+func set_gameplay_paused(should_pause: bool) -> void:
+	is_gameplay_paused = should_pause
+	var tween_speed := 0.0 if should_pause else 1.0
+	if _lane_tween != null:
+		_lane_tween.set_speed_scale(tween_speed)
+	if _action_tween != null:
+		_action_tween.set_speed_scale(tween_speed)
 
 
 func _exit_tree() -> void:

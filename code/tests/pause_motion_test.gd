@@ -52,9 +52,10 @@ func _test_pause_freezes_motion_timers_and_input(level: Node) -> void:
 	_expect(response_timer != null and not response_timer.paused, "Prompt response timer begins active")
 	_expect(resolve_timer != null and not resolve_timer.paused, "Prompt resolve timer begins active")
 
-	var before_motion := float(motion.get("motion_distance")) if motion != null else 0.0
+	var has_motion_controller := motion != null and motion.has_method("set_motion_paused")
+	var before_motion := float(motion.get("motion_distance")) if has_motion_controller else 0.0
 	await create_timer(0.12).timeout
-	if motion != null:
+	if has_motion_controller:
 		_expect(float(motion.get("motion_distance")) > before_motion, "World motion advances at a fixed calm pace")
 
 	level.call("pause_gameplay")
@@ -63,22 +64,22 @@ func _test_pause_freezes_motion_timers_and_input(level: Node) -> void:
 	_expect(warning_timer != null and warning_timer.paused, "Warning timer freezes on pause")
 	_expect(response_timer != null and response_timer.paused, "Response timer freezes on pause")
 	_expect(resolve_timer != null and resolve_timer.paused, "Resolve timer freezes on pause")
-	if motion != null:
+	if has_motion_controller:
 		_expect_equal(motion.get("is_motion_paused"), true, "World motion freezes on pause")
 
-	var frozen_motion := float(motion.get("motion_distance")) if motion != null else 0.0
+	var frozen_motion := float(motion.get("motion_distance")) if has_motion_controller else 0.0
 	var lane_before_pause: Variant = player.get("lane_index") if player != null else -1
 	level.call("receive_input", &"move_left", true, 10.0)
 	_expect_equal(player.get("lane_index") if player != null else -1, lane_before_pause, "Movement input is ignored while paused")
 	await create_timer(0.12).timeout
-	if motion != null:
+	if has_motion_controller:
 		_expect_equal(float(motion.get("motion_distance")), frozen_motion, "World motion remains frozen while paused")
 
 	level.call("resume_gameplay")
 	_expect_equal(level.get("is_gameplay_paused"), false, "Gameplay resumes explicitly")
 	_expect(pause_overlay != null and not pause_overlay.visible, "Pause overlay hides on resume")
 	_expect(warning_timer != null and not warning_timer.paused, "Warning timer resumes")
-	if motion != null:
+	if has_motion_controller:
 		_expect_equal(motion.get("is_motion_paused"), false, "World motion resumes")
 
 

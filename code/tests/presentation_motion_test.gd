@@ -48,6 +48,13 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 	await create_timer(0.92).timeout
 	_expect(prompt_anchor != null and prompt_anchor.position.y >= 120.0, "Prompt prop approaches clearly before response")
 	_expect(prompt_anchor != null and prompt_anchor.scale.x >= 1.1, "Prompt prop grows gently as it approaches")
+	var prompt_ground_shadow := level.get_node_or_null(^"LevelWorld/PromptWorldAnchor/L01PromptProps/PromptGroundShadow") as Polygon2D
+	_expect(prompt_ground_shadow != null, "Prompt includes a ground shadow for depth")
+	await create_timer(1.0).timeout
+	_expect(prompt_anchor != null and prompt_anchor.position.y >= 150.0, "Prompt travels deeply into the lower road space")
+	_expect(prompt_anchor != null and prompt_anchor.scale.x >= 1.32, "Prompt gains clear perspective scale near the player")
+	_expect(prompt_ground_shadow != null and prompt_ground_shadow.visible, "Ground shadow stays visible while the prompt approaches")
+	_expect(prompt_ground_shadow != null and prompt_ground_shadow.scale.x >= 1.2, "Ground shadow expands with the approaching prompt")
 
 	level.queue_free()
 	await process_frame

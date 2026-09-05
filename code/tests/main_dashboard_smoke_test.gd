@@ -7,6 +7,8 @@ var failures: PackedStringArray = []
 
 
 func _init() -> void:
+	_expect_equal(ProjectSettings.get_setting("application/run/main_scene", ""), MAIN_SCENE_PATH, "F5 opens the main dashboard")
+
 	if not ResourceLoader.exists(MAIN_SCENE_PATH):
 		failures.append("Main dashboard scene is missing")
 		_finish()

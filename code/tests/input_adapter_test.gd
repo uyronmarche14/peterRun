@@ -53,6 +53,7 @@ func _test_held_action_and_cooldown_allow_one_event() -> void:
 	_expect_equal(adapter.accept_action(&"jump", 1.1), &"", "Held action is ignored")
 	adapter.release_action(&"jump")
 	_expect_equal(adapter.accept_action(&"jump", 1.4), &"", "Released action inside cooldown is ignored")
+	adapter.release_action(&"jump")
 	_expect_equal(adapter.accept_action(&"jump", 1.5), &"jump", "Action is accepted when cooldown expires")
 
 

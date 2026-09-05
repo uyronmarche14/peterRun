@@ -1,0 +1,127 @@
+extends SceneTree
+
+const MAIN_SCENE_PATH := "res://scenes/main.tscn"
+const PATIENT_SETUP_SCENE_PATH := "res://scenes/patient_setup.tscn"
+const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
+const RUNNER_LEVEL_PATH := "res://scenes/levels/runner_level.tscn"
+const SESSION_SETUP_STORE_PATH := "res://scripts/session_setup_store.gd"
+const SessionConfigModel = preload("res://scripts/session_config.gd")
+
+var failures: PackedStringArray = []
+
+
+func _init() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
+	_expect(ResourceLoader.exists(PATIENT_SETUP_SCENE_PATH), "Patient Setup scene exists")
+	_expect(ResourceLoader.exists(CONTROLLER_CHECK_SCENE_PATH), "Controller Check scene exists")
+	_expect(ResourceLoader.exists(SESSION_SETUP_STORE_PATH), "Session setup store exists")
+	if not failures.is_empty():
+		_finish()
+		return
+
+	var store_script: GDScript = load(SESSION_SETUP_STORE_PATH)
+	store_script.call("reset")
+	_test_main_menu_route()
+	await _test_setup_persists_supervised_session_config(store_script)
+	await _test_controller_check_routes_to_l01(store_script)
+	_finish()
+
+
+func _test_main_menu_route() -> void:
+	var dashboard: Control = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
+	_expect_button(dashboard, ^"Dashboard/Margin/Content/StartSessionButton", "Start Session")
+	_expect(dashboard.has_method("open_patient_setup"), "Main Menu opens Patient Setup")
+	_expect(dashboard.has_method("get_patient_setup_scene_path"), "Main Menu exposes the Patient Setup route")
+	if dashboard.has_method("get_patient_setup_scene_path"):
+		_expect_equal(dashboard.call("get_patient_setup_scene_path"), PATIENT_SETUP_SCENE_PATH, "Start Session routes to Patient Setup")
+	dashboard.free()
+
+
+func _test_setup_persists_supervised_session_config(store_script: GDScript) -> void:
+	var setup: Control = (load(PATIENT_SETUP_SCENE_PATH) as PackedScene).instantiate()
+	root.add_child(setup)
+	await process_frame
+	_expect_node(setup, ^"Panel/Margin/Content/AffectedSideOption", "affected-side selector")
+	_expect_node(setup, ^"Panel/Margin/Content/TargetRepetitionsSpinBox", "target repetition selector")
+	_expect_button(setup, ^"Panel/Margin/Content/ContinueButton", "Continue to Controller Check")
+	_expect_button(setup, ^"Panel/Margin/Content/BackButton", "Back")
+	_expect(setup.has_method("save_session_settings"), "Patient Setup saves session settings")
+	if setup.has_method("save_session_settings"):
+		setup.call("set_affected_side", SessionConfigModel.AffectedSide.LEFT)
+		setup.call("set_target_repetitions", 12)
+		setup.call("save_session_settings")
+		var config: Variant = store_script.call("get_session_config")
+		_expect_equal(config.affected_side, SessionConfigModel.AffectedSide.LEFT, "Selected affected side persists")
+		_expect_equal(config.selected_level_id, &"l01_barangay", "L01 is selected for this build")
+		for action_name in SessionConfigModel.ACTIONS:
+			_expect_equal(config.get_target(action_name), 12, "Selected target persists for %s" % action_name)
+	setup.queue_free()
+	await process_frame
+
+
+func _test_controller_check_routes_to_l01(store_script: GDScript) -> void:
+	var controller_check: Control = (load(CONTROLLER_CHECK_SCENE_PATH) as PackedScene).instantiate()
+	root.add_child(controller_check)
+	await process_frame
+	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
+	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Use Keyboard Fallback")
+	_expect_button(controller_check, ^"Panel/Margin/Content/BackButton", "Back")
+	_expect(controller_check.has_method("get_runner_scene_path"), "Controller Check exposes the L01 route")
+	if controller_check.has_method("get_runner_scene_path"):
+		_expect_equal(controller_check.call("get_runner_scene_path"), RUNNER_LEVEL_PATH, "Keyboard fallback starts L01")
+	controller_check.queue_free()
+	await process_frame
+
+	var runner: Node = (load(RUNNER_LEVEL_PATH) as PackedScene).instantiate()
+	root.add_child(runner)
+	await process_frame
+	var saved_config: Variant = store_script.call("get_session_config")
+	_expect_equal(runner.get("session_config").affected_side, saved_config.affected_side, "L01 receives the selected affected side")
+	_expect_equal(runner.get("session_config").get_target(&"jump"), 12, "L01 receives the selected target")
+	_expect_equal(runner.get("input_adapter").affected_side, SessionConfigModel.AffectedSide.LEFT, "Input adapter receives left-side mapping")
+	runner.queue_free()
+	await process_frame
+
+
+func _expect_node(root_node: Node, path: NodePath, description: String) -> void:
+	_expect(root_node.get_node_or_null(path) != null, "Screen includes %s" % description)
+
+
+func _expect_button(root_node: Node, path: NodePath, expected_text: String) -> void:
+	var button := root_node.get_node_or_null(path) as Button
+	_expect(button != null, "Screen includes %s button" % expected_text)
+	if button != null:
+		_expect(button.visible, "%s button is visible" % expected_text)
+		_expect_equal(button.text, expected_text, "%s button has the expected label" % expected_text)
+
+
+func _expect_label(root_node: Node, path: NodePath, expected_text: String, description: String) -> void:
+	var label := root_node.get_node_or_null(path) as Label
+	_expect(label != null, "Screen includes %s" % description)
+	if label != null:
+		_expect_equal(label.text, expected_text, "%s has the expected text" % description)
+
+
+func _expect(condition: bool, message: String) -> void:
+	if not condition:
+		failures.append(message)
+
+
+func _expect_equal(actual: Variant, expected: Variant, message: String) -> void:
+	if actual != expected:
+		failures.append("%s (expected %s, got %s)" % [message, expected, actual])
+
+
+func _finish() -> void:
+	if failures.is_empty():
+		print("PETER RUN session setup flow test: PASS")
+		quit(0)
+		return
+
+	for failure in failures:
+		printerr("FAIL: %s" % failure)
+	printerr("PETER RUN session setup flow test: FAIL (%d failures)" % failures.size())
+	quit(1)

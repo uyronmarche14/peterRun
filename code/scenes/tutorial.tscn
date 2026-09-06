@@ -163,6 +163,14 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
 text = "Next"
 
+[node name="DemoButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+focus_mode = 0
+text = "Show me"
+
 [node name="UtilityRow" type="HBoxContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 4
@@ -239,3 +247,7 @@ color = Color(0.87, 0.47, 0.32, 1)
 
 [node name="Player" parent="Panel/Margin/Content/ActionCard/PracticeArea/PracticeCanvas" instance=ExtResource("2_player")]
 position = Vector2(240, 90)
+
+[node name="DemoTimer" type="Timer" parent="."]
+wait_time = 1.0
+one_shot = true

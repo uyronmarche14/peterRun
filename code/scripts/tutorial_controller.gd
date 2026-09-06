@@ -31,6 +31,7 @@ var current_action_index := 0
 var is_tutorial_paused := false
 var step_completed := false
 var input_adapter: RefCounted
+var is_demonstrating := false
 
 @onready var progress_label: Label = $Panel/Margin/Content/ProgressLabel
 @onready var action_icon_label: Label = $Panel/Margin/Content/ActionCard/ActionIconLabel
@@ -43,6 +44,8 @@ var input_adapter: RefCounted
 @onready var pause_tutorial_button: Button = $Panel/Margin/Content/UtilityRow/PauseTutorialButton
 @onready var back_button: Button = $Panel/Margin/Content/UtilityRow/BackButton
 @onready var repeat_button: Button = $Panel/Margin/Content/NavigationRow/RepeatButton
+@onready var demo_button: Button = $Panel/Margin/Content/NavigationRow/DemoButton
+@onready var demo_timer: Timer = $DemoTimer
 @onready var practice_area: Control = $Panel/Margin/Content/ActionCard/PracticeArea
 @onready var practice_canvas: Node2D = $Panel/Margin/Content/ActionCard/PracticeArea/PracticeCanvas
 @onready var practice_player: Node2D = $Panel/Margin/Content/ActionCard/PracticeArea/PracticeCanvas/Player
@@ -59,6 +62,8 @@ func _ready() -> void:
 	pause_tutorial_button.pressed.connect(toggle_tutorial_pause)
 	back_button.pressed.connect(return_to_controller_check)
 	repeat_button.pressed.connect(repeat_action)
+	demo_button.pressed.connect(demonstrate_action)
+	demo_timer.timeout.connect(_on_demo_finished)
 	practice_area.resized.connect(_centre_practice)
 	_centre_practice()
 	show_action_index(0)
@@ -88,7 +93,7 @@ func receive_practice_input(source_action: StringName, pressed: bool, now_second
 	if action == &"pause_session":
 		toggle_tutorial_pause()
 		return
-	if action == &"" or is_tutorial_paused or step_completed:
+	if action == &"" or is_tutorial_paused or is_demonstrating or step_completed:
 		return
 	if action != PRACTICE_ACTIONS[current_action_index]:
 		tutorial_status.text = "Take your time. Try the highlighted movement."
@@ -103,12 +108,31 @@ func repeat_action() -> void:
 	show_action_index(current_action_index)
 
 
+func demonstrate_action() -> void:
+	if is_tutorial_paused or is_demonstrating:
+		return
+	show_action_index(current_action_index)
+	is_demonstrating = true
+	# Visual example only: bypass input acknowledgement and never count a rep.
+	practice_player.handle_action(PRACTICE_ACTIONS[current_action_index])
+	demo_timer.start()
+	_refresh_status()
+
+
+func _on_demo_finished() -> void:
+	if not is_demonstrating or is_tutorial_paused:
+		return
+	is_demonstrating = false
+	practice_player.reset_for_practice()
+	_refresh_status()
+
+
 func get_ready_scene_path() -> String:
 	return READY_SCENE_PATH
 
 
 func show_action_index(index: int) -> void:
-	if is_tutorial_paused:
+	if is_tutorial_paused or is_demonstrating:
 		return
 	current_action_index = clampi(index, 0, ACTIONS.size() - 1)
 	step_completed = false
@@ -139,11 +163,14 @@ func _practice_instruction() -> String:
 
 
 func _refresh_status() -> void:
-	previous_button.disabled = is_tutorial_paused or current_action_index == 0
-	repeat_button.disabled = is_tutorial_paused
-	next_button.disabled = is_tutorial_paused or not step_completed
+	previous_button.disabled = is_tutorial_paused or is_demonstrating or current_action_index == 0
+	repeat_button.disabled = is_tutorial_paused or is_demonstrating
+	demo_button.disabled = is_tutorial_paused or is_demonstrating
+	next_button.disabled = is_tutorial_paused or is_demonstrating or not step_completed
 	if is_tutorial_paused:
 		tutorial_status.text = "Practice paused. Resume when ready."
+	elif is_demonstrating:
+		tutorial_status.text = "Watch the example. Your turn comes next."
 	elif step_completed:
 		tutorial_status.text = "Nicely done! Repeat or choose %s." % next_button.text
 	else:
@@ -155,7 +182,7 @@ func show_previous_action() -> void:
 
 
 func show_next_action() -> void:
-	if is_tutorial_paused or not step_completed:
+	if is_tutorial_paused or is_demonstrating or not step_completed:
 		return
 	if current_action_index == ACTIONS.size() - 1:
 		skip_to_ready()
@@ -170,6 +197,7 @@ func skip_to_ready() -> void:
 func toggle_tutorial_pause() -> void:
 	is_tutorial_paused = not is_tutorial_paused
 	practice_player.set_gameplay_paused(is_tutorial_paused)
+	demo_timer.paused = is_tutorial_paused
 	pause_tutorial_button.text = "Resume Tutorial" if is_tutorial_paused else "Pause Tutorial"
 	_refresh_status()
 

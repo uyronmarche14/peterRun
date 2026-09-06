@@ -41,6 +41,8 @@ PR-11 implementation status (2026-09-06): implemented locally with `session_summ
 | PR-14 | Parallax and final art integration | PR-03, PR-13 | Background supports—not hides—prompts, lanes or Pause control at 480 × 270 | Readability review and performance baseline |
 | PR-15 | ESP32 HID integration | PR-02 | Controller emits one expected HID action per verified movement | Notepad evidence + Godot input log; therapist/hardware status recorded |
 
+PR-12 implementation status (2026-09-07): L01 and a developer-only second fixture use the same runner through validated LevelDefinition resources. Titles, palettes, sequence, prop scenes and existing timing values are data-driven. Therapist targets, fixed speed and action semantics are unchanged. Ready, Summary and Retry retain the selected level; invalid data blocks starting. See `code/README.md` for authoring and `code/tests/level_definition_test.gd` for validation/flow checks. The normal setup UI is still L01-only. Next: PR-13 content resources and level selection, not final art or release approval.
+
 ## Phase 4 — Release gate
 
 | ID | Build unit | Depends on | Done when | Required proof |

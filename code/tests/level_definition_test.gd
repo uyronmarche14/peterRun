@@ -31,6 +31,11 @@ func _run() -> void:
 func _test_validation() -> void:
 	var source: Resource = load(L01)
 	_expect(source.call("validate").is_empty(), "L01 definition is valid")
+	var catalog: Resource = load("res://data/levels/catalog.tres")
+	_expect(catalog.call("find_level", &"l01_barangay") == source, "Normal catalog resolves L01")
+	_expect(catalog.call("find_level", &"fixture_courtyard") == null, "Developer fixture is excluded from the production catalog")
+	_expect(source.call("get_prop_scene", &"unknown") == null, "Unknown actions have no prop")
+	_expect(source.call("get_action_icon", &"jump") == "▲", "Action icons stay stable across themes")
 	_expect(source.call("get_planned_sequence") == [&"move_left", &"jump", &"move_right", &"slide"], "L01 order is unchanged")
 	var copy: Resource = source.duplicate(true)
 	var sequence: Array = copy.call("get_planned_sequence")
@@ -40,7 +45,7 @@ func _test_validation() -> void:
 		["level_id", &""], ["title", ""], ["sequence", []],
 		["sequence", [&"jump", &"slide", &"move_left"]],
 		["sequence", [&"jump", &"slide", &"move_left", &"move_right", &"bad"]],
-		["warning_seconds", 0.1], ["response_seconds", NAN],
+		["warning_seconds", 0.1], ["response_seconds", NAN], ["response_seconds", INF],
 		["resolved_seconds", 0.0], ["jump_prop", null]
 	]:
 		copy = source.duplicate(true)
@@ -51,6 +56,13 @@ func _test_validation() -> void:
 		else:
 			copy.set(mutation[0], mutation[1])
 		_expect(not copy.call("validate").is_empty(), "Invalid level is rejected: " + str(mutation[0]))
+	var invalid_prop := PackedScene.new()
+	var non_2d := Node.new()
+	invalid_prop.pack(non_2d)
+	non_2d.free()
+	copy = source.duplicate(true)
+	copy.set("jump_prop", invalid_prop)
+	_expect(not copy.call("validate").is_empty(), "Non-2D prop roots are rejected before runner instantiation")
 
 
 func _test_level(path: String) -> void:
@@ -71,6 +83,7 @@ func _test_level(path: String) -> void:
 	_expect(runner.scene_file_path == "res://scenes/levels/runner_level.tscn", "Both definitions use the same runner scene")
 	_expect(runner.get_node("HUD/HUDRoot/LevelLabel").text.contains(definition.get("title")), "HUD uses resource title")
 	_expect(runner.get_node("LevelWorld/Sky").color == definition.get("sky_color"), "Resource palette reaches world")
+	_expect(runner.get("level_definition") != definition, "Running level settings do not alias the authored resource")
 	var director := runner.get_node("PromptDirector")
 	var actions: Array = definition.call("get_planned_sequence")
 	_expect(director.get("current_action") == actions[0], "Resource chooses first action")
@@ -90,6 +103,11 @@ func _test_level(path: String) -> void:
 		_expect(director.get("current_action") == action, "Runner follows authored sequence")
 		var prop: Node2D = runner.call("get_visible_prompt")
 		_expect(prop != null and prop.scene_file_path == definition.call("get_prop_scene", action).resource_path, "Correct resource prop is visible")
+		var visible_props := 0
+		for child in runner.get_node("LevelWorld/PromptWorldAnchor/PromptProps").get_children():
+			if child is Node2D and child.visible and child.scene_file_path != "":
+				visible_props += 1
+		_expect(visible_props == 1, "Exactly one resource prop is visible")
 		_expect(runner.get_node("PromptTimers/WarningTimer").wait_time == definition.get("warning_seconds"), "Resource drives warning timer")
 		director.call("open_response_window")
 		_expect(runner.get_node("PromptTimers/ResponseTimer").wait_time == definition.get("response_seconds"), "Resource drives response timer")

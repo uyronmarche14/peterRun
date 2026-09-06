@@ -36,11 +36,17 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 	var player := level.get_node_or_null(^"Player") as Node2D
 	if player != null:
 		player.call("handle_action", &"move_left")
-		await create_timer(0.12).timeout
-		_expect(player.position.x > 128.0 and player.position.x < 165.0, "Lane input responds early and eases toward the target without overshoot")
-		await create_timer(0.16).timeout
+		# Scene-loading frame time can affect a timer before the tween starts.
+		# Sample the actual tween deterministically, independent of machine load.
+		var lane_tween: Tween = player.get("_lane_tween")
+		lane_tween.pause()
+		lane_tween.custom_step(0.12)
+		_expect(player.position.x > 128.0 and player.position.x < 165.0, "Lane input responds early and eases toward the target without overshoot (x=%f)" % player.position.x)
+		lane_tween.custom_step(0.16)
 		player.call("handle_action", &"jump")
-		await create_timer(0.20).timeout
+		var action_tween: Tween = player.get("_action_tween")
+		action_tween.pause()
+		action_tween.custom_step(0.20)
 		var visual := player.get_node_or_null(^"Visual") as Node2D
 		_expect(visual != null and visual.position.y <= -26.0, "Jump has a readable, smooth peak")
 

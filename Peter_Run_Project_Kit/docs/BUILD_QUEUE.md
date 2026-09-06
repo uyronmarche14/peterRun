@@ -27,6 +27,7 @@ Each item is designed as a small, independently verifiable unit. Finish them in 
 | --- | --- | --- | --- | --- |
 | PR-09 | Main Menu, Patient Setup and Controller Check | PR-00, PR-02 | Therapist can configure level, targets and affected side before play | UI smoke flow evidence |
 | PR-10 | Tutorial and Ready screen | PR-04, PR-05 | One action is explained at a time; therapist can pause or skip | Manual UI walkthrough |
+| PR-10B | L01 runner motion and HUD polish | PR-06, PR-08, PR-10 | Lane-aware props travel throughout warning/response and fade on exit; running/landing feedback and capped animated repetition progress freeze on pause | `runner_polish_test.gd`, presentation/pause/progress regressions, native and 1080p rendered captures |
 | PR-11 | Summary, RPE and therapist decision | PR-08 | Results show completed reps and neutral misses; RPE is 1–10 and mouse-operated | Flow test from level completion to Main Menu |
 
 ## Phase 3 — Data-driven levels and art

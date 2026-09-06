@@ -1,0 +1,112 @@
+extends SceneTree
+
+const Store = preload("res://scripts/session_setup_store.gd")
+const Config = preload("res://scripts/session_config.gd")
+var failures: PackedStringArray = []
+
+
+func _init() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
+	Store.reset()
+	var tutorial: Control = load("res://scenes/tutorial.tscn").instantiate()
+	root.add_child(tutorial)
+	await process_frame
+	_expect(tutorial.has_method("receive_practice_input"), "Tutorial accepts named practice actions")
+	if tutorial.has_method("receive_practice_input"):
+		var next: Button = tutorial.get_node("Panel/Margin/Content/NavigationRow/NextButton")
+		_expect(next.disabled, "Next waits for the demonstrated action")
+		tutorial.call("show_next_action")
+		_expect(tutorial.current_action_index == 0, "Next cannot bypass an unpractised step")
+		tutorial.call("receive_practice_input", &"jump", true, 1.0)
+		_expect(not tutorial.step_completed, "Another action does not complete a left lesson")
+		tutorial.call("receive_practice_input", &"jump", false, 1.1)
+		tutorial.call("receive_practice_input", &"move_left", true, 2.0)
+		_expect(tutorial.step_completed and not next.disabled, "Correct movement acknowledges the lesson")
+		_expect(tutorial.practice_player.lane_index == 0, "Practice moves the real animated player to the left lane")
+		tutorial.call("repeat_action")
+		_expect(not tutorial.step_completed and tutorial.practice_player.lane_index == 1, "Repeat resets the player and lesson")
+		tutorial.call("receive_practice_input", &"move_left", true, 3.0)
+		_expect(not tutorial.step_completed, "A held key cannot complete a repeated lesson")
+		tutorial.call("receive_practice_input", &"move_left", false, 3.1)
+		tutorial.call("receive_practice_input", &"move_left", true, 3.5)
+		_expect(tutorial.step_completed, "A fresh press can complete the repeated lesson")
+		tutorial.call("show_next_action")
+		_expect(tutorial.current_action_index == 1 and not tutorial.step_completed, "Next opens exactly one new lesson")
+		tutorial.call("receive_practice_input", &"move_right", true, 4.0)
+		_expect(tutorial.practice_player.lane_index == 2, "Right lesson moves to the right lane")
+		tutorial.call("show_next_action")
+		tutorial.call("receive_practice_input", &"jump", true, 5.0)
+		await create_timer(0.15).timeout
+		var visual: Node2D = tutorial.practice_player.get_node("Visual")
+		_expect(visual.position.y < -15.0, "Jump lesson visibly lifts the player")
+		tutorial.call("toggle_tutorial_pause")
+		var pose := visual.transform
+		await create_timer(0.2).timeout
+		_expect(visual.transform == pose, "Tutorial pause freezes practice animation")
+		tutorial.call("show_next_action")
+		_expect(tutorial.current_action_index == 2, "Paused tutorial cannot advance")
+		tutorial.call("toggle_tutorial_pause")
+		tutorial.call("show_next_action")
+		tutorial.call("receive_practice_input", &"slide", true, 6.0)
+		await create_timer(0.15).timeout
+		_expect(tutorial.practice_player.get_node("Visual").scale.y < 0.8, "Slide lesson has a visible low pose")
+		_expect(tutorial.step_completed and next.text == "Continue", "Final action unlocks Ready")
+		_expect(Store.get_session_config().get_target(&"jump") == 10, "Practice leaves session targets unchanged")
+	tutorial.free()
+	Store.configure(Config.AffectedSide.LEFT, 12)
+	tutorial = load("res://scenes/tutorial.tscn").instantiate()
+	root.add_child(tutorial)
+	await process_frame
+	if tutorial.has_method("receive_practice_input"):
+		var hint: Label = tutorial.get_node("Panel/Margin/Content/ActionCard/InstructionLabel")
+		_expect(hint.text.contains("D"), "Left-affected setup shows the mapped keyboard hint")
+		tutorial.call("receive_practice_input", &"move_right", true, 10.0)
+		_expect(tutorial.step_completed and tutorial.practice_player.lane_index == 0, "Practice honours affected-side inversion")
+		# With no input there is no expiry or neutral miss in practice.
+		tutorial.call("show_action_index", 3)
+		await create_timer(0.6).timeout
+		_expect(not tutorial.step_completed and tutorial.current_action_index == 3, "Practice waits without a countdown")
+	tutorial.free()
+	Store.reset()
+	await _test_ready_routes()
+	for failure in failures:
+		printerr("FAIL: " + failure)
+	print("PETER RUN guided tutorial test: " + ("PASS" if failures.is_empty() else "FAIL"))
+	quit(0 if failures.is_empty() else 1)
+
+
+func _test_ready_routes() -> void:
+	var tutorial: Control = load("res://scenes/tutorial.tscn").instantiate()
+	root.add_child(tutorial)
+	current_scene = tutorial
+	await process_frame
+	if not tutorial.has_method("receive_practice_input"):
+		tutorial.free()
+		return
+	tutorial.call("show_action_index", 3)
+	tutorial.call("receive_practice_input", &"slide", true, 20.0)
+	tutorial.get_node("Panel/Margin/Content/NavigationRow/NextButton").pressed.emit()
+	await process_frame
+	await process_frame
+	_expect(current_scene != null and current_scene.scene_file_path == "res://scenes/ready.tscn", "Completed practice continues to the real Ready screen")
+	if current_scene != null:
+		current_scene.free()
+	tutorial = load("res://scenes/tutorial.tscn").instantiate()
+	root.add_child(tutorial)
+	current_scene = tutorial
+	await process_frame
+	tutorial.call("toggle_tutorial_pause")
+	tutorial.get_node("Panel/Margin/Content/UtilityRow/SkipButton").pressed.emit()
+	await process_frame
+	await process_frame
+	_expect(current_scene != null and current_scene.scene_file_path == "res://scenes/ready.tscn", "Skip remains available even while practice is paused")
+	if current_scene != null:
+		current_scene.free()
+
+
+func _expect(condition: bool, message: String) -> void:
+	if not condition:
+		failures.append(message)

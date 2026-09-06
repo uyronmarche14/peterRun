@@ -77,7 +77,8 @@ func _update_summary() -> void:
 	if not is_instance_valid(session_summary):
 		return
 	var side_name := "left" if _get_selected_affected_side() == SessionConfigModel.AffectedSide.LEFT else "right"
-	session_summary.text = "L01 Barangay Morning • %d repetitions per action • %s affected side" % [int(target_repetitions_spin_box.value), side_name]
+	var per_action := int(target_repetitions_spin_box.value)
+	session_summary.text = "%d per action · %d total · %s side" % [per_action, per_action * SessionConfigModel.ACTIONS.size(), side_name]
 
 
 func _on_affected_side_selected(_index: int) -> void:

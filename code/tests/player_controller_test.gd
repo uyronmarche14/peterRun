@@ -81,7 +81,8 @@ func _test_runner_scene_named_action_bridge() -> void:
 		level.call("receive_input", &"jump", true, 3.0)
 		_expect_equal(player.get("action_state"), 1, "Named jump starts the neutral jump animation")
 		level.call("receive_input", &"jump", false, 3.1)
-		await create_timer(0.5).timeout
+		# 0.24s rise + 0.06s apex + 0.32s descent, with a frame margin.
+		await create_timer(0.7).timeout
 		_expect_equal(player.get("action_state"), 0, "Neutral jump animation returns the scene player to idle")
 
 	level.queue_free()

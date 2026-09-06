@@ -37,24 +37,34 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 	if player != null:
 		player.call("handle_action", &"move_left")
 		await create_timer(0.12).timeout
-		_expect(player.position.x > 155.0 and player.position.x < 240.0, "Lane movement eases through the middle of the transition")
+		_expect(player.position.x > 128.0 and player.position.x < 165.0, "Lane input responds early and eases toward the target without overshoot")
 		await create_timer(0.16).timeout
 		player.call("handle_action", &"jump")
 		await create_timer(0.20).timeout
 		var visual := player.get_node_or_null(^"Visual") as Node2D
 		_expect(visual != null and visual.position.y <= -26.0, "Jump has a readable, smooth peak")
 
-	var prompt_anchor := level.get_node_or_null(^"LevelWorld/PromptWorldAnchor") as Marker2D
-	await create_timer(0.92).timeout
-	_expect(prompt_anchor != null and prompt_anchor.position.y >= 120.0, "Prompt prop approaches clearly before response")
-	_expect(prompt_anchor != null and prompt_anchor.scale.x >= 1.1, "Prompt prop grows gently as it approaches")
-	var prompt_ground_shadow := level.get_node_or_null(^"LevelWorld/PromptWorldAnchor/L01PromptProps/PromptGroundShadow") as Polygon2D
-	_expect(prompt_ground_shadow != null, "Prompt includes a ground shadow for depth")
-	await create_timer(1.0).timeout
-	_expect(prompt_anchor != null and prompt_anchor.position.y >= 150.0, "Prompt travels deeply into the lower road space")
-	_expect(prompt_anchor != null and prompt_anchor.scale.x >= 1.32, "Prompt gains clear perspective scale near the player")
-	_expect(prompt_ground_shadow != null and prompt_ground_shadow.visible, "Ground shadow stays visible while the prompt approaches")
-	_expect(prompt_ground_shadow != null and prompt_ground_shadow.scale.x >= 1.2, "Ground shadow expands with the approaching prompt")
+	# Sample the new full lifecycle deterministically; props reach the player
+	# at the end of the response window, not at the end of the warning.
+	for timer in level.get_node("PromptTimers").get_children():
+		timer.stop()
+	var motion: Node = level.get_node("WorldMotion")
+	motion.set_process(false)
+	motion.call("begin_prompt_approach")
+	var prompt_anchor: Node2D = level.get_node("LevelWorld/PromptWorldAnchor")
+	var initial_scale := prompt_anchor.scale.x
+	motion.call("_process", 2.5)
+	var warning_y := prompt_anchor.position.y
+	var warning_scale := prompt_anchor.scale.x
+	_expect(warning_y > 92.0 and warning_y < 218.0, "Warning prop remains on the road ahead")
+	_expect(warning_scale > initial_scale, "Depth increases during warning")
+	motion.call("_process", 2.0)
+	_expect(prompt_anchor.position.y > warning_y, "Approach continues throughout response")
+	_expect(is_equal_approx(prompt_anchor.position.y, 218.0), "Item reaches player contact depth at response close")
+	_expect(prompt_anchor.scale.x > warning_scale, "Perspective grows continuously toward player")
+	var prompt_ground_shadow: Polygon2D = level.get_node("LevelWorld/PromptWorldAnchor/L01PromptProps/PromptGroundShadow")
+	_expect(prompt_ground_shadow.visible, "Approaching prop stays grounded")
+	_expect(is_equal_approx(prompt_ground_shadow.global_scale.x, prompt_anchor.scale.x), "Shadow shares the same depth scale as its prop")
 
 	level.queue_free()
 	await process_frame

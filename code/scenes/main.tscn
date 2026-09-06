@@ -1,20 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_dashboard.gd" id="1_dashboard"]
 
+[ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxDashboard"]
 bg_color = Color(0.039, 0.114, 0.149, 0.97)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.969, 0.71, 0.196, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.24, 0.43, 0.42, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="Main" type="Control"]
+theme = ExtResource("9_compact")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,29 +46,30 @@ mouse_filter = 2
 [node name="Dashboard" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.08
-anchor_top = 0.07
-anchor_right = 0.92
-anchor_bottom = 0.93
+anchor_left = 0.20833333333333334
+anchor_top = 0.14814814814814814
+anchor_right = 0.7916666666666666
+anchor_bottom = 0.8518518518518519
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxDashboard")
 
 [node name="Margin" type="MarginContainer" parent="Dashboard"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="Content" type="VBoxContainer" parent="Dashboard/Margin"]
+alignment = 1
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 23
 text = "PETER RUN"
 horizontal_alignment = 1
 
@@ -79,8 +83,8 @@ horizontal_alignment = 1
 [node name="SessionStatus" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 11
-text = "Set up a supervised L01 session | keyboard fallback available"
+theme_override_font_sizes/font_size = 10
+text = "Choose a session or review the movements."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -88,9 +92,9 @@ autowrap_mode = 2
 layout_mode = 2
 
 [node name="StartSessionButton" type="Button" parent="Dashboard/Margin/Content"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 12
 text = "Start Session"
 
 [node name="SecondaryActions" type="HBoxContainer" parent="Dashboard/Margin/Content"]
@@ -101,21 +105,21 @@ theme_override_constants/separation = 4
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "Tutorial"
 
 [node name="SettingsButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "Settings"
 
 [node name="QuitButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "Quit"
 
 [node name="SafetyNote" type="Label" parent="Dashboard/Margin/Content"]

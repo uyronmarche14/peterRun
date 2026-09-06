@@ -1,20 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/patient_setup_controller.gd" id="1_setup"]
 
+[ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxSetup"]
 bg_color = Color(0.039, 0.114, 0.149, 0.97)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.969, 0.71, 0.196, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.24, 0.43, 0.42, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="PatientSetup" type="Control"]
+theme = ExtResource("9_compact")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,29 +39,30 @@ mouse_filter = 2
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.1
-anchor_top = 0.08
-anchor_right = 0.9
-anchor_bottom = 0.92
+anchor_left = 0.1875
+anchor_top = 0.05185185185185185
+anchor_right = 0.8125
+anchor_bottom = 0.9481481481481482
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxSetup")
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 14
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+alignment = 1
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 17
 text = "Patient Setup"
 horizontal_alignment = 1
 
@@ -66,14 +70,14 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
 theme_override_font_sizes/font_size = 10
-text = "Therapist: confirm this planned practice set before starting."
+text = "Confirm the session settings before starting."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="LevelLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "Level: L01 • Barangay Morning"
 
 [node name="AffectedSideLabel" type="Label" parent="Panel/Margin/Content"]
@@ -83,9 +87,9 @@ theme_override_font_sizes/font_size = 11
 text = "Affected side"
 
 [node name="AffectedSideOption" type="OptionButton" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 28)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 
 [node name="TargetLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
@@ -94,9 +98,9 @@ theme_override_font_sizes/font_size = 11
 text = "Planned repetitions per action"
 
 [node name="TargetRepetitionsSpinBox" type="SpinBox" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 28)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 
 [node name="SessionSummary" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
@@ -109,13 +113,13 @@ custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 
 [node name="ContinueButton" type="Button" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "Continue to Controller Check"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "Back"

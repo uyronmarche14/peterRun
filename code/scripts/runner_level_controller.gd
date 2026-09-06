@@ -22,10 +22,13 @@ var session_result := SessionResultModel.new()
 var _sequence_index := 0
 var is_gameplay_paused := false
 var is_session_ended := false
+var _progress_tween: Tween
 
 @onready var player: PlayerController = $Player
 @onready var prompt_director: Node = $PromptDirector
 @onready var progress_label: Label = $HUD/HUDRoot/ProgressLabel
+@onready var progress_bar: ProgressBar = $HUD/HUDRoot/ProgressBar
+@onready var feedback_toast: PanelContainer = $HUD/HUDRoot/FeedbackToast
 @onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
@@ -116,7 +119,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 			response_timer.stop()
 			resolve_timer.stop()
 			_show_l01_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
-			world_motion.call("begin_prompt_approach")
+			world_motion.call("begin_prompt_approach", player.lane_index, WARNING_SECONDS, RESPONSE_SECONDS)
 			warning_timer.start(WARNING_SECONDS)
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
@@ -126,6 +129,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 			warning_timer.stop()
 			response_timer.stop()
 			_record_prompt_resolution(action_name, resolution)
+			world_motion.call("resolve_prompt_approach", resolution == PromptDirectorModel.Resolution.SUCCESS, RESOLVED_SECONDS)
 			var resolved_text := "Nice step!" if resolution == PromptDirectorModel.Resolution.SUCCESS else "Take your time."
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
@@ -150,7 +154,8 @@ func _show_l01_prompt(action_name: StringName, state_text: String, state_color: 
 	crate_prompt.visible = prop_id == &"crate"
 	puddle_prompt.visible = prop_id == &"puddle"
 	laundry_line_prompt.visible = prop_id == &"laundry_line"
-	prompt_backdrop.visible = prop_id != &""
+	# The silhouette and contact shadow carry the world cue; instructions stay in HUD.
+	prompt_backdrop.visible = false
 
 
 func _hide_l01_props() -> void:
@@ -179,17 +184,28 @@ func _record_prompt_resolution(action_name: StringName, resolution: int) -> void
 		session_result.record_success(action_name)
 	else:
 		session_result.record_neutral_miss()
-	_update_progress_hud()
+	_update_progress_hud(resolution == PromptDirectorModel.Resolution.SUCCESS)
+	var completed := 0
+	for action in SessionConfigModel.ACTIONS:
+		completed += mini(session_result.get_completed(action), session_config.get_target(action))
+	feedback_toast.show_result(resolution == PromptDirectorModel.Resolution.SUCCESS, completed)
 
 
-func _update_progress_hud() -> void:
+func _update_progress_hud(animate_success: bool = false) -> void:
 	var completed_repetitions := 0
 	var target_repetitions := 0
 	for action_name in SessionConfigModel.ACTIONS:
-		completed_repetitions += session_result.get_completed(action_name)
+		completed_repetitions += mini(session_result.get_completed(action_name), session_config.get_target(action_name))
 		target_repetitions += session_config.get_target(action_name)
 	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
 	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
+	progress_bar.max_value = maxf(1.0, target_repetitions)
+	if _progress_tween != null:
+		_progress_tween.kill()
+	_progress_tween = create_tween().set_parallel(true)
+	_progress_tween.tween_property(progress_bar, "value", float(completed_repetitions), 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	progress_label.modulate = Color(1.15, 1.15, 1.1) if animate_success else Color.WHITE
+	_progress_tween.tween_property(progress_label, "modulate", Color.WHITE, 0.45)
 
 
 func _on_warning_timer_timeout() -> void:
@@ -241,6 +257,9 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 	resolve_timer.paused = should_pause
 	world_motion.call("set_motion_paused", should_pause)
 	player.set_gameplay_paused(should_pause)
+	feedback_toast.set_feedback_paused(should_pause)
+	if _progress_tween != null:
+		_progress_tween.set_speed_scale(0.0 if should_pause else 1.0)
 
 
 func _show_neutral_end_overlay(title: String, message: String) -> void:
@@ -249,6 +268,11 @@ func _show_neutral_end_overlay(title: String, message: String) -> void:
 
 	is_gameplay_paused = true
 	is_session_ended = true
+	if session_result.has_met_targets(session_config):
+		if _progress_tween != null:
+			_progress_tween.kill()
+		progress_bar.value = progress_bar.max_value
+		progress_label.modulate = Color.WHITE
 	_set_gameplay_updates_paused(true)
 	warning_timer.stop()
 	response_timer.stop()
@@ -257,3 +281,4 @@ func _show_neutral_end_overlay(title: String, message: String) -> void:
 	end_session_title.text = title
 	end_session_message.text = message
 	end_session_overlay.visible = true
+	feedback_toast.dismiss()

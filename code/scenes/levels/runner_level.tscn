@@ -1,9 +1,15 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
-[ext_resource type="Script" path="res://scripts/player_controller.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/prompt_director.gd" id="3_prompt_director"]
 [ext_resource type="Script" path="res://scripts/world_motion_controller.gd" id="4_world_motion"]
+
+[ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
+
+[ext_resource type="Script" path="res://scripts/feedback_toast.gd" id="10_toast"]
+
+[ext_resource type="PackedScene" path="res://scenes/roadside_marker.tscn" id="11_roadside"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxPromptCard"]
 bg_color = Color(0.027, 0.11, 0.145, 0.96)
@@ -16,6 +22,33 @@ corner_radius_top_left = 7
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="ProgressTrack"]
+bg_color = Color(0.12, 0.23, 0.26, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[sub_resource type="StyleBoxFlat" id="ProgressFill"]
+bg_color = Color(0.42, 0.83, 0.72, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[sub_resource type="StyleBoxFlat" id="ToastStyle"]
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+bg_color = Color(0.035, 0.13, 0.16, 0.96)
+border_width_left = 2
+border_color = Color(0.45, 0.84, 0.7, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
 
 [node name="RunnerLevel" type="Node2D"]
 script = ExtResource("1_runner")
@@ -37,31 +70,32 @@ color = Color(0.098, 0.37, 0.337, 1)
 [node name="RoadAndLanes" type="Node2D" parent="LevelWorld"]
 
 [node name="RoadSurface" type="Polygon2D" parent="LevelWorld/RoadAndLanes"]
-polygon = PackedVector2Array(90, 78, 390, 78, 480, 270, 0, 270)
+polygon = PackedVector2Array(184, 78, 296, 78, 449, 270, 31, 270)
 color = Color(0.102, 0.145, 0.169, 1)
 
 [node name="RoadEdgeLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
-points = PackedVector2Array(90, 78, 0, 270)
+points = PackedVector2Array(184, 78, 31, 270)
 width = 2.0
 default_color = Color(0.855, 0.678, 0.302, 0.85)
 
 [node name="RoadEdgeRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
-points = PackedVector2Array(390, 78, 480, 270)
+points = PackedVector2Array(296, 78, 449, 270)
 width = 2.0
 default_color = Color(0.855, 0.678, 0.302, 0.85)
 
 [node name="LaneLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
-points = PackedVector2Array(165, 78, 118, 270)
+points = PackedVector2Array(221, 78, 170, 270)
 width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
 
 [node name="LaneCenter" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 points = PackedVector2Array(240, 78, 240, 270)
 width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
 
 [node name="LaneRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
-points = PackedVector2Array(315, 78, 362, 270)
+points = PackedVector2Array(259, 78, 310, 270)
 width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
 
@@ -81,6 +115,20 @@ default_color = Color(0.855, 0.678, 0.302, 0.7)
 points = PackedVector2Array(165, 232, 315, 232)
 width = 4.0
 default_color = Color(0.855, 0.678, 0.302, 0.7)
+
+[node name="RoadsideMotion" type="Node2D" parent="LevelWorld"]
+
+[node name="Marker0" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
+
+[node name="Marker1" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
+
+[node name="Marker2" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
+
+[node name="Marker3" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
+
+[node name="Marker4" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
+
+[node name="Marker5" parent="LevelWorld/RoadsideMotion" instance=ExtResource("11_roadside")]
 
 [node name="PromptWorldAnchor" type="Marker2D" parent="LevelWorld"]
 position = Vector2(240, 104)
@@ -116,6 +164,14 @@ visible = false
 [node name="CrateBody" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
 polygon = PackedVector2Array(-20, 17, -20, -17, 20, -17, 20, 17)
 color = Color(0.67, 0.365, 0.173, 1)
+
+[node name="CrateTop" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+polygon = PackedVector2Array(-20, -17, -12, -23, 26, -23, 20, -17)
+color = Color(0.91, 0.62, 0.3, 1)
+
+[node name="CrateSide" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
+polygon = PackedVector2Array(20, -17, 26, -23, 26, 11, 20, 17)
+color = Color(0.45, 0.25, 0.15, 1)
 
 [node name="CrateCross" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
 points = PackedVector2Array(-18, -15, 18, 15, 18, -15, -18, 15)
@@ -189,9 +245,7 @@ theme_override_font_sizes/font_size = 9
 text = "LAUNDRY"
 horizontal_alignment = 1
 
-[node name="Player" type="Node2D" parent="."]
-position = Vector2(240, 226)
-script = ExtResource("2_player")
+[node name="Player" parent="." instance=ExtResource("2_player")]
 
 [node name="PromptDirector" type="Node" parent="."]
 script = ExtResource("3_prompt_director")
@@ -199,30 +253,11 @@ script = ExtResource("3_prompt_director")
 [node name="WorldMotion" type="Node" parent="."]
 script = ExtResource("4_world_motion")
 
-[node name="Shadow" type="Polygon2D" parent="Player"]
-polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)
-color = Color(0.012, 0.035, 0.047, 0.55)
-
-[node name="SlideStreak" type="Line2D" parent="Player"]
-visible = false
-points = PackedVector2Array(-29, 13, -17, 13, -11, 11)
-width = 2.0
-default_color = Color(1, 0.75, 0.32, 0.78)
-
-[node name="Visual" type="Node2D" parent="Player"]
-
-[node name="PlaceholderBody" type="Polygon2D" parent="Player/Visual"]
-polygon = PackedVector2Array(-10, 11, -8, -12, -4, -20, 4, -20, 8, -12, 10, 11, 5, 15, -5, 15)
-color = Color(0.941, 0.42, 0.298, 1)
-
-[node name="PlaceholderHead" type="Polygon2D" parent="Player/Visual"]
-polygon = PackedVector2Array(-6, -23, -3, -27, 3, -27, 6, -23, 4, -18, -4, -18)
-color = Color(1, 0.78, 0.545, 1)
-
 [node name="HUD" type="CanvasLayer" parent="."]
 layer = 1
 
 [node name="HUDRoot" type="Control" parent="HUD"]
+theme = ExtResource("9_compact")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -234,27 +269,27 @@ mouse_filter = 2
 [node name="TopBar" type="ColorRect" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_right = 480.0
-offset_bottom = 53.0
+offset_bottom = 38
 color = Color(0.024, 0.078, 0.106, 0.9)
 mouse_filter = 2
 
 [node name="PromptCard" type="Panel" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 160.0
-offset_top = 4.0
-offset_right = 326.0
-offset_bottom = 49.0
+offset_left = 166
+offset_top = 3
+offset_right = 328
+offset_bottom = 35
 theme_override_styles/panel = SubResource("StyleBoxPromptCard")
 mouse_filter = 2
 
 [node name="PromptIconLabel" type="Label" parent="HUD/HUDRoot/PromptCard"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 8.0
+offset_top = 1
 offset_right = 28.0
-offset_bottom = 37.0
+offset_bottom = 30
 theme_override_colors/font_color = Color(1, 0.8, 0.39, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "•"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -262,63 +297,82 @@ vertical_alignment = 1
 [node name="LevelLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 10.0
-offset_right = 188.0
-offset_bottom = 31.0
+offset_top = 2
+offset_right = 151.0
+offset_bottom = 16
 theme_override_colors/font_color = Color(0.839, 0.925, 0.875, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 9
 text = "L01 · Barangay Morning"
 
 [node name="ProgressLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 31.0
-offset_right = 116.0
-offset_bottom = 49.0
+offset_top = 15
+offset_right = 150.0
+offset_bottom = 29
 theme_override_colors/font_color = Color(0.349, 0.667, 0.612, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Reps: 0 / 40"
+
+[node name="ProgressBar" type="ProgressBar" parent="HUD/HUDRoot"]
+offset_left = 12.0
+offset_top = 31
+offset_right = 148.0
+offset_bottom = 34
+mouse_filter = 2
+theme_override_styles/background = SubResource("ProgressTrack")
+theme_override_styles/fill = SubResource("ProgressFill")
+show_percentage = false
+
+[node name="KeyboardHint" type="Label" parent="HUD/HUDRoot"]
+offset_left = 12.0
+offset_top = 254.0
+offset_right = 300.0
+offset_bottom = 270.0
+theme_override_colors/font_color = Color(0.7, 0.83, 0.8, 1)
+theme_override_font_sizes/font_size = 9
+text = "Keyboard · A D W S    /    P to pause"
 
 [node name="NeutralMissLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 118.0
-offset_top = 31.0
-offset_right = 164.0
-offset_bottom = 49.0
+offset_left = 398.0
+offset_top = 254.0
+offset_right = 468.0
+offset_bottom = 270.0
 theme_override_colors/font_color = Color(0.58, 0.75, 0.71, 1)
 theme_override_font_sizes/font_size = 9
 text = "Misses: 0"
 
 [node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_top = 7.0
-offset_left = 190.0
-offset_right = 318.0
-offset_bottom = 27.0
+offset_top = 2
+offset_left = 196
+offset_right = 322
+offset_bottom = 20
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 text = "NEXT ACTION"
 
 [node name="PromptStateLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 28.0
-offset_right = 320.0
-offset_bottom = 46.0
+offset_left = 196
+offset_top = 20
+offset_right = 322
+offset_bottom = 34
 theme_override_colors/font_color = Color(0.35, 0.78, 0.66, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 horizontal_alignment = 1
 text = "GET READY"
 
 [node name="PauseButton" type="Button" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 390.0
-offset_top = 10.0
-offset_right = 468.0
-offset_bottom = 43.0
+offset_left = 404
+offset_top = 6
+offset_right = 468
+offset_bottom = 32
 theme_override_colors/font_color = Color(0.945, 0.957, 0.91, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "Pause"
 
 [node name="PromptTimers" type="Node" parent="."]
@@ -349,62 +403,64 @@ grow_vertical = 2
 color = Color(0.008, 0.027, 0.039, 0.82)
 
 [node name="Panel" type="Panel" parent="PauseOverlay"]
+theme_override_styles/panel = SubResource("StyleBoxPromptCard")
+theme = ExtResource("9_compact")
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.17
-anchor_top = 0.18
-anchor_right = 0.83
-anchor_bottom = 0.82
+anchor_left = 0.25
+anchor_top = 0.23
+anchor_right = 0.75
+anchor_bottom = 0.77
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Title" type="Label" parent="PauseOverlay/Panel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 15.0
-offset_right = 300.0
-offset_bottom = 42.0
+offset_left = 12
+offset_top = 9
+offset_right = 228
+offset_bottom = 31
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "Paused"
 horizontal_alignment = 1
 
 [node name="Message" type="Label" parent="PauseOverlay/Panel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 47.0
-offset_right = 300.0
-offset_bottom = 77.0
+offset_left = 12
+offset_top = 34
+offset_right = 228
+offset_bottom = 58
 theme_override_colors/font_color = Color(0.88, 0.94, 0.9, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "The session is safely paused."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="Actions" type="VBoxContainer" parent="PauseOverlay/Panel"]
 layout_mode = 0
-offset_left = 38.0
-offset_top = 86.0
-offset_right = 280.0
-offset_bottom = 158.0
-theme_override_constants/separation = 5
+offset_left = 16
+offset_top = 65
+offset_right = 224
+offset_bottom = 135
+theme_override_constants/separation = 4
 
 [node name="ResumeButton" type="Button" parent="PauseOverlay/Panel/Actions"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "Resume"
 
 [node name="EndLevelButton" type="Button" parent="PauseOverlay/Panel/Actions"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "End Level"
 
 [node name="EndSessionButton" type="Button" parent="PauseOverlay/Panel/Actions"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "End Session"
 
 [node name="EndSessionOverlay" type="CanvasLayer" parent="."]
@@ -421,43 +477,62 @@ grow_vertical = 2
 color = Color(0.008, 0.027, 0.039, 0.9)
 
 [node name="Panel" type="Panel" parent="EndSessionOverlay"]
+theme_override_styles/panel = SubResource("StyleBoxPromptCard")
+theme = ExtResource("9_compact")
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.16
-anchor_top = 0.26
-anchor_right = 0.84
-anchor_bottom = 0.74
+anchor_left = 0.21875
+anchor_top = 0.22
+anchor_right = 0.78125
+anchor_bottom = 0.78
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Title" type="Label" parent="EndSessionOverlay/Panel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 18.0
-offset_right = 308.0
-offset_bottom = 45.0
+offset_left = 12
+offset_top = 10
+offset_right = 258
+offset_bottom = 36
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "Session ended"
 horizontal_alignment = 1
 
 [node name="Message" type="Label" parent="EndSessionOverlay/Panel"]
 layout_mode = 0
-offset_left = 26.0
-offset_top = 52.0
-offset_right = 300.0
-offset_bottom = 88.0
+offset_left = 16
+offset_top = 43
+offset_right = 254
+offset_bottom = 98
 theme_override_colors/font_color = Color(0.88, 0.94, 0.9, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "The session ended safely."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="ReturnButton" type="Button" parent="EndSessionOverlay/Panel"]
 layout_mode = 0
-offset_left = 53.0
-offset_top = 104.0
-offset_right = 273.0
-offset_bottom = 132.0
-theme_override_font_sizes/font_size = 13
+offset_left = 28
+offset_top = 113
+offset_right = 242
+offset_bottom = 137
+theme_override_font_sizes/font_size = 11
 text = "Return to Dashboard"
+
+[node name="FeedbackToast" type="PanelContainer" parent="HUD/HUDRoot"]
+offset_left = 12.0
+offset_top = 47.0
+offset_right = 164.0
+offset_bottom = 85.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ToastStyle")
+script = ExtResource("10_toast")
+
+[node name="Message" type="Label" parent="HUD/HUDRoot/FeedbackToast"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.89, 0.97, 0.91, 1)
+theme_override_font_sizes/font_size = 11
+autowrap_mode = 2
+vertical_alignment = 1

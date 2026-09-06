@@ -35,10 +35,10 @@ var is_tutorial_paused := false
 @onready var action_label: Label = $Panel/Margin/Content/ActionCard/ActionLabel
 @onready var instruction_label: Label = $Panel/Margin/Content/ActionCard/InstructionLabel
 @onready var tutorial_status: Label = $Panel/Margin/Content/TutorialStatus
-@onready var previous_button: Button = $Panel/Margin/Content/PreviousButton
-@onready var next_button: Button = $Panel/Margin/Content/NextButton
-@onready var skip_button: Button = $Panel/Margin/Content/SkipButton
-@onready var pause_tutorial_button: Button = $Panel/Margin/Content/PauseTutorialButton
+@onready var previous_button: Button = $Panel/Margin/Content/NavigationRow/PreviousButton
+@onready var next_button: Button = $Panel/Margin/Content/NavigationRow/NextButton
+@onready var skip_button: Button = $Panel/Margin/Content/UtilityRow/SkipButton
+@onready var pause_tutorial_button: Button = $Panel/Margin/Content/UtilityRow/PauseTutorialButton
 @onready var back_button: Button = $Panel/Margin/Content/BackButton
 
 

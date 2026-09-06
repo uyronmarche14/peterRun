@@ -70,14 +70,18 @@ text = "The therapist can start, pause, or end the session at any time."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="SessionDetails" type="Label" parent="Panel/Margin/Content"]
+[node name="SessionSummary" type="VBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="SessionDetails" type="Label" parent="Panel/Margin/Content/SessionSummary"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
 theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="KeyboardNote" type="Label" parent="Panel/Margin/Content"]
+[node name="KeyboardNote" type="Label" parent="Panel/Margin/Content/SessionSummary"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.855, 0.824, 1)
 theme_override_font_sizes/font_size = 9

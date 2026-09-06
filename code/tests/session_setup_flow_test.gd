@@ -73,7 +73,7 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var controller_check: Control = (load(CONTROLLER_CHECK_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(controller_check)
 	await process_frame
-	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
+	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerSummary/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
 	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Continue to Tutorial")
 	_expect_button(controller_check, ^"Panel/Margin/Content/BackButton", "Back")
 	_expect(controller_check.has_method("get_tutorial_scene_path"), "Controller Check exposes the Tutorial route")
@@ -87,17 +87,17 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	await process_frame
 	_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "MOVE LEFT", "Tutorial begins with one action")
 	_expect_node(tutorial, ^"Panel/Margin/Content/ActionCard/ActionIconLabel", "Tutorial action icon")
-	_expect_button(tutorial, ^"Panel/Margin/Content/PreviousButton", "Previous")
-	_expect_button(tutorial, ^"Panel/Margin/Content/NextButton", "Next")
-	_expect_button(tutorial, ^"Panel/Margin/Content/SkipButton", "Skip Tutorial")
-	_expect_button(tutorial, ^"Panel/Margin/Content/PauseTutorialButton", "Pause Tutorial")
+	_expect_button(tutorial, ^"Panel/Margin/Content/NavigationRow/PreviousButton", "Previous")
+	_expect_button(tutorial, ^"Panel/Margin/Content/NavigationRow/NextButton", "Next")
+	_expect_button(tutorial, ^"Panel/Margin/Content/UtilityRow/SkipButton", "Skip Tutorial")
+	_expect_button(tutorial, ^"Panel/Margin/Content/UtilityRow/PauseTutorialButton", "Pause Tutorial")
 	_expect(tutorial.has_method("show_action_index"), "Tutorial can show one planned action at a time")
 	if tutorial.has_method("show_action_index"):
 		tutorial.call("show_action_index", 2)
 		_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "JUMP", "Tutorial can preview Jump without a countdown")
 		tutorial.call("toggle_tutorial_pause")
 		_expect_equal(tutorial.get("is_tutorial_paused"), true, "Tutorial pauses visibly without automatic progression")
-		_expect_button(tutorial, ^"Panel/Margin/Content/PauseTutorialButton", "Resume Tutorial")
+		_expect_button(tutorial, ^"Panel/Margin/Content/UtilityRow/PauseTutorialButton", "Resume Tutorial")
 		tutorial.call("toggle_tutorial_pause")
 	_expect(tutorial.has_method("get_ready_scene_path"), "Tutorial exposes the Ready route")
 	if tutorial.has_method("get_ready_scene_path"):
@@ -108,7 +108,7 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var ready: Control = (load(READY_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(ready)
 	await process_frame
-	_expect_label(ready, ^"Panel/Margin/Content/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
+	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
 	_expect_button(ready, ^"Panel/Margin/Content/StartSessionButton", "Start L01 Session")
 	_expect_button(ready, ^"Panel/Margin/Content/BackButton", "Back to Tutorial")
 	_expect(ready.has_method("get_runner_scene_path"), "Ready screen exposes the L01 route")

@@ -6,9 +6,9 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 
 @onready var session_status: Label = $Dashboard/Margin/Content/SessionStatus
 @onready var start_session_button: Button = $Dashboard/Margin/Content/StartSessionButton
-@onready var tutorial_button: Button = $Dashboard/Margin/Content/TutorialButton
-@onready var settings_button: Button = $Dashboard/Margin/Content/SettingsButton
-@onready var quit_button: Button = $Dashboard/Margin/Content/QuitButton
+@onready var tutorial_button: Button = $Dashboard/Margin/Content/SecondaryActions/TutorialButton
+@onready var settings_button: Button = $Dashboard/Margin/Content/SecondaryActions/SettingsButton
+@onready var quit_button: Button = $Dashboard/Margin/Content/SecondaryActions/QuitButton
 
 
 func _ready() -> void:

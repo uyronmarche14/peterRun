@@ -6,7 +6,7 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 
-@onready var session_details: Label = $Panel/Margin/Content/SessionDetails
+@onready var session_details: Label = $Panel/Margin/Content/SessionSummary/SessionDetails
 @onready var start_session_button: Button = $Panel/Margin/Content/StartSessionButton
 @onready var back_button: Button = $Panel/Margin/Content/BackButton
 

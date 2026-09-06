@@ -93,21 +93,28 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "Start Session"
 
-[node name="TutorialButton" type="Button" parent="Dashboard/Margin/Content"]
+[node name="SecondaryActions" type="HBoxContainer" parent="Dashboard/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TutorialButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "Tutorial"
 
-[node name="SettingsButton" type="Button" parent="Dashboard/Margin/Content"]
+[node name="SettingsButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "Settings"
 
-[node name="QuitButton" type="Button" parent="Dashboard/Margin/Content"]
+[node name="QuitButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 21)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "Quit"
 

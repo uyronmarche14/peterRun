@@ -22,9 +22,9 @@ func _init() -> void:
 	_expect_label(dashboard, ^"Dashboard/Margin/Content/Title", "PETER RUN", "clear game title")
 	_expect_node(dashboard, ^"Dashboard/Margin/Content/SessionStatus", "session status")
 	_expect_button(dashboard, ^"Dashboard/Margin/Content/StartSessionButton", "Start Session")
-	_expect_button(dashboard, ^"Dashboard/Margin/Content/TutorialButton", "Tutorial")
-	_expect_button(dashboard, ^"Dashboard/Margin/Content/SettingsButton", "Settings")
-	_expect_button(dashboard, ^"Dashboard/Margin/Content/QuitButton", "Quit")
+	_expect_button(dashboard, ^"Dashboard/Margin/Content/SecondaryActions/TutorialButton", "Tutorial")
+	_expect_button(dashboard, ^"Dashboard/Margin/Content/SecondaryActions/SettingsButton", "Settings")
+	_expect_button(dashboard, ^"Dashboard/Margin/Content/SecondaryActions/QuitButton", "Quit")
 	_expect(dashboard.has_method("open_patient_setup"), "dashboard has a Patient Setup route")
 	_expect(dashboard.has_method("get_patient_setup_scene_path"), "dashboard exposes the Patient Setup route for verification")
 	if dashboard.has_method("get_patient_setup_scene_path"):

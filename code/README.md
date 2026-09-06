@@ -30,11 +30,17 @@ godot --headless --path . -s res://tests/project_setup_smoke.gd
 
 Use [the project ComfyUI workflow](../Peter_Run_Visual_Production/05_ComfyUI_Concept_Workflow.md) for required prompt, licensing, and approval rules.
 
-## Next build unit
+## Current focus — one route, clearer practice
 
 The Tutorial is now a playable four-step practice area. Follow the displayed keyboard hint, try the highlighted movement, then choose Next. Repeat resets the current lesson; Skip bypasses practice. Pause (button or P) freezes the character. The tutorial shares `scenes/player.tscn` and the affected-side input adapter with gameplay, but does not record session repetitions or misses. Verify with `res://tests/guided_tutorial_test.gd`.
 
-**PR-12: LevelDefinition data resources** is implemented locally. Next is **PR-13: L02–L05 content resources and level selection**; final art integration remains PR-14.
+**PR-12: LevelDefinition data resources** is implemented locally. **PR-13, additional themes and the level selector are deferred by user direction (2026-09-07).** Keep Start Session → Setup → Controller Check → Tutorial → Ready → Barangay Morning. There are no difficulty tiers, unlock requirements or automatic progression.
+
+Setup labels Barangay Morning as the **route**. Future route selection, if resumed, chooses an environment rather than a difficulty; therapist-controlled repetition settings remain separate. The data-resource architecture stays intact.
+
+Tutorial polish: **Show me** plays one visual example of the current action, then returns the character to the starting pose. Watching never acknowledges a lesson or records repetitions. The player must still try the highlighted action before Next is enabled. Pause freezes the demonstration and its return timer; Skip/Back remain available. No automatic demonstration loop or timed practice challenge was added.
+
+Test: `godot --headless --path . -s res://tests/tutorial_demo_test.gd`. For a quick visual check, open How to Play, select Show me, pause/resume the example, then try the movement yourself.
 
 ## Data-driven levels (PR-12)
 
@@ -47,7 +53,7 @@ To author another level:
 3. Edit the `sequence`, covering all four named actions so every prescribed target remains reachable. The sequence repeats after misses until the session targets are met.
 4. Set the four environment colours. An optional `background_texture` is placed at the native origin behind hills and road; use a 480×270 image. Full layered parallax/final-art work is still PR-14.
 5. Retain timing at **2.5s warning / 2.0s response / 0.75s resolution**. Validation rejects changes to this baseline, missing props, non-2D roots, missing identity or incomplete/unknown actions. Themes cannot silently increase reflex demands.
-6. Add the resource to `data/levels/catalog.tres`. Selecting its ID in `SessionConfig` uses the same runner, Ready and Summary. The normal setup UI remains L01-only until PR-13.
+6. Add the resource to `data/levels/catalog.tres`. Selecting its ID in `SessionConfig` uses the same runner, Ready and Summary. Normal setup remains Barangay Morning-only; adding routes and a selector is currently deferred.
 
 Therapist-configured repetition targets remain in `SessionConfig`; level resources do not overwrite them. The current fixed road pace and movement animation are unchanged. Each run creates its prop instances once and reuses them. Review/retry retain a snapshot of the selected definition.
 

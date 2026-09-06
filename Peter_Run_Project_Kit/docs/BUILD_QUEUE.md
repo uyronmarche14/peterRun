@@ -2,6 +2,12 @@
 
 Each item is designed as a small, independently verifiable unit. Finish them in order unless the dependencies state otherwise. Do not start visual polish or L02–L05 before L01's basic safe loop works.
 
+## Current scope override — 2026-09-07
+
+User direction: pause PR-13, additional themes and level-selection work. Keep the single Barangay Morning route and polish existing gameplay/tutorial usability. Any future “Choose your route” screen will select scenery independently of therapist repetition settings, not impose difficulty tiers, unlocks, faster travel or shorter response windows. The PR-12 resource architecture remains available; the numbered roadmap below is retained for later, not an instruction to resume deferred work.
+
+Current slice: route wording in Setup and a mouse-operated tutorial **Show me** demonstration. Demonstration does not count as practice, change targets, or advance the lesson; Pause/Skip/Back remain available. Verification: `code/tests/tutorial_demo_test.gd` and existing tutorial/layout regressions.
+
 ## Phase 0 — Project foundation
 
 | ID | Build unit | Depends on | Done when | Required proof |
@@ -37,7 +43,7 @@ PR-11 implementation status (2026-09-06): implemented locally with `session_summ
 | ID | Build unit | Depends on | Done when | Required proof |
 | --- | --- | --- | --- | --- |
 | PR-12 | `LevelDefinition` data resources | PR-05, PR-08 | Level theme/props/sequence can change without changing prompt logic | Load L01 and a second fixture using the same scene |
-| PR-13 | L02–L05 content resources | PR-12 | Each level has its approved obstacle mapping and readable palette | One scene-loading check per level |
+| PR-13 (deferred) | L02–L05 content resources and route selection | PR-12 + renewed user direction | Each route has its approved obstacle mapping and readable palette | One scene-loading check per route |
 | PR-14 | Parallax and final art integration | PR-03, PR-13 | Background supports—not hides—prompts, lanes or Pause control at 480 × 270 | Readability review and performance baseline |
 | PR-15 | ESP32 HID integration | PR-02 | Controller emits one expected HID action per verified movement | Notepad evidence + Godot input log; therapist/hardware status recorded |
 

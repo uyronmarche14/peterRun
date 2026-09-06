@@ -20,6 +20,15 @@ func _run() -> void:
 		_check_visible_controls(screen, Rect2(Vector2.ZERO, screen.size))
 		await _capture("compact_" + name + ".png")
 		if name == "tutorial":
+			screen.call("show_action_index", 2)
+			screen.call("demonstrate_action")
+			await create_timer(0.18).timeout
+			await _capture("tutorial_show_me_jump.png")
+			screen.call("toggle_tutorial_pause")
+			await _capture("tutorial_show_me_paused.png")
+			screen.call("toggle_tutorial_pause")
+			await create_timer(1.1).timeout
+			screen.call("show_action_index", 0)
 			screen.call("receive_practice_input", &"move_left", true, 1.0)
 			await create_timer(0.3).timeout
 			await _capture("guided_tutorial_success.png")

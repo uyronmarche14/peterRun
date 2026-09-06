@@ -24,3 +24,12 @@ static func configure(affected_side: int, target_repetitions: int, selected_leve
 
 static func reset() -> void:
 	_session_config = SessionConfigModel.new()
+
+
+static func restore_session_config(source) -> void:
+	var config := SessionConfigModel.new()
+	config.affected_side = source.affected_side
+	config.selected_level_id = source.selected_level_id
+	for action in SessionConfigModel.ACTIONS:
+		config.set_target(action, source.get_target(action))
+	_session_config = config

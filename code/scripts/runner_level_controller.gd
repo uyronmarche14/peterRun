@@ -7,11 +7,12 @@ const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
+const SessionReviewStore = preload("res://scripts/session_review_store.gd")
 
 const WARNING_SECONDS := 2.5
 const RESPONSE_SECONDS := 2.0
 const RESOLVED_SECONDS := 0.75
-const MAIN_DASHBOARD_SCENE_PATH := "res://scenes/main.tscn"
+const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
 
 signal named_action_received(action_name: StringName)
 
@@ -23,6 +24,7 @@ var _sequence_index := 0
 var is_gameplay_paused := false
 var is_session_ended := false
 var _progress_tween: Tween
+var _pending_end_reason: StringName = &""
 
 @onready var player: PlayerController = $Player
 @onready var prompt_director: Node = $PromptDirector
@@ -50,6 +52,7 @@ var _progress_tween: Tween
 @onready var end_session_message: Label = $EndSessionOverlay/Panel/Message
 @onready var return_button: Button = $EndSessionOverlay/Panel/ReturnButton
 @onready var world_motion: Node = $WorldMotion
+@onready var end_confirmation: CanvasLayer = $EndConfirmation
 
 
 func _ready() -> void:
@@ -61,9 +64,11 @@ func _ready() -> void:
 	resolve_timer.timeout.connect(_on_resolve_timer_timeout)
 	pause_button.pressed.connect(pause_gameplay)
 	resume_button.pressed.connect(resume_gameplay)
-	end_level_button.pressed.connect(end_level_neutrally)
-	end_session_button.pressed.connect(end_session_neutrally)
-	return_button.pressed.connect(return_to_dashboard)
+	end_level_button.pressed.connect(request_end_level)
+	end_session_button.pressed.connect(request_end_session)
+	return_button.pressed.connect(open_summary)
+	$EndConfirmation/Panel/Actions/CancelButton.pressed.connect(cancel_end)
+	$EndConfirmation/Panel/Actions/ConfirmButton.pressed.connect(confirm_end)
 	_update_progress_hud()
 	_schedule_next_l01_prompt()
 
@@ -104,6 +109,8 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 
 
 func _schedule_next_l01_prompt() -> void:
+	if is_session_ended:
+		return
 	var planned_sequence := l01_prompt_catalog.get_planned_sequence()
 	if planned_sequence.is_empty():
 		return
@@ -114,6 +121,8 @@ func _schedule_next_l01_prompt() -> void:
 
 
 func _on_prompt_state_changed(state: int, action_name: StringName, resolution: int) -> void:
+	if is_session_ended:
+		return
 	match state:
 		PromptDirectorModel.State.WARNING:
 			response_timer.stop()
@@ -231,7 +240,7 @@ func pause_gameplay() -> void:
 
 
 func resume_gameplay() -> void:
-	if not is_gameplay_paused or is_session_ended:
+	if not is_gameplay_paused or is_session_ended or end_confirmation.visible:
 		return
 
 	is_gameplay_paused = false
@@ -240,15 +249,56 @@ func resume_gameplay() -> void:
 
 
 func end_level_neutrally() -> void:
-	_show_neutral_end_overlay("Level ended", "The level ended safely. No score or penalty was recorded.")
+	_show_neutral_end_overlay("Level ended", "Your completed movements are kept for review. There is no penalty for ending early.", &"level_ended")
 
 
 func end_session_neutrally() -> void:
-	_show_neutral_end_overlay("Session ended", "The session ended safely. Return when the therapist is ready.")
+	_show_neutral_end_overlay("Session ended", "Your completed movements are kept for review. There is no penalty for ending early.", &"session_ended")
 
 
-func return_to_dashboard() -> void:
-	get_tree().change_scene_to_file(MAIN_DASHBOARD_SCENE_PATH)
+func request_end_level() -> void:
+	_request_end(&"level_ended", "End this level?")
+
+
+func request_end_session() -> void:
+	_request_end(&"session_ended", "End this session?")
+
+
+func _request_end(reason: StringName, title: String) -> void:
+	if is_session_ended:
+		return
+	pause_gameplay()
+	_pending_end_reason = reason
+	pause_overlay.visible = false
+	$EndConfirmation/Panel/Title.text = title
+	end_confirmation.visible = true
+
+
+func cancel_end() -> void:
+	if is_session_ended or _pending_end_reason == &"":
+		return
+	_pending_end_reason = &""
+	end_confirmation.visible = false
+	pause_overlay.visible = true
+
+
+func confirm_end() -> void:
+	var reason := _pending_end_reason
+	_pending_end_reason = &""
+	end_confirmation.visible = false
+	if reason == &"level_ended":
+		end_level_neutrally()
+	elif reason == &"session_ended":
+		end_session_neutrally()
+
+
+func open_summary() -> void:
+	if not is_session_ended or return_button.disabled:
+		return
+	return_button.disabled = true
+	if get_tree().change_scene_to_file(SUMMARY_SCENE_PATH) != OK:
+		return_button.disabled = false
+		end_session_message.text = "Could not open the summary. Your results are still available; please try again."
 
 
 func _set_gameplay_updates_paused(should_pause: bool) -> void:
@@ -262,7 +312,7 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 		_progress_tween.set_speed_scale(0.0 if should_pause else 1.0)
 
 
-func _show_neutral_end_overlay(title: String, message: String) -> void:
+func _show_neutral_end_overlay(title: String, message: String, reason: StringName = &"completed") -> void:
 	if is_session_ended:
 		return
 
@@ -278,6 +328,8 @@ func _show_neutral_end_overlay(title: String, message: String) -> void:
 	response_timer.stop()
 	resolve_timer.stop()
 	pause_overlay.visible = false
+	end_confirmation.visible = false
+	SessionReviewStore.capture(session_config, session_result, reason)
 	end_session_title.text = title
 	end_session_message.text = message
 	end_session_overlay.visible = true

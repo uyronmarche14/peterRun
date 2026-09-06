@@ -1,0 +1,164 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/session_summary_controller.gd" id="1"]
+[ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="Card"]
+bg_color = Color(0.027, 0.11, 0.145, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.64, 0.57, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[node name="SessionSummary" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("2")
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.019, 0.065, 0.09, 1)
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -124.0
+offset_right = 180.0
+offset_bottom = 124.0
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Session review"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Barangay Morning"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.6, 0.78, 0.74, 1)
+
+[node name="RepsHeading" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "COMPLETED / PLANNED"
+theme_override_colors/font_color = Color(0.96, 0.77, 0.4, 1)
+
+[node name="Repetitions" type="GridContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 2
+
+[node name="Left" type="Label" parent="Panel/Margin/Content/Repetitions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Move left: 0 / 10"
+
+[node name="Right" type="Label" parent="Panel/Margin/Content/Repetitions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Move right: 0 / 10"
+
+[node name="Jump" type="Label" parent="Panel/Margin/Content/Repetitions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Jump: 0 / 10"
+
+[node name="Slide" type="Label" parent="Panel/Margin/Content/Repetitions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Slide: 0 / 10"
+
+[node name="Misses" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Neutral misses: 0"
+theme_override_colors/font_color = Color(0.6, 0.78, 0.74, 1)
+
+[node name="Effort" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "How much effort did it take?  Choose 1–10"
+
+
+[node name="Ratings" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="ScaleNote" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "In-game effort rating · 1 = least, 10 = most"
+theme_override_colors/font_color = Color(0.6, 0.78, 0.74, 1)
+
+[node name="Status" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Record effort before retrying, or finish without a rating."
+custom_minimum_size = Vector2(0, 26)
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="RestButton" type="Button" parent="Panel/Margin/Content/Actions"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
+focus_mode = 0
+text = "Rest"
+
+[node name="RetryButton" type="Button" parent="Panel/Margin/Content/Actions"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
+focus_mode = 0
+text = "Retry L01"
+
+[node name="FinishButton" type="Button" parent="Panel/Margin/Content/Actions"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
+focus_mode = 0
+text = "Finish without rating"
+

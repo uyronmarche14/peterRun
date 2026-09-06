@@ -33,7 +33,7 @@ func _test_pause_controls_exist(level: Node) -> void:
 	_expect_button(level, ^"PauseOverlay/Panel/Actions/ResumeButton", "Resume")
 	_expect_button(level, ^"PauseOverlay/Panel/Actions/EndLevelButton", "End Level")
 	_expect_button(level, ^"PauseOverlay/Panel/Actions/EndSessionButton", "End Session")
-	_expect_button(level, ^"EndSessionOverlay/Panel/ReturnButton", "Return to Dashboard")
+	_expect_button(level, ^"EndSessionOverlay/Panel/ReturnButton", "Review Summary")
 	_expect(level.has_method("pause_gameplay"), "RunnerLevel can pause gameplay")
 	_expect(level.has_method("resume_gameplay"), "RunnerLevel can resume gameplay")
 	_expect(level.has_method("end_session_neutrally"), "RunnerLevel has a neutral end-session route")

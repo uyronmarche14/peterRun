@@ -18,7 +18,7 @@ func _run() -> void:
 	motion.call("begin_prompt_approach", 1, 2.5, 2.0)
 	motion.call("_process", 4.1)
 	var player: Node = level.get_node("Player")
-	level.call("_show_l01_prompt", &"jump", "MOVE NOW", Color(0.35, 0.78, 0.66))
+	level.call("_show_prompt", &"jump", "MOVE NOW", Color(0.35, 0.78, 0.66))
 	player.call("handle_action", &"jump")
 	await create_timer(0.26).timeout
 	player.call("set_gameplay_paused", true)
@@ -28,13 +28,13 @@ func _run() -> void:
 	player.call("set_gameplay_paused", true)
 	await _capture("movement_landing.png")
 	player.call("reset_for_practice")
-	level.call("_show_l01_prompt", &"slide", "MOVE NOW", Color(0.35, 0.78, 0.66))
+	level.call("_show_prompt", &"slide", "MOVE NOW", Color(0.35, 0.78, 0.66))
 	player.call("handle_action", &"slide")
 	await create_timer(0.16).timeout
 	player.call("set_gameplay_paused", true)
 	await _capture("movement_slide.png")
 	player.call("reset_for_practice")
-	level.call("_show_l01_prompt", &"move_left", "MOVE NOW", Color(0.35, 0.78, 0.66))
+	level.call("_show_prompt", &"move_left", "MOVE NOW", Color(0.35, 0.78, 0.66))
 	player.call("handle_action", &"move_left")
 	await create_timer(0.07).timeout
 	player.call("set_gameplay_paused", true)

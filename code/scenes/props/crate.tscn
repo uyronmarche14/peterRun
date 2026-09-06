@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[node name="CratePrompt" type="Node2D"]
+
+[node name="CrateBody" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-20, 17, -20, -17, 20, -17, 20, 17)
+color = Color(0.67, 0.365, 0.173, 1)
+
+[node name="CrateTop" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-20, -17, -12, -23, 26, -23, 20, -17)
+color = Color(0.91, 0.62, 0.3, 1)
+
+[node name="CrateSide" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(20, -17, 26, -23, 26, 11, 20, 17)
+color = Color(0.45, 0.25, 0.15, 1)
+
+[node name="CrateCross" type="Line2D" parent="."]
+points = PackedVector2Array(-18, -15, 18, 15, 18, -15, -18, 15)
+width = 2.0
+default_color = Color(1, 0.784, 0.42, 0.9)
+
+[node name="CrateLabel" type="Label" parent="."]
+visible = false
+offset_left = -24.0
+offset_top = 20.0
+offset_right = 24.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(1, 0.88, 0.59, 1)
+theme_override_font_sizes/font_size = 9
+text = "CRATE"
+horizontal_alignment = 1

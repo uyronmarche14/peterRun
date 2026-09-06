@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[node name="LowStep" type="Node2D"]
+
+[node name="Step" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-26, 5, 26, 5, 26, 15, -26, 15)
+color = Color(0.61, 0.65, 0.64, 1)
+
+[node name="Top" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-26, 5, -18, 0, 31, 0, 26, 5)
+color = Color(0.88, 0.82, 0.6, 1)

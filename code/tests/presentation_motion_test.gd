@@ -31,7 +31,7 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 
 	_expect_node(level, ^"HUD/HUDRoot/PromptCard", "high-contrast prompt card")
 	_expect_node(level, ^"HUD/HUDRoot/PromptCard/PromptIconLabel", "prompt action icon")
-	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop", "clean prompt backdrop")
+	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/PromptProps/PromptBackdrop", "clean prompt backdrop")
 
 	var player := level.get_node_or_null(^"Player") as Node2D
 	if player != null:
@@ -62,7 +62,7 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 	_expect(prompt_anchor.position.y > warning_y, "Approach continues throughout response")
 	_expect(is_equal_approx(prompt_anchor.position.y, 218.0), "Item reaches player contact depth at response close")
 	_expect(prompt_anchor.scale.x > warning_scale, "Perspective grows continuously toward player")
-	var prompt_ground_shadow: Polygon2D = level.get_node("LevelWorld/PromptWorldAnchor/L01PromptProps/PromptGroundShadow")
+	var prompt_ground_shadow: Polygon2D = level.get_node("LevelWorld/PromptWorldAnchor/PromptProps/PromptGroundShadow")
 	_expect(prompt_ground_shadow.visible, "Approaching prop stays grounded")
 	_expect(is_equal_approx(prompt_ground_shadow.global_scale.x, prompt_anchor.scale.x), "Shadow shares the same depth scale as its prop")
 

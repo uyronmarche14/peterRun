@@ -30,6 +30,7 @@ static func restore_session_config(source) -> void:
 	var config := SessionConfigModel.new()
 	config.affected_side = source.affected_side
 	config.selected_level_id = source.selected_level_id
+	config.level_definition = source.level_definition.duplicate(true) if source.level_definition != null else null
 	for action in SessionConfigModel.ACTIONS:
 		config.set_target(action, source.get_target(action))
 	_session_config = config

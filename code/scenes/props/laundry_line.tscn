@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[node name="LaundryLinePrompt" type="Node2D"]
+
+[node name="Line" type="Line2D" parent="."]
+points = PackedVector2Array(-28, -8, 28, -8)
+width = 2.0
+default_color = Color(0.96, 0.76, 0.37, 1)
+
+[node name="LeftPost" type="Line2D" parent="."]
+points = PackedVector2Array(-28, -9, -28, 17)
+width = 2.0
+default_color = Color(0.79, 0.5, 0.24, 1)
+
+[node name="RightPost" type="Line2D" parent="."]
+points = PackedVector2Array(28, -9, 28, 17)
+width = 2.0
+default_color = Color(0.79, 0.5, 0.24, 1)
+
+[node name="Cloth" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-12, -8, 12, -8, 8, 7, -8, 7)
+color = Color(0.95, 0.4, 0.39, 1)
+
+[node name="LaundryLabel" type="Label" parent="."]
+visible = false
+offset_left = -35.0
+offset_top = 20.0
+offset_right = 35.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(1, 0.85, 0.53, 1)
+theme_override_font_sizes/font_size = 9
+text = "LAUNDRY"
+horizontal_alignment = 1

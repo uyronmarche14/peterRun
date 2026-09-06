@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="LevelDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/level_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/props/crate.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://tests/fixtures/low_step.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/props/laundry_line.tscn" id="4"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"fixture_courtyard"
+short_name = "TEST"
+title = "Courtyard Test"
+sequence = Array[StringName]([&"jump", &"move_right", &"slide", &"move_left"])
+move_prop = ExtResource("2")
+jump_prop = ExtResource("3")
+slide_prop = ExtResource("4")
+move_prop_id = &"crate"
+jump_prop_id = &"low_step"
+slide_prop_id = &"laundry_line"
+warning_seconds = 2.5
+response_seconds = 2.0
+resolved_seconds = 0.75
+sky_color = Color(0.07, 0.11, 0.2, 1)
+distant_color = Color(0.12, 0.22, 0.31, 1)
+horizon_color = Color(0.18, 0.32, 0.35, 1)
+road_color = Color(0.16, 0.18, 0.23, 1)
+

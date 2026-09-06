@@ -3,6 +3,7 @@ extends Control
 const Review = preload("res://scripts/session_review_store.gd")
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const LevelSelection = preload("res://scripts/level_selection.gd")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
 
@@ -10,6 +11,7 @@ var is_resting := false
 var _leaving := false
 var _result: Variant
 var _config: Variant
+var _level: Resource
 
 @onready var content: VBoxContainer = $Panel/Margin/Content
 @onready var retry_button: Button = $Panel/Margin/Content/Actions/RetryButton
@@ -20,6 +22,7 @@ var _config: Variant
 func _ready() -> void:
 	_result = Review.get_result()
 	_config = Review.get_config()
+	_level = LevelSelection.resolve(_config)
 	var group := ButtonGroup.new()
 	for rating in range(1, 11):
 		var button := Button.new()
@@ -47,13 +50,14 @@ func _ready() -> void:
 		return
 	match Review.get_end_reason():
 		&"completed":
-			content.get_node("Title").text = "L01 complete"
+			content.get_node("Title").text = (_level.short_name + " complete") if _level != null else "Session review"
 		&"level_ended":
 			content.get_node("Title").text = "Level review"
 		_:
 			content.get_node("Title").text = "Session review"
 	var side := "Left" if _config.affected_side == Config.AffectedSide.LEFT else "Right"
-	content.get_node("Subtitle").text = "Barangay Morning  ·  %s affected side" % side
+	content.get_node("Subtitle").text = "%s  ·  %s affected side" % [_level.title if _level != null else "Level unavailable", side]
+	retry_button.text = ("Retry " + _level.short_name) if _level != null else "Retry"
 	for index in range(Config.ACTIONS.size()):
 		var action: StringName = Config.ACTIONS[index]
 		content.get_node("Repetitions/" + ACTION_NODES[index]).text = "%s: %d / %d" % [
@@ -71,7 +75,7 @@ func select_rating(value: Variant) -> bool:
 
 func _refresh_rating() -> void:
 	var rating := int(_result.rpe) if _result != null else 0
-	retry_button.disabled = rating == 0 or _config == null
+	retry_button.disabled = rating == 0 or _level == null
 	finish_button.text = "Finish without rating" if rating == 0 and _result != null else "Finish"
 	content.get_node("Effort").text = "How much effort did it take?  %s" % (
 		"Choose 1–10" if rating == 0 else "%d / 10" % rating)
@@ -94,7 +98,7 @@ func rest_session() -> void:
 
 
 func retry_session() -> void:
-	if _leaving or _result == null or _config == null or _result.rpe < 1 or _result.rpe > 10:
+	if _leaving or _result == null or _level == null or _result.rpe < 1 or _result.rpe > 10:
 		return
 	Setup.restore_session_config(_config)
 	_navigate("res://scenes/ready.tscn", &"retry")

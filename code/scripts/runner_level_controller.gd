@@ -2,22 +2,22 @@ class_name RunnerLevelController
 extends Node2D
 
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
-const L01PromptCatalogModel = preload("res://scripts/l01_prompt_catalog.gd")
+const LevelSelection = preload("res://scripts/level_selection.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const SessionReviewStore = preload("res://scripts/session_review_store.gd")
 
-const WARNING_SECONDS := 2.5
-const RESPONSE_SECONDS := 2.0
-const RESOLVED_SECONDS := 0.75
 const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
 
 signal named_action_received(action_name: StringName)
 
 var input_adapter := InputAdapterModel.new()
-var l01_prompt_catalog := L01PromptCatalogModel.new()
+var level_definition: Resource
+var _planned_sequence: Array[StringName] = []
+var _prop_nodes: Dictionary = {}
+var _visible_prompt: Node2D
 var session_config := SessionConfigModel.new()
 var session_result := SessionResultModel.new()
 var _sequence_index := 0
@@ -35,10 +35,7 @@ var _pending_end_reason: StringName = &""
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
-@onready var prompt_backdrop: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop
-@onready var crate_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt
-@onready var puddle_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt
-@onready var laundry_line_prompt: Node2D = $LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt
+@onready var prompt_backdrop: Node2D = $LevelWorld/PromptWorldAnchor/PromptProps/PromptBackdrop
 @onready var warning_timer: Timer = $PromptTimers/WarningTimer
 @onready var response_timer: Timer = $PromptTimers/ResponseTimer
 @onready var resolve_timer: Timer = $PromptTimers/ResolveTimer
@@ -70,7 +67,16 @@ func _ready() -> void:
 	$EndConfirmation/Panel/Actions/CancelButton.pressed.connect(cancel_end)
 	$EndConfirmation/Panel/Actions/ConfirmButton.pressed.connect(confirm_end)
 	_update_progress_hud()
-	_schedule_next_l01_prompt()
+	level_definition = LevelSelection.resolve(session_config)
+	if level_definition == null:
+		_show_neutral_end_overlay("Level unavailable", "This level configuration cannot be loaded. Finish the review and return to setup.", &"configuration_error")
+		return
+	# Freeze the authored settings for this run; results/retry get their own copy.
+	level_definition = level_definition.duplicate(true)
+	session_config.level_definition = level_definition
+	_planned_sequence = level_definition.get_planned_sequence()
+	_apply_level_presentation()
+	_schedule_next_prompt()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -108,15 +114,14 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 	player.handle_action(logical_action)
 
 
-func _schedule_next_l01_prompt() -> void:
+func _schedule_next_prompt() -> void:
 	if is_session_ended:
 		return
-	var planned_sequence := l01_prompt_catalog.get_planned_sequence()
-	if planned_sequence.is_empty():
+	if _planned_sequence.is_empty():
 		return
 
-	var action_name: StringName = planned_sequence[_sequence_index]
-	_sequence_index = (_sequence_index + 1) % planned_sequence.size()
+	var action_name: StringName = _planned_sequence[_sequence_index]
+	_sequence_index = (_sequence_index + 1) % _planned_sequence.size()
 	prompt_director.call("schedule", action_name)
 
 
@@ -127,65 +132,71 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		PromptDirectorModel.State.WARNING:
 			response_timer.stop()
 			resolve_timer.stop()
-			_show_l01_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
-			world_motion.call("begin_prompt_approach", player.lane_index, WARNING_SECONDS, RESPONSE_SECONDS)
-			warning_timer.start(WARNING_SECONDS)
+			_show_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
+			world_motion.call("begin_prompt_approach", player.lane_index, level_definition.warning_seconds, level_definition.response_seconds)
+			warning_timer.start(level_definition.warning_seconds)
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
-			_show_l01_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
-			response_timer.start(RESPONSE_SECONDS)
+			_show_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
+			response_timer.start(level_definition.response_seconds)
 		PromptDirectorModel.State.RESOLVED:
 			warning_timer.stop()
 			response_timer.stop()
 			_record_prompt_resolution(action_name, resolution)
-			world_motion.call("resolve_prompt_approach", resolution == PromptDirectorModel.Resolution.SUCCESS, RESOLVED_SECONDS)
+			world_motion.call("resolve_prompt_approach", resolution == PromptDirectorModel.Resolution.SUCCESS, level_definition.resolved_seconds)
 			var resolved_text := "Nice step!" if resolution == PromptDirectorModel.Resolution.SUCCESS else "Take your time."
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
 			if session_result.has_met_targets(session_config):
-				_show_neutral_end_overlay("L01 complete", "The planned repetitions are complete. Review the session with the therapist.")
+				_show_neutral_end_overlay(level_definition.short_name + " complete", "The planned repetitions are complete. Review the session with the therapist.")
 				return
-			resolve_timer.start(RESOLVED_SECONDS)
+			resolve_timer.start(level_definition.resolved_seconds)
 		PromptDirectorModel.State.IDLE:
-			_hide_l01_props()
+			_hide_props()
 			world_motion.call("hide_prompt_approach")
 			prompt_action_label.text = "NEXT ACTION"
 			prompt_state_label.text = ""
 
 
-func _show_l01_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
-	prompt_action_label.text = l01_prompt_catalog.get_action_label(action_name)
-	prompt_icon_label.text = _get_prompt_icon(action_name)
+func _apply_level_presentation() -> void:
+	$HUD/HUDRoot/LevelLabel.text = "%s · %s" % [level_definition.short_name, level_definition.title]
+	$LevelWorld/Sky.color = level_definition.sky_color
+	$LevelWorld/DistantHills.color = level_definition.distant_color
+	$LevelWorld/Horizon.color = level_definition.horizon_color
+	$LevelWorld/RoadAndLanes/RoadSurface.color = level_definition.road_color
+	$LevelWorld/BackgroundArt.texture = level_definition.background_texture
+	var instances: Dictionary = {}
+	for action in SessionConfigModel.ACTIONS:
+		var packed: PackedScene = level_definition.get_prop_scene(action)
+		if not instances.has(packed):
+			var prop: Node2D = packed.instantiate()
+			prop.visible = false
+			$LevelWorld/PromptWorldAnchor/PromptProps.add_child(prop)
+			instances[packed] = prop
+		_prop_nodes[action] = instances[packed]
+
+
+func get_visible_prompt() -> Node2D:
+	return _visible_prompt
+
+
+func _show_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
+	_hide_props()
+	prompt_action_label.text = level_definition.get_action_label(action_name)
+	prompt_icon_label.text = level_definition.get_action_icon(action_name)
 	prompt_state_label.text = state_text
 	prompt_state_label.add_theme_color_override("font_color", state_color)
-
-	var prop_id := l01_prompt_catalog.get_prop_id(action_name)
-	crate_prompt.visible = prop_id == &"crate"
-	puddle_prompt.visible = prop_id == &"puddle"
-	laundry_line_prompt.visible = prop_id == &"laundry_line"
-	# The silhouette and contact shadow carry the world cue; instructions stay in HUD.
-	prompt_backdrop.visible = false
+	_visible_prompt = _prop_nodes.get(action_name)
+	if _visible_prompt != null:
+		_visible_prompt.visible = true
 
 
-func _hide_l01_props() -> void:
-	crate_prompt.visible = false
-	puddle_prompt.visible = false
-	laundry_line_prompt.visible = false
+func _hide_props() -> void:
+	for prop in _prop_nodes.values():
+		prop.visible = false
+	_visible_prompt = null
 	prompt_backdrop.visible = false
 	prompt_icon_label.text = "•"
-
-
-func _get_prompt_icon(action_name: StringName) -> String:
-	match action_name:
-		&"move_left":
-			return "‹"
-		&"move_right":
-			return "›"
-		&"jump":
-			return "▲"
-		&"slide":
-			return "▼"
-	return "•"
 
 
 func _record_prompt_resolution(action_name: StringName, resolution: int) -> void:
@@ -227,7 +238,7 @@ func _on_response_timer_timeout() -> void:
 
 func _on_resolve_timer_timeout() -> void:
 	prompt_director.call("clear_resolved_prompt")
-	_schedule_next_l01_prompt()
+	_schedule_next_prompt()
 
 
 func pause_gameplay() -> void:

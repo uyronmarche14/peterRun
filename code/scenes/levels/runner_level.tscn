@@ -59,6 +59,9 @@ script = ExtResource("1_runner")
 polygon = PackedVector2Array(0, 0, 480, 0, 480, 270, 0, 270)
 color = Color(0.035, 0.141, 0.196, 1)
 
+[node name="BackgroundArt" type="Sprite2D" parent="LevelWorld"]
+centered = false
+
 [node name="DistantHills" type="Polygon2D" parent="LevelWorld"]
 polygon = PackedVector2Array(0, 106, 72, 74, 136, 102, 214, 62, 300, 101, 378, 70, 480, 112, 480, 164, 0, 164)
 color = Color(0.075, 0.278, 0.29, 1)
@@ -138,112 +141,25 @@ polygon = PackedVector2Array(-18, 18, -18, -8, -8, -18, 8, -18, 18, -8, 18, 18)
 color = Color(0.969, 0.729, 0.318, 0.92)
 visible = false
 
-[node name="L01PromptProps" type="Node2D" parent="LevelWorld/PromptWorldAnchor"]
+[node name="PromptProps" type="Node2D" parent="LevelWorld/PromptWorldAnchor"]
 
-[node name="PromptBackdrop" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+[node name="PromptBackdrop" type="Node2D" parent="LevelWorld/PromptWorldAnchor/PromptProps"]
 visible = false
 
-[node name="Glow" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop"]
+[node name="Glow" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/PromptProps/PromptBackdrop"]
 polygon = PackedVector2Array(-42, 0, -24, -22, 24, -22, 42, 0, 24, 22, -24, 22)
 color = Color(0.018, 0.098, 0.125, 0.86)
 
-[node name="Frame" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PromptBackdrop"]
+[node name="Frame" type="Line2D" parent="LevelWorld/PromptWorldAnchor/PromptProps/PromptBackdrop"]
 points = PackedVector2Array(-36, 0, -20, -17, 20, -17, 36, 0, 20, 17, -20, 17, -36, 0)
 width = 1.5
 default_color = Color(1, 0.75, 0.32, 0.72)
 
-[node name="PromptGroundShadow" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
+[node name="PromptGroundShadow" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/PromptProps"]
 z_index = -1
 visible = false
 polygon = PackedVector2Array(-24, 16, -16, 12, 12, 12, 24, 16, 15, 19, -14, 19)
 color = Color(0.005, 0.024, 0.033, 0.68)
-
-[node name="CratePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
-visible = false
-
-[node name="CrateBody" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
-polygon = PackedVector2Array(-20, 17, -20, -17, 20, -17, 20, 17)
-color = Color(0.67, 0.365, 0.173, 1)
-
-[node name="CrateTop" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
-polygon = PackedVector2Array(-20, -17, -12, -23, 26, -23, 20, -17)
-color = Color(0.91, 0.62, 0.3, 1)
-
-[node name="CrateSide" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
-polygon = PackedVector2Array(20, -17, 26, -23, 26, 11, 20, 17)
-color = Color(0.45, 0.25, 0.15, 1)
-
-[node name="CrateCross" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
-points = PackedVector2Array(-18, -15, 18, 15, 18, -15, -18, 15)
-width = 2.0
-default_color = Color(1, 0.784, 0.42, 0.9)
-
-[node name="CrateLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt"]
-visible = false
-offset_left = -24.0
-offset_top = 20.0
-offset_right = 24.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(1, 0.88, 0.59, 1)
-theme_override_font_sizes/font_size = 9
-text = "CRATE"
-horizontal_alignment = 1
-
-[node name="PuddlePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
-visible = false
-
-[node name="PuddleShape" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
-polygon = PackedVector2Array(-27, 10, -20, 3, -5, -2, 10, 0, 26, 8, 19, 14, 4, 17, -14, 15)
-color = Color(0.22, 0.61, 0.83, 1)
-
-[node name="PuddleHighlight" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
-points = PackedVector2Array(-14, 7, -3, 3, 9, 5)
-width = 2.0
-default_color = Color(0.78, 0.94, 1, 0.9)
-
-[node name="PuddleLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt"]
-visible = false
-offset_left = -26.0
-offset_top = 20.0
-offset_right = 26.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 9
-text = "PUDDLE"
-horizontal_alignment = 1
-
-[node name="LaundryLinePrompt" type="Node2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps"]
-visible = false
-
-[node name="Line" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
-points = PackedVector2Array(-28, -8, 28, -8)
-width = 2.0
-default_color = Color(0.96, 0.76, 0.37, 1)
-
-[node name="LeftPost" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
-points = PackedVector2Array(-28, -9, -28, 17)
-width = 2.0
-default_color = Color(0.79, 0.5, 0.24, 1)
-
-[node name="RightPost" type="Line2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
-points = PackedVector2Array(28, -9, 28, 17)
-width = 2.0
-default_color = Color(0.79, 0.5, 0.24, 1)
-
-[node name="Cloth" type="Polygon2D" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
-polygon = PackedVector2Array(-12, -8, 12, -8, 8, 7, -8, 7)
-color = Color(0.95, 0.4, 0.39, 1)
-
-[node name="LaundryLabel" type="Label" parent="LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt"]
-visible = false
-offset_left = -35.0
-offset_top = 20.0
-offset_right = 35.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(1, 0.85, 0.53, 1)
-theme_override_font_sizes/font_size = 9
-text = "LAUNDRY"
-horizontal_alignment = 1
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 

@@ -21,9 +21,7 @@ func _init() -> void:
 func _test_runner_scene_prompt_hooks() -> void:
 	var packed_scene: PackedScene = load(RUNNER_LEVEL_PATH)
 	var level := packed_scene.instantiate()
-	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/L01PromptProps/CratePrompt", "crate prompt silhouette")
-	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/L01PromptProps/PuddlePrompt", "puddle prompt silhouette")
-	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/L01PromptProps/LaundryLinePrompt", "laundry-line prompt silhouette")
+	_expect_node(level, ^"LevelWorld/PromptWorldAnchor/PromptProps", "data-driven prop mount")
 	_expect_node(level, ^"HUD/HUDRoot/PromptActionLabel", "prompt action label")
 	_expect_node(level, ^"HUD/HUDRoot/PromptStateLabel", "prompt state label")
 	_expect_node(level, ^"PromptTimers/WarningTimer", "calm warning timer")

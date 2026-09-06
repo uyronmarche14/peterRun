@@ -44,7 +44,12 @@ func _test_validation() -> void:
 		["resolved_seconds", 0.0], ["jump_prop", null]
 	]:
 		copy = source.duplicate(true)
-		copy.set(mutation[0], mutation[1])
+		if mutation[0] == "sequence":
+			var invalid_sequence: Array[StringName] = []
+			invalid_sequence.assign(mutation[1])
+			copy.set("sequence", invalid_sequence)
+		else:
+			copy.set(mutation[0], mutation[1])
 		_expect(not copy.call("validate").is_empty(), "Invalid level is rejected: " + str(mutation[0]))
 
 

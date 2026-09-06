@@ -14,6 +14,7 @@ static func capture(config, result, end_reason: StringName) -> void:
 	_config = Config.new()
 	_config.affected_side = config.affected_side
 	_config.selected_level_id = config.selected_level_id
+	_config.level_definition = config.level_definition.duplicate(true) if config.level_definition != null else null
 	_result = Result.new()
 	for action in Config.ACTIONS:
 		_config.set_target(action, config.get_target(action))

@@ -16,6 +16,8 @@ const DEFAULT_TARGET_REPETITIONS := 10
 
 var affected_side: AffectedSide = AffectedSide.RIGHT
 var selected_level_id: StringName = &"l01_barangay"
+# Optional explicit definition for developer fixtures; normal play resolves the catalog ID.
+var level_definition: Resource = null
 var target_repetitions: Dictionary[StringName, int] = {}
 
 

@@ -25,7 +25,7 @@ var _roadside_markers: Array[Node2D] = []
 
 @onready var road_motion_dashes: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadMotionDashes") as Node2D
 @onready var prompt_anchor: Marker2D = get_node("../LevelWorld/PromptWorldAnchor") as Marker2D
-@onready var prompt_ground_shadow: Polygon2D = get_node("../LevelWorld/PromptWorldAnchor/L01PromptProps/PromptGroundShadow") as Polygon2D
+@onready var prompt_ground_shadow: Polygon2D = get_node("../LevelWorld/PromptWorldAnchor/PromptProps/PromptGroundShadow") as Polygon2D
 
 
 func _ready() -> void:

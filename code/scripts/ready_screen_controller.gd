@@ -5,6 +5,7 @@ const RUNNER_LEVEL_SCENE_PATH := "res://scenes/levels/runner_level.tscn"
 const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
+const LevelSelection = preload("res://scripts/level_selection.gd")
 
 @onready var session_details: Label = $Panel/Margin/Content/SessionSummary/SessionDetails
 @onready var start_session_button: Button = $Panel/Margin/Content/StartSessionButton
@@ -22,6 +23,9 @@ func get_runner_scene_path() -> String:
 
 
 func start_session() -> void:
+	if LevelSelection.resolve(SessionSetupStoreModel.get_session_config()) == null:
+		_refresh_session_details()
+		return
 	get_tree().change_scene_to_file(RUNNER_LEVEL_SCENE_PATH)
 
 
@@ -31,6 +35,12 @@ func return_to_tutorial() -> void:
 
 func _refresh_session_details() -> void:
 	var config: Variant = SessionSetupStoreModel.get_session_config()
+	var definition: Resource = LevelSelection.resolve(config)
+	start_session_button.disabled = definition == null
+	if definition == null:
+		session_details.text = "Level unavailable. Return to setup before starting."
+		return
+	start_session_button.text = "Start %s Session" % definition.short_name
 	var target_repetitions: int = int(config.get_target(&"jump"))
 	var side_name := "Left" if config.affected_side == SessionConfigModel.AffectedSide.LEFT else "Right"
-	session_details.text = "L01 Barangay Morning • %d reps/action • %s affected side" % [target_repetitions, side_name]
+	session_details.text = "%s %s • %d reps/action • %s affected side" % [definition.short_name, definition.title, target_repetitions, side_name]

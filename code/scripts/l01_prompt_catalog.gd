@@ -1,39 +1,17 @@
 class_name L01PromptCatalog
 extends RefCounted
 
-const PLANNED_SEQUENCE: Array[StringName] = [
-	&"move_left",
-	&"jump",
-	&"move_right",
-	&"slide",
-]
+# Compatibility facade for existing L01 tests/tools. Runtime uses LevelDefinition.
+const Definition = preload("res://data/levels/l01_barangay.tres")
 
 
 func get_planned_sequence() -> Array[StringName]:
-	return PLANNED_SEQUENCE.duplicate()
+	return Definition.get_planned_sequence()
 
 
 func get_prop_id(action_name: StringName) -> StringName:
-	match action_name:
-		&"move_left", &"move_right":
-			return &"crate"
-		&"jump":
-			return &"puddle"
-		&"slide":
-			return &"laundry_line"
-		_:
-			return &""
+	return Definition.get_prop_id(action_name)
 
 
 func get_action_label(action_name: StringName) -> String:
-	match action_name:
-		&"move_left":
-			return "MOVE LEFT"
-		&"move_right":
-			return "MOVE RIGHT"
-		&"jump":
-			return "JUMP"
-		&"slide":
-			return "SLIDE"
-		_:
-			return ""
+	return Definition.get_action_label(action_name)

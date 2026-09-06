@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[node name="PuddlePrompt" type="Node2D"]
+
+[node name="PuddleShape" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-27, 10, -20, 3, -5, -2, 10, 0, 26, 8, 19, 14, 4, 17, -14, 15)
+color = Color(0.22, 0.61, 0.83, 1)
+
+[node name="PuddleHighlight" type="Line2D" parent="."]
+points = PackedVector2Array(-14, 7, -3, 3, 9, 5)
+width = 2.0
+default_color = Color(0.78, 0.94, 1, 0.9)
+
+[node name="PuddleLabel" type="Label" parent="."]
+visible = false
+offset_left = -26.0
+offset_top = 20.0
+offset_right = 26.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "PUDDLE"
+horizontal_alignment = 1

@@ -30,6 +30,8 @@ Each item is designed as a small, independently verifiable unit. Finish them in 
 | PR-10B | L01 runner motion and HUD polish | PR-06, PR-08, PR-10 | Lane-aware props travel throughout warning/response and fade on exit; running/landing feedback and capped animated repetition progress freeze on pause | `runner_polish_test.gd`, presentation/pause/progress regressions, native and 1080p rendered captures |
 | PR-11 | Summary, RPE and therapist decision | PR-08 | Results show completed reps and neutral misses; RPE is 1–10 and mouse-operated | Flow test from level completion to Main Menu |
 
+PR-11 implementation status (2026-09-06): implemented locally with `session_summary_flow_test.gd` and `tests/support/capture_session_summary.gd`. Normal completion and confirmed early endings retain a result snapshot for review; Rest does not auto-restart, Retry requires a rating and returns to Ready, and Finish may explicitly leave the rating unrecorded. The latest review is in memory only. This does not claim GitHub PR/merge, clinical approval, persistent storage, or release readiness. Next build unit: PR-12.
+
 ## Phase 3 — Data-driven levels and art
 
 | ID | Build unit | Depends on | Done when | Required proof |

@@ -34,7 +34,27 @@ Use [the project ComfyUI workflow](../Peter_Run_Visual_Production/05_ComfyUI_Con
 
 The Tutorial is now a playable four-step practice area. Follow the displayed keyboard hint, try the highlighted movement, then choose Next. Repeat resets the current lesson; Skip bypasses practice. Pause (button or P) freezes the character. The tutorial shares `scenes/player.tscn` and the affected-side input adapter with gameplay, but does not record session repetitions or misses. Verify with `res://tests/guided_tutorial_test.gd`.
 
-Next is **PR-11: Summary, RPE and therapist decision**. PR-10B is the intermediate motion/HUD polish slice; final art integration remains PR-14.
+**PR-11: Summary, RPE and therapist decision** is implemented locally. Next is **PR-12: LevelDefinition data resources**; final art integration remains PR-14.
+
+## Session review (PR-11)
+
+Completing the configured targets opens the completion overlay. Choose **Review Summary** to see actual completed/planned counts for all four movements and neutral misses.
+
+- Ending a level/session from Pause first asks for confirmation. **Keep paused** cancels without resuming; **End & review** retains partial results and opens the end overlay.
+- Select an effort rating from **1–10** with the mouse. No rating is preselected. This is the simplified in-game scale, not a validated clinical assessment or clearance to continue.
+- **Rest** stays on the summary indefinitely; there is no countdown or automatic restart.
+- After a rating is recorded, **Retry L01** restores the reviewed settings and opens **Ready**. The therapist must explicitly start again; the new run has fresh counters and no inherited rating.
+- **Finish** returns to Main Menu. **Finish without rating** remains available if no rating was entered; the model keeps `rpe = 0` to represent unrecorded effort.
+- Only the latest completed/ended run is retained in memory, including its settings, rating and latest decision. Closing the application loses it; the next ended run replaces it. There is no database, export, history browser or patient identifier in this slice.
+
+Quick manual test: **F5 → Start Session → setup/check/tutorial → Start L01 Session → Pause → End Session → End & review → Review Summary**. Try a rating, Rest, and Retry; confirm Retry waits at Ready. Repeat and use Finish without rating.
+
+```text
+godot --headless --path . -s res://tests/session_summary_flow_test.gd
+godot --path . --rendering-method gl_compatibility -s res://tests/support/capture_session_summary.gd
+```
+
+The second command opens an auto-closing graphics preview and saves layout captures to `../test_evidence/`.
 
 ## Verify runner polish
 

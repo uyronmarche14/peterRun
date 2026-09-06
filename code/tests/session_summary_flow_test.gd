@@ -70,6 +70,7 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	await process_frame
 	_expect(current_scene.scene_file_path == SummaryPath, "Review button opens the actual summary")
 	var summary := current_scene
+	_expect_controls_fit(summary.get_node("Panel"), summary.get_node("Panel").get_global_rect())
 	_expect(summary.get_node("Panel/Margin/Content/Repetitions/Jump").text == "Jump: 1 / 1", "Summary displays completed and planned repetitions")
 	_expect(summary.get_node("Panel/Margin/Content/Misses").text == "Neutral misses: 1", "Summary labels misses neutrally")
 	_expect(summary.get_node("Panel/Margin/Content/Actions/RetryButton").disabled, "Retry waits for a recorded rating")
@@ -92,8 +93,11 @@ func _test_completion_and_rating(review: GDScript) -> void:
 
 func _test_early_end_and_retry(review: GDScript) -> void:
 	Setup.configure(Config.AffectedSide.LEFT, 12)
+	Setup.get_session_config().set_target(&"slide", 15)
 	var runner := _open("res://scenes/levels/runner_level.tscn")
 	await process_frame
+	runner.get_node("PromptDirector").call("open_response_window")
+	runner.get_node("PromptDirector").call("receive_action", &"move_left")
 	runner.get_node("PauseOverlay/Panel/Actions/EndSessionButton").pressed.emit()
 	_expect(runner.get_node("EndConfirmation").visible and runner.get("is_gameplay_paused"), "Early end asks for confirmation and freezes play")
 	runner.call("resume_gameplay")
@@ -103,6 +107,7 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	runner.get_node("PauseOverlay/Panel/Actions/EndLevelButton").pressed.emit()
 	runner.call("confirm_end")
 	_expect(review.call("get_end_reason") == &"level_ended", "Early level ending records its reason")
+	_expect(review.call("get_result").get_completed(&"move_left") == 1, "Early ending preserves partial progress")
 	runner.call("open_summary")
 	await process_frame
 	await process_frame
@@ -115,6 +120,9 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	await process_frame
 	_expect(current_scene.scene_file_path == "res://scenes/ready.tscn", "Retry requires an explicit start from Ready")
 	_expect(Setup.get_session_config().affected_side == Config.AffectedSide.LEFT and Setup.get_session_config().get_target(&"jump") == 12, "Retry restores the reviewed session settings")
+	_expect(Setup.get_session_config().get_target(&"slide") == 15, "Retry preserves per-action targets")
+	Setup.get_session_config().set_target(&"slide", 13)
+	_expect(review.call("get_config").get_target(&"slide") == 15, "Retry config does not alias the reviewed config")
 	current_scene.call("start_session")
 	await process_frame
 	await process_frame
@@ -148,3 +156,10 @@ func _test_empty_summary(review: GDScript) -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _expect_controls_fit(node: Node, bounds: Rect2) -> void:
+	if node is Control and node.is_visible_in_tree():
+		_expect(bounds.grow(1).encloses(node.get_global_rect()), "Summary card contains " + str(node.get_path()))
+	for child in node.get_children():
+		_expect_controls_fit(child, bounds)

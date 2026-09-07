@@ -36,6 +36,35 @@ godot --path . --rendering-method gl_compatibility -s res://tests/support/captur
 
 The second command captures the opening at 1920×1080, 960×540 and 1024×768, plus its settings/quit panels, then closes. It preserves the 480×270 canvas and aspect ratio; non-wide windows have letterboxing. Screenshots are saved in `../test_evidence/`.
 
+## Compact Barangay UI pass
+
+The opening, setup, controller check, tutorial, Ready, review and overlays now share a cream card surface (`art/ui/menu_card.tres`) and a teal/cream control theme (`art/ui/compact_theme.tres`). Primary actions use `PrimaryButton`; secondary controls stay quieter. Session screens reuse the original code-drawn barangay background, and L01 uses a warmer resource palette. No new route or final raster artwork was added.
+
+Measured card dimensions at 1920×1080 (480×270 base canvas unchanged):
+
+| Screen | Card size |
+| --- | --- |
+| Opening | 776×648 |
+| Settings / Quit | 720×464 |
+| Patient Setup | 976×784 |
+| Controller Check | 912×576 |
+| Ready | 912×600 |
+| Tutorial | 1280×904; retains the readable practice area |
+| Pause | 688×440 |
+| End confirmation / end review | 768×440 |
+| Session review | 1200×832 |
+
+The HUD band is 120 output pixels high, down from 152. A separate quiet footer keeps keyboard/miss labels readable against the brighter route. Regular button targets are 64–80 pixels high at the 1080p output; rating targets are 72 pixels high. Smaller windows preserve the aspect ratio and proportionally scale the interface, so these are not guaranteed physical-pixel minima at every window size.
+
+Patient Setup now uses horizontal **− / +** repetition buttons instead of tiny vertical arrows. The underlying SpinBox/Range and `value_changed` contract remain intact, with the existing 10–15 bounds. Direct text entry is replaced by mouse-operated stepping. The tutorial's action instruction remains larger than its utility buttons; all practice, demonstration, pause and skip routes remain available.
+
+```text
+godot --headless --path . -s res://tests/ui_theme_pass_test.gd
+godot --path . --rendering-method gl_compatibility -s res://tests/ui_theme_pass_test.gd -- --capture
+```
+
+The test verifies card-size caps, shared surfaces, visible control bounds, button targets, pointer routing for repetition changes, and rated/resting review states at 1920×1080, 960×540 and 1024×768. The graphics variant saves `../test_evidence/ui_theme_*.png` and closes automatically. These checks do not substitute for user readability or clinical review.
+
 ## ComfyUI use
 
 1. Generate a reference only for **L01 Barangay Morning** first.
@@ -105,7 +134,7 @@ The second command opens an auto-closing graphics preview and saves layout captu
 
 ## Verify runner polish
 
-Session and pause menus use compact centred panels and a shared teal button theme; the opening uses a left-side welcome card. The gameplay HUD is 38 native pixels tall (previously 53). Patient Setup shows both repetitions per action and the total session target.
+Session and pause menus use compact centred cream panels and a shared teal control theme; the opening uses a left-side welcome card. The gameplay HUD band is 30 native pixels tall (previously 38). Patient Setup shows both repetitions per action and the total session target.
 
 Successful responses rotate brief encouragement toasts, with recognition at ten-movement milestones. Misses show neutral feedback. Only one toast exists; it dismisses automatically, ignores mouse input, freezes/hides on Pause, resumes with its remaining time, and clears on session end. Run `res://tests/feedback_toast_test.gd` for these behavior checks.
 

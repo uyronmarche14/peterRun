@@ -181,6 +181,7 @@ Button/colors/font_hover_color = Color(0.08, 0.23, 0.21, 1)
 Button/colors/font_pressed_color = Color(1, 0.957, 0.839, 1)
 Button/colors/font_disabled_color = Color(0.38, 0.43, 0.37, 1)
 OptionButton/styles/normal = SubResource("Normal")
+OptionButton/constants/modulate_arrow = 1
 OptionButton/styles/hover = SubResource("Hover")
 OptionButton/styles/pressed = SubResource("Pressed")
 OptionButton/styles/disabled = SubResource("Disabled")

@@ -33,7 +33,7 @@ func _run() -> void:
 					stepper.value = 10
 					stepper.get_node("Stepper/Row/Decrease").pressed.emit()
 					_expect(stepper.value == 10, "Stepper retains minimum target")
-					stepper.get_node("Stepper/Row/Increase").pressed.emit()
+					await _click(stepper.get_node("Stepper/Row/Increase"))
 					_expect(stepper.value == 11, "Stepper increments the existing configuration value")
 					stepper.value = 15
 					stepper.get_node("Stepper/Row/Increase").pressed.emit()
@@ -72,6 +72,19 @@ func _run() -> void:
 		_check_controls(runner)
 		await _capture("end_review", dimensions)
 		runner.free()
+		var review: Control = load("res://scenes/session_summary.tscn").instantiate()
+		root.add_child(review)
+		await process_frame
+		for rating in [1, 10]:
+			review.call("select_rating", rating)
+			await process_frame
+			_check_card(review.get_node("Panel"), SCREENS["session_summary"])
+			_check_controls(review)
+		review.call("rest_session")
+		await process_frame
+		_check_card(review.get_node("Panel"), SCREENS["session_summary"])
+		await _capture("review_rated_rest", dimensions)
+		review.free()
 	await create_timer(0.15).timeout
 	for failure in failures:
 		printerr("FAIL: " + failure)
@@ -83,6 +96,23 @@ func _check_card(card: Control, maximum: Vector2) -> void:
 	_expect(card.size.x <= maximum.x + 1 and card.size.y <= maximum.y + 1, "Content-sized card: %s is %s; cap %s" % [card.get_path(), card.size, maximum])
 	_expect(card.get_theme_stylebox("panel").resource_path == "res://art/ui/menu_card.tres", "Cards share one themed surface: " + str(card.get_path()))
 	_check_inside(card, card.get_global_rect())
+	if root.size == Vector2i(1920, 1080):
+		print("UI SIZE %s: %s native" % [card.get_path(), card.size])
+
+
+func _click(button: Control) -> void:
+	var pointer := InputEventMouseMotion.new()
+	pointer.position = button.get_global_rect().get_center()
+	root.push_input(pointer, true)
+	var click := InputEventMouseButton.new()
+	click.position = pointer.position
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	root.push_input(click, true)
+	click = click.duplicate()
+	click.pressed = false
+	root.push_input(click, true)
+	await process_frame
 
 
 func _check_inside(node: Node, bounds: Rect2) -> void:

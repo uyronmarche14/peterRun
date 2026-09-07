@@ -22,6 +22,8 @@ func _run() -> void:
 		await _test_invalid_selection()
 	Setup.reset()
 	Review.reset()
+	# Audio playback release is asynchronous after the final menu is freed.
+	await create_timer(0.15).timeout
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN level definition test: " + ("PASS" if failures.is_empty() else "FAIL"))

@@ -22,6 +22,8 @@ func _run() -> void:
 		await _test_early_end_and_retry(review)
 		await _test_empty_summary(review)
 		Setup.reset()
+	# Allow the stopped menu playback to leave the audio mixer before shutdown.
+	await create_timer(0.15).timeout
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN session summary flow test: " + ("PASS" if failures.is_empty() else "FAIL"))

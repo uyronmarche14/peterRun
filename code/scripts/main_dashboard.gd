@@ -91,6 +91,10 @@ func _open_setup_from_settings() -> void:
 
 func confirm_quit() -> void:
 	if quit_overlay.visible and not _leaving:
+		_leaving = true
+		menu_music.stop()
+		# Godot releases stopped playback on the audio thread, not synchronously.
+		await get_tree().create_timer(0.15).timeout
 		get_tree().quit()
 
 

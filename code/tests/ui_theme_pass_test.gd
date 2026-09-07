@@ -26,6 +26,19 @@ func _run() -> void:
 			var card: Control = screen.get_node("Dashboard" if screen_name == "main" else "Panel")
 			_check_card(card, SCREENS[screen_name])
 			_check_controls(screen)
+			if screen_name == "patient_setup":
+				var stepper: SpinBox = screen.get_node("Panel/Margin/Content/TargetRepetitionsSpinBox")
+				_expect(stepper.has_node("Stepper/Row/Increase"), "Repetition field offers full-size horizontal controls")
+				if stepper.has_node("Stepper/Row/Increase"):
+					stepper.value = 10
+					stepper.get_node("Stepper/Row/Decrease").pressed.emit()
+					_expect(stepper.value == 10, "Stepper retains minimum target")
+					stepper.get_node("Stepper/Row/Increase").pressed.emit()
+					_expect(stepper.value == 11, "Stepper increments the existing configuration value")
+					stepper.value = 15
+					stepper.get_node("Stepper/Row/Increase").pressed.emit()
+					_expect(stepper.value == 15, "Stepper retains maximum target")
+					stepper.value = 10
 			if screen_name != "main":
 				_expect(screen.has_node("BackdropArt"), screen_name + " carries the shared barangay setting")
 			await _capture(screen_name, dimensions)
@@ -43,6 +56,7 @@ func _run() -> void:
 		root.add_child(runner)
 		await process_frame
 		_expect(runner.get_node("HUD/HUDRoot/TopBar").size.y <= 30, "HUD band is at most 120px high at 1080p")
+		_expect(runner.get_node("HUD/HUDRoot").has_node("FooterBacking"), "Footer text has a consistent contrast surface")
 		_check_controls(runner)
 		await _capture("gameplay", dimensions)
 		runner.call("pause_gameplay")

@@ -7,17 +7,7 @@
 [ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="2_art"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxDashboard"]
-bg_color = Color(0.039, 0.114, 0.149, 0.97)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.24, 0.43, 0.42, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
 
 [node name="Main" type="Control"]
 theme = ExtResource("9_compact")
@@ -50,22 +40,26 @@ color = Color(0.075, 0.31, 0.33, 0.0)
 mouse_filter = 2
 
 [node name="Dashboard" type="PanelContainer" parent="."]
+offset_bottom = 0
+offset_top = 0
+offset_right = 0
+offset_left = 0
 layout_mode = 1
 anchors_preset = 15
 anchor_left = 0.05
-anchor_top = 0.15
-anchor_right = 0.53
-anchor_bottom = 0.87
+anchor_top = 0.2037037037037037
+anchor_right = 0.45416666666666666
+anchor_bottom = 0.8037037037037037
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxDashboard")
+theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="Dashboard"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="Content" type="VBoxContainer" parent="Dashboard/Margin"]
 alignment = 1
@@ -74,30 +68,30 @@ theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 27
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 20
 text = "PETER RUN"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
-theme_override_font_sizes/font_size = 10
-text = "A fresh start. One step at a time."
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
+text = "One step at a time."
 horizontal_alignment = 1
 
 [node name="SessionStatus" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 10
-text = "Ready when you are."
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
+text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="RouteName" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(1, 0.82, 0.47, 1)
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 text = "Barangay Morning"
 horizontal_alignment = 1
 
@@ -105,9 +99,10 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="StartSessionButton" type="Button" parent="Dashboard/Margin/Content"]
-custom_minimum_size = Vector2(0, 22)
+theme_type_variation = &"PrimaryButton"
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 8
 text = "Start Session"
 
 [node name="SecondaryActions" type="HBoxContainer" parent="Dashboard/Margin/Content"]
@@ -115,30 +110,30 @@ layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="TutorialButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
-custom_minimum_size = Vector2(0, 21)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Tutorial"
 
 [node name="SettingsButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
-custom_minimum_size = Vector2(0, 21)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Settings"
 
 [node name="QuitButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
-custom_minimum_size = Vector2(0, 21)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Quit"
 
 [node name="SafetyNote" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.855, 0.824, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 7
 text = "Supervised prototype • Keyboard mode"
 horizontal_alignment = 1
 [node name="Welcome" type="Label" parent="."]
@@ -146,17 +141,17 @@ offset_left = 24.0
 offset_top = 5.0
 offset_right = 255.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.1, 0.28, 0.26, 1)
+theme_override_font_sizes/font_size = 7
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 text = "MABUHAY!  /  WELCOME"
 
 [node name="RouteCaption" type="Label" parent="."]
 offset_left = 277.0
-offset_top = 44.0
+offset_top = 51
 offset_right = 468.0
 offset_bottom = 80.0
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.09, 0.25, 0.23, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 text = "Sa bawat hakbang,\nmay bagong simula."
 
 [node name="StoreSign" type="Label" parent="."]
@@ -164,8 +159,8 @@ offset_left = 282.0
 offset_top = 129.0
 offset_right = 350.0
 offset_bottom = 139.0
-theme_override_font_sizes/font_size = 7
-theme_override_colors/font_color = Color(0.09, 0.25, 0.23, 1)
+theme_override_font_sizes/font_size = 8
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 text = "SARI-SARI"
 horizontal_alignment = 1
 
@@ -177,11 +172,11 @@ position = Vector2(240, 236)
 scale = Vector2(0.85, 0.85)
 
 [node name="MusicButton" type="Button" parent="."]
-offset_left = 364.0
+offset_left = 402
 offset_top = 7.0
 offset_right = 460.0
-offset_bottom = 28.0
-theme_override_font_sizes/font_size = 10
+offset_bottom = 23
+theme_override_font_sizes/font_size = 8
 focus_mode = 0
 text = "Music: On"
 
@@ -190,8 +185,8 @@ offset_left = 24.0
 offset_top = 246.0
 offset_right = 440.0
 offset_bottom = 264.0
-theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.89, 0.92, 0.81, 1)
+theme_override_font_sizes/font_size = 7
+theme_override_colors/font_color = Color(1, 0.957, 0.839, 1)
 text = "Hakbang sa Umaga · Original menu instrumental"
 
 [node name="MenuMusic" type="AudioStreamPlayer" parent="."]
@@ -208,30 +203,34 @@ anchor_bottom = 1.0
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.02, 0.07, 0.08, 0.88)
+color = Color(0.04, 0.12, 0.11, 0.58)
 
 [node name="Panel" type="PanelContainer" parent="SettingsOverlay"]
-anchor_left = 0.23
-anchor_top = 0.18
-anchor_right = 0.77
-anchor_bottom = 0.82
-theme_override_styles/panel = SubResource("StyleBoxDashboard")
+offset_bottom = 0
+offset_top = 0
+offset_right = 0
+offset_left = 0
+anchor_left = 0.3125
+anchor_top = 0.2851851851851852
+anchor_right = 0.6875
+anchor_bottom = 0.7148148148148148
+theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="SettingsOverlay/Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="Content" type="VBoxContainer" parent="SettingsOverlay/Panel/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 7
+theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 13
 text = "Sound & session"
 horizontal_alignment = 1
 
@@ -246,36 +245,40 @@ anchor_bottom = 1.0
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.02, 0.07, 0.08, 0.88)
+color = Color(0.04, 0.12, 0.11, 0.58)
 
 [node name="Panel" type="PanelContainer" parent="QuitOverlay"]
-anchor_left = 0.23
-anchor_top = 0.18
-anchor_right = 0.77
-anchor_bottom = 0.82
-theme_override_styles/panel = SubResource("StyleBoxDashboard")
+offset_bottom = 0
+offset_top = 0
+offset_right = 0
+offset_left = 0
+anchor_left = 0.3125
+anchor_top = 0.2851851851851852
+anchor_right = 0.6875
+anchor_bottom = 0.7148148148148148
+theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="QuitOverlay/Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="Content" type="VBoxContainer" parent="QuitOverlay/Panel/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 7
+theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 13
 text = "Finish for now?"
 horizontal_alignment = 1
 
 [node name="VolumeLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 text = "Menu music · 35%"
 autowrap_mode = 2
 horizontal_alignment = 1
@@ -288,32 +291,38 @@ value = 35.0
 focus_mode = 0
 
 [node name="SetupButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 8
 layout_mode = 2
-custom_minimum_size = Vector2(0, 23)
+custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 text = "Session settings"
 
 [node name="CloseButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 8
 layout_mode = 2
-custom_minimum_size = Vector2(0, 23)
+custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 text = "Back to opening"
 
 [node name="Message" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 text = "You can return whenever you are ready."
 autowrap_mode = 2
 horizontal_alignment = 1
 
 [node name="CancelButton" type="Button" parent="QuitOverlay/Panel/Margin/Content"]
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 8
 layout_mode = 2
-custom_minimum_size = Vector2(0, 23)
+custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 text = "Stay here"
 
 [node name="ConfirmButton" type="Button" parent="QuitOverlay/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 8
 layout_mode = 2
-custom_minimum_size = Vector2(0, 23)
+custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 text = "Quit game"

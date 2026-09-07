@@ -1,20 +1,12 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ready_screen_controller.gd" id="1_ready"]
 
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxReady"]
-bg_color = Color(0.039, 0.114, 0.149, 0.97)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.24, 0.43, 0.42, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
+
+[ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="11_backdrop"]
 
 [node name="Ready" type="Control"]
 theme = ExtResource("9_compact")
@@ -36,23 +28,31 @@ grow_vertical = 2
 color = Color(0.027, 0.169, 0.22, 1)
 mouse_filter = 2
 
+[node name="BackdropArt" type="Node2D" parent="."]
+script = ExtResource("11_backdrop")
+modulate = Color(0.9, 0.95, 0.9, 1)
+
 [node name="Panel" type="PanelContainer" parent="."]
+offset_bottom = 0
+offset_top = 0
+offset_right = 0
+offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.20833333333333334
-anchor_top = 0.13333333333333333
-anchor_right = 0.7916666666666666
-anchor_bottom = 0.8666666666666667
+anchor_left = 0.2625
+anchor_top = 0.2222222222222222
+anchor_right = 0.7375
+anchor_bottom = 0.7777777777777778
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxReady")
+theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="Content" type="VBoxContainer" parent="Panel/Margin"]
 alignment = 1
@@ -61,16 +61,16 @@ theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 13
 text = "Ready When You Are"
 horizontal_alignment = 1
 
 [node name="Guidance" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
-theme_override_font_sizes/font_size = 10
-text = "The therapist can start, pause, or end the session at any time."
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
+text = "Start when ready. Pause or end at any time."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -80,27 +80,28 @@ theme_override_constants/separation = 3
 
 [node name="SessionDetails" type="Label" parent="Panel/Margin/Content/SessionSummary"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="KeyboardNote" type="Label" parent="Panel/Margin/Content/SessionSummary"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.855, 0.824, 1)
-theme_override_font_sizes/font_size = 9
-text = "Keyboard fallback: A / D / W / S. Missed prompts stay neutral."
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
+text = "Keyboard: A / D / W / S. Misses stay neutral."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="StartSessionButton" type="Button" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 22)
+theme_type_variation = &"PrimaryButton"
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 8
 text = "Start L01 Session"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Back to Tutorial"

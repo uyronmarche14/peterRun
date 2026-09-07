@@ -28,7 +28,7 @@ func _ready() -> void:
 		var button := Button.new()
 		button.name = "Rating%d" % rating
 		button.text = str(rating)
-		button.custom_minimum_size = Vector2(26, 24)
+		button.custom_minimum_size = Vector2(18, 18)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.focus_mode = Control.FOCUS_NONE
 		button.toggle_mode = true

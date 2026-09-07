@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/tutorial_controller.gd" id="1_tutorial"]
 
@@ -6,17 +6,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxTutorial"]
-bg_color = Color(0.039, 0.114, 0.149, 0.97)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.24, 0.43, 0.42, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
+
+[ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="11_backdrop"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxActionCard"]
 bg_color = Color(0.027, 0.11, 0.145, 0.94)
@@ -50,22 +42,30 @@ grow_vertical = 2
 color = Color(0.027, 0.169, 0.22, 1)
 mouse_filter = 2
 
+[node name="BackdropArt" type="Node2D" parent="."]
+script = ExtResource("11_backdrop")
+modulate = Color(0.9, 0.95, 0.9, 1)
+
 [node name="Panel" type="PanelContainer" parent="."]
+offset_bottom = 0
+offset_top = 0
+offset_right = 0
+offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.125
-anchor_top = 0.0444444
-anchor_right = 0.875
-anchor_bottom = 0.9555556
+anchor_left = 0.16666666666666666
+anchor_top = 0.08148148148148149
+anchor_right = 0.8333333333333334
+anchor_bottom = 0.9185185185185185
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTutorial")
+theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
+theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
 [node name="Content" type="VBoxContainer" parent="Panel/Margin"]
@@ -75,23 +75,23 @@ theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 13
 text = "Let’s practise!"
 horizontal_alignment = 1
 
 [node name="Guidance" type="Label" parent="Panel/Margin/Content"]
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
 text = "One movement at a time, at your pace."
 horizontal_alignment = 1
 
 [node name="ProgressLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
 horizontal_alignment = 1
 
 [node name="ActionCard" type="Panel" parent="Panel/Margin/Content"]
@@ -134,8 +134,8 @@ autowrap_mode = 2
 [node name="TutorialStatus" type="Label" parent="Panel/Margin/Content"]
 autowrap_mode = 2
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.79, 0.73, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 8
 horizontal_alignment = 1
 
 [node name="NavigationRow" type="HBoxContainer" parent="Panel/Margin/Content"]
@@ -143,31 +143,32 @@ layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="PreviousButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Previous"
 
 [node name="RepeatButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Repeat"
 
 [node name="NextButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
-custom_minimum_size = Vector2(0, 22)
+theme_type_variation = &"PrimaryButton"
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 text = "Next"
 
 [node name="DemoButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 8
 focus_mode = 0
 text = "Show me"
 
@@ -176,24 +177,24 @@ layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="SkipButton" type="Button" parent="Panel/Margin/Content/UtilityRow"]
-custom_minimum_size = Vector2(0, 19)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 text = "Skip Tutorial"
 
 [node name="PauseTutorialButton" type="Button" parent="Panel/Margin/Content/UtilityRow"]
-custom_minimum_size = Vector2(0, 19)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 text = "Pause Tutorial"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content/UtilityRow"]
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 19)
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 text = "Back"
 
 [node name="PracticeArea" type="Control" parent="Panel/Margin/Content/ActionCard"]

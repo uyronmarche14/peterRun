@@ -10,6 +10,10 @@ script = ExtResource("1")
 level_id = &"l01_barangay"
 short_name = "L01"
 title = "Barangay Morning"
+sky_color = Color(0.78, 0.867, 0.827, 1)
+distant_color = Color(0.45, 0.624, 0.569, 1)
+horizon_color = Color(0.31, 0.51, 0.463, 1)
+road_color = Color(0.62, 0.59, 0.46, 1)
 sequence = Array[StringName]([&"move_left", &"jump", &"move_right", &"slide"])
 move_prop = ExtResource("2")
 jump_prop = ExtResource("3")
@@ -20,4 +24,3 @@ slide_prop_id = &"laundry_line"
 warning_seconds = 2.5
 response_seconds = 2.0
 resolved_seconds = 0.75
-

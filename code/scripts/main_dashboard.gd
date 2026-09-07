@@ -93,8 +93,11 @@ func confirm_quit() -> void:
 	if quit_overlay.visible and not _leaving:
 		_leaving = true
 		menu_music.stop()
-		# Godot releases stopped playback on the audio thread, not synchronously.
-		await get_tree().create_timer(0.15).timeout
+		# A busy frame can consume a newly created SceneTreeTimer immediately.
+		# Give the audio thread actual wall time, without blocking the UI thread.
+		var release_at := Time.get_ticks_msec() + 150
+		while Time.get_ticks_msec() < release_at:
+			await get_tree().process_frame
 		get_tree().quit()
 
 

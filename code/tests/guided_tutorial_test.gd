@@ -39,7 +39,10 @@ func _run() -> void:
 		_expect(tutorial.practice_player.lane_index == 2, "Right lesson moves to the right lane")
 		tutorial.call("show_next_action")
 		tutorial.call("receive_practice_input", &"jump", true, 5.0)
-		await create_timer(0.15).timeout
+		# Sample the real tween deterministically, independent of startup-frame load.
+		var jump_tween: Tween = tutorial.practice_player.get("_action_tween")
+		jump_tween.pause()
+		jump_tween.custom_step(0.15)
 		var visual: Node2D = tutorial.practice_player.get_node("Visual")
 		_expect(visual.position.y < -15.0, "Jump lesson visibly lifts the player")
 		tutorial.call("toggle_tutorial_pause")
@@ -51,7 +54,9 @@ func _run() -> void:
 		tutorial.call("toggle_tutorial_pause")
 		tutorial.call("show_next_action")
 		tutorial.call("receive_practice_input", &"slide", true, 6.0)
-		await create_timer(0.15).timeout
+		var slide_tween: Tween = tutorial.practice_player.get("_slide_scale_tween")
+		slide_tween.pause()
+		slide_tween.custom_step(0.15)
 		_expect(tutorial.practice_player.get_node("Visual").scale.y < 0.8, "Slide lesson has a visible low pose")
 		_expect(tutorial.step_completed and next.text == "Continue", "Final action unlocks Ready")
 		_expect(Store.get_session_config().get_target(&"jump") == 10, "Practice leaves session targets unchanged")

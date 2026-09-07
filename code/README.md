@@ -21,6 +21,21 @@ This is the Godot 4 project root for the PETER RUN Windows desktop prototype.
 godot --headless --path . -s res://tests/project_setup_smoke.gd
 ```
 
+## Opening dashboard and menu music
+
+F5 now opens an original code-drawn Barangay Morning welcome screen with an animated prototype character and a short panel fade-in. **Start Session** retains the existing supervised setup flow; **Tutorial** opens practice. **Settings** now opens a sound panel; choose **Session settings** inside it to reach Patient Setup. **Quit** asks for confirmation.
+
+**Music: On/Off** toggles the original 20-second synthesized instrumental, *Hakbang sa Umaga*. Settings provides a 0–100% volume slider with a bounded output gain. Music fades in on the opening and stops when leaving it; no music was added to gameplay or practice. Mute and volume persist only while the application is running, not across restarts. Adjust the operating-system/device volume for comfortable listening.
+
+This is a plucked-string-style prototype, not a recorded rondalla ensemble, national anthem, final mastered soundtrack, or clinically approved audio asset. See [audio provenance and rebuild instructions](art/audio/README.md). The environment is original procedural geometry; final character/background art remains separate work. No additional routes, difficulty tiers or level selector were added.
+
+```text
+godot --headless --path . -s res://tests/opening_dashboard_test.gd
+godot --path . --rendering-method gl_compatibility -s res://tests/support/capture_opening.gd
+```
+
+The second command captures the opening at 1920×1080, 960×540 and 1024×768, plus its settings/quit panels, then closes. It preserves the 480×270 canvas and aspect ratio; non-wide windows have letterboxing. Screenshots are saved in `../test_evidence/`.
+
 ## ComfyUI use
 
 1. Generate a reference only for **L01 Barangay Morning** first.
@@ -90,7 +105,7 @@ The second command opens an auto-closing graphics preview and saves layout captu
 
 ## Verify runner polish
 
-Menus now use compact centred panels and a shared teal button theme. The gameplay HUD is 38 native pixels tall (previously 53). Patient Setup shows both repetitions per action and the total session target.
+Session and pause menus use compact centred panels and a shared teal button theme; the opening uses a left-side welcome card. The gameplay HUD is 38 native pixels tall (previously 53). Patient Setup shows both repetitions per action and the total session target.
 
 Successful responses rotate brief encouragement toasts, with recognition at ten-movement milestones. Misses show neutral feedback. Only one toast exists; it dismisses automatically, ignores mouse input, freezes/hides on Pause, resumes with its remaining time, and clears on session end. Run `res://tests/feedback_toast_test.gd` for these behavior checks.
 

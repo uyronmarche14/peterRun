@@ -18,10 +18,14 @@ func _run() -> void:
 	_expect(menu.has_node("BarangayBackdrop"), "Opening has an original barangay environment")
 	_expect(menu.has_node("SettingsOverlay"), "Settings opens an actual settings panel")
 	_expect(menu.has_node("QuitOverlay"), "Quit has confirmation")
+	for overlay_name in ["SettingsOverlay", "QuitOverlay"]:
+		if menu.has_node(overlay_name):
+			_expect(menu.get_node(overlay_name).z_index > menu.get_node("CharacterMount/OpeningPlayer").z_index, "Modal dims the animated character too: " + overlay_name)
 	if menu.has_method("toggle_music") and FileAccess.file_exists(MUSIC):
 		var music: AudioStreamPlayer = menu.get_node("MenuMusic")
 		_expect(music.stream is AudioStreamWAV and music.stream.get_length() >= 15, "Menu has a complete reusable instrumental loop")
 		_expect(music.stream.loop_mode == AudioStreamWAV.LOOP_FORWARD, "Music loops rather than stopping abruptly")
+		_expect(music.stream.loop_end == int(round(music.stream.get_length() * music.stream.mix_rate)), "Loop boundary covers the full imported track, including compressed audio")
 		menu.call("set_music_volume", 35.0)
 		menu.call("toggle_music")
 		_expect(music.stream_paused, "Mute immediately pauses music")
@@ -54,6 +58,8 @@ func _run() -> void:
 		menu.call("toggle_music")
 		menu.call("set_music_volume", 35.0)
 	menu.free()
+	# Let the audio mixer release the stopped playback before process shutdown.
+	await create_timer(0.15).timeout
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN opening dashboard test: " + ("PASS" if failures.is_empty() else "FAIL"))

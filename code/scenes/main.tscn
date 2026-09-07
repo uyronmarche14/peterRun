@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_dashboard.gd" id="1_dashboard"]
 
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
+
+[ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="2_art"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxDashboard"]
 bg_color = Color(0.039, 0.114, 0.149, 0.97)
@@ -36,20 +39,23 @@ grow_vertical = 2
 color = Color(0.027, 0.169, 0.22, 1)
 mouse_filter = 2
 
+[node name="BarangayBackdrop" type="Node2D" parent="."]
+script = ExtResource("2_art")
+
 [node name="TopGlow" type="ColorRect" parent="."]
 layout_mode = 0
 offset_right = 480.0
 offset_bottom = 50.0
-color = Color(0.075, 0.31, 0.33, 0.52)
+color = Color(0.075, 0.31, 0.33, 0.0)
 mouse_filter = 2
 
 [node name="Dashboard" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.20833333333333334
-anchor_top = 0.14814814814814814
-anchor_right = 0.7916666666666666
-anchor_bottom = 0.8518518518518519
+anchor_left = 0.05
+anchor_top = 0.15
+anchor_right = 0.53
+anchor_bottom = 0.87
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxDashboard")
@@ -69,24 +75,31 @@ theme_override_constants/separation = 3
 [node name="Title" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.831, 0.353, 1)
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 27
 text = "PETER RUN"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.867, 0.941, 0.89, 1)
-theme_override_font_sizes/font_size = 11
-text = "A calm, supervised movement session"
+theme_override_font_sizes/font_size = 10
+text = "A fresh start. One step at a time."
 horizontal_alignment = 1
 
 [node name="SessionStatus" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.373, 0.851, 0.761, 1)
 theme_override_font_sizes/font_size = 10
-text = "Choose a session or review the movements."
+text = "Ready when you are."
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="RouteName" type="Label" parent="Dashboard/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.82, 0.47, 1)
+text = "Barangay Morning"
+horizontal_alignment = 1
 
 [node name="Divider" type="HSeparator" parent="Dashboard/Margin/Content"]
 layout_mode = 2
@@ -126,5 +139,181 @@ text = "Quit"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.855, 0.824, 1)
 theme_override_font_sizes/font_size = 9
-text = "For supervised prototype testing only."
+text = "Supervised prototype • Keyboard mode"
 horizontal_alignment = 1
+[node name="Welcome" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 5.0
+offset_right = 255.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.1, 0.28, 0.26, 1)
+text = "MABUHAY!  /  WELCOME"
+
+[node name="RouteCaption" type="Label" parent="."]
+offset_left = 277.0
+offset_top = 44.0
+offset_right = 468.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.09, 0.25, 0.23, 1)
+text = "Sa bawat hakbang,\nmay bagong simula."
+
+[node name="StoreSign" type="Label" parent="."]
+offset_left = 282.0
+offset_top = 129.0
+offset_right = 350.0
+offset_bottom = 139.0
+theme_override_font_sizes/font_size = 7
+theme_override_colors/font_color = Color(0.09, 0.25, 0.23, 1)
+text = "SARI-SARI"
+horizontal_alignment = 1
+
+[node name="CharacterMount" type="Node2D" parent="."]
+position = Vector2(175, 0)
+
+[node name="OpeningPlayer" parent="CharacterMount" instance=ExtResource("3_player")]
+position = Vector2(240, 236)
+scale = Vector2(0.85, 0.85)
+
+[node name="MusicButton" type="Button" parent="."]
+offset_left = 364.0
+offset_top = 7.0
+offset_right = 460.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 10
+focus_mode = 0
+text = "Music: On"
+
+[node name="MusicCredit" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 246.0
+offset_right = 440.0
+offset_bottom = 264.0
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.89, 0.92, 0.81, 1)
+text = "Hakbang sa Umaga · Original menu instrumental"
+
+[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
+volume_db = -30.0
+
+[node name="SettingsOverlay" type="Control" parent="."]
+z_index = 100
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="SettingsOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.02, 0.07, 0.08, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="SettingsOverlay"]
+anchor_left = 0.23
+anchor_top = 0.18
+anchor_right = 0.77
+anchor_bottom = 0.82
+theme_override_styles/panel = SubResource("StyleBoxDashboard")
+
+[node name="Margin" type="MarginContainer" parent="SettingsOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="VBoxContainer" parent="SettingsOverlay/Panel/Margin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 7
+
+[node name="Title" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Sound & session"
+horizontal_alignment = 1
+
+[node name="QuitOverlay" type="Control" parent="."]
+z_index = 100
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="QuitOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.02, 0.07, 0.08, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="QuitOverlay"]
+anchor_left = 0.23
+anchor_top = 0.18
+anchor_right = 0.77
+anchor_bottom = 0.82
+theme_override_styles/panel = SubResource("StyleBoxDashboard")
+
+[node name="Margin" type="MarginContainer" parent="QuitOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="VBoxContainer" parent="QuitOverlay/Panel/Margin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 7
+
+[node name="Title" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Finish for now?"
+horizontal_alignment = 1
+
+[node name="VolumeLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Menu music · 35%"
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="VolumeSlider" type="HSlider" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 18)
+max_value = 100.0
+value = 35.0
+focus_mode = 0
+
+[node name="SetupButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 23)
+focus_mode = 0
+text = "Session settings"
+
+[node name="CloseButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 23)
+focus_mode = 0
+text = "Back to opening"
+
+[node name="Message" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "You can return whenever you are ready."
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="CancelButton" type="Button" parent="QuitOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 23)
+focus_mode = 0
+text = "Stay here"
+
+[node name="ConfirmButton" type="Button" parent="QuitOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 23)
+focus_mode = 0
+text = "Quit game"

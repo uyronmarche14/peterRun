@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/patient_setup_controller.gd" id="1_setup"]
 
@@ -7,6 +7,8 @@
 [ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
 
 [ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="11_backdrop"]
+
+[ext_resource type="Script" path="res://scripts/repetition_stepper.gd" id="12_stepper"]
 
 [node name="PatientSetup" type="Control"]
 theme = ExtResource("9_compact")
@@ -98,6 +100,7 @@ theme_override_font_sizes/font_size = 8
 text = "Planned repetitions per action"
 
 [node name="TargetRepetitionsSpinBox" type="SpinBox" parent="Panel/Margin/Content"]
+script = ExtResource("12_stepper")
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8

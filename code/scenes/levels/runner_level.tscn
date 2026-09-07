@@ -244,6 +244,13 @@ theme_override_styles/background = SubResource("ProgressTrack")
 theme_override_styles/fill = SubResource("ProgressFill")
 show_percentage = false
 
+[node name="FooterBacking" type="ColorRect" parent="HUD/HUDRoot"]
+offset_top = 253.0
+offset_right = 480.0
+offset_bottom = 270.0
+color = Color(0.04, 0.13, 0.14, 1)
+mouse_filter = 2
+
 [node name="KeyboardHint" type="Label" parent="HUD/HUDRoot"]
 offset_left = 12
 offset_top = 256

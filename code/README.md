@@ -5,7 +5,7 @@ This is the Godot 4 project root for the PETER RUN Windows desktop prototype.
 ## Current setup
 
 - Original 2D forward-lane runner with a 2.5D parallax illusion, Compatibility renderer, and `480 × 270` base canvas.
-- Development Input Map: `A` Move Left, `D` Move Right, `W` Jump, `S` Slide, `P` Pause.
+- Input Map: keyboard `A` Move Left, `D` Move Right, `W` Jump, `S` Slide, `P` Pause; standard gamepad D-pad Left/Right, A Jump, B Slide, Start Pause. A MOVE controller is supported when its firmware sends the same debounced HID keyboard actions.
 - ComfyUI reference folders exist under `art/_references/`; they are not runtime game assets.
 - `scenes/main.tscn` opens the menu, followed by Patient Setup, Controller Check, Tutorial, Ready, and L01.
 - PR-10B adds continuous perspective travel, lane-aware props, neutral exit fades, running/landing feedback, and animated repetition progress. The current character and environment remain prototype geometry.
@@ -23,7 +23,9 @@ godot --headless --path . -s res://tests/project_setup_smoke.gd
 
 ## Opening dashboard and menu music
 
-F5 now opens an original code-drawn Barangay Morning welcome screen with an animated prototype character and a short panel fade-in. **Start Session** retains the existing supervised setup flow; **Tutorial** opens practice. **Settings** now opens a sound panel; choose **Session settings** inside it to reach Patient Setup. **Quit** asks for confirmation.
+F5 now opens an original code-drawn Barangay Morning welcome screen with an animated prototype character and a short panel fade-in. **Start Session** retains the existing supervised setup flow; **Tutorial** opens practice. **Settings** offers menu music, a compact keyboard/controller support guide, **Check controller**, and **Session settings**. **Quit** asks for confirmation.
+
+The game accepts both keyboard and a compatible standard gamepad through the same named actions. Keyboard remains the reliable development fallback. A connected gamepad uses D-pad Left/Right, A to Jump, B to Slide, and Start to Pause. The MOVE controller must be validated separately: its firmware should emit debounced HID A/D/W/S/P presses and releases; the game does not parse raw sensor data. Use **Settings -> Check controller** to see whether a compatible gamepad is detected before a session.
 
 **Music: On/Off** toggles the original 20-second synthesized instrumental, *Hakbang sa Umaga*. Settings provides a 0–100% volume slider with a bounded output gain. Music fades in on the opening and stops when leaving it; no music was added to gameplay or practice. Mute and volume persist only while the application is running, not across restarts. Adjust the operating-system/device volume for comfortable listening.
 

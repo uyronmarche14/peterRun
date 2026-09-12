@@ -38,7 +38,7 @@ func _test_controller_check_describes_keyboard_and_hid_support() -> void:
 	if controller_check.has_method("get_control_support_summary"):
 		var summary := String(controller_check.call("get_control_support_summary", 0))
 		_expect(summary.contains("Keyboard"), "control guidance keeps keyboard fallback visible")
-		_expect(summary.contains("controller"), "control guidance explains controller support")
+		_expect(summary.to_lower().contains("controller"), "control guidance explains controller support")
 		_expect(summary.contains("HID"), "control guidance explains MOVE HID support")
 	controller_check.queue_free()
 

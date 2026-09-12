@@ -211,9 +211,9 @@ offset_top = 0
 offset_right = 0
 offset_left = 0
 anchor_left = 0.3125
-anchor_top = 0.2851851851851852
+anchor_top = 0.2222222222222222
 anchor_right = 0.6875
-anchor_bottom = 0.7148148148148148
+anchor_bottom = 0.7777777777777778
 theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="SettingsOverlay/Panel"]
@@ -226,12 +226,12 @@ theme_override_constants/margin_bottom = 8
 [node name="Content" type="VBoxContainer" parent="SettingsOverlay/Panel/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
-text = "Sound & session"
+text = "Sound & controls"
 horizontal_alignment = 1
 
 [node name="QuitOverlay" type="Control" parent="."]
@@ -289,6 +289,26 @@ custom_minimum_size = Vector2(0, 18)
 max_value = 100.0
 value = 35.0
 focus_mode = 0
+
+[node name="ControlsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Play controls"
+horizontal_alignment = 1
+
+[node name="ControlsDetail" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Keyboard and controller inputs supported."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ControllerCheckButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 8
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+focus_mode = 0
+text = "Check controller"
 
 [node name="SetupButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
 theme_type_variation = &"PrimaryButton"

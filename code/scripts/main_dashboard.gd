@@ -3,6 +3,7 @@ extends Control
 
 const PATIENT_SETUP_SCENE_PATH := "res://scenes/patient_setup.tscn"
 const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
+const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
 const MUSIC_PATH := "res://art/audio/hakbang_sa_umaga.wav"
 
@@ -19,6 +20,7 @@ var _music_fade: Tween
 @onready var settings_overlay: Control = $SettingsOverlay
 @onready var quit_overlay: Control = $QuitOverlay
 @onready var volume_slider: HSlider = $SettingsOverlay/Panel/Margin/Content/VolumeSlider
+@onready var controller_check_button: Button = $SettingsOverlay/Panel/Margin/Content/ControllerCheckButton
 
 
 func _ready() -> void:
@@ -30,6 +32,7 @@ func _ready() -> void:
 	volume_slider.value_changed.connect(set_music_volume)
 	$SettingsOverlay/Panel/Margin/Content/CloseButton.pressed.connect(close_overlays)
 	$SettingsOverlay/Panel/Margin/Content/SetupButton.pressed.connect(_open_setup_from_settings)
+	controller_check_button.pressed.connect(_open_controller_check_from_settings)
 	$QuitOverlay/Panel/Margin/Content/CancelButton.pressed.connect(close_overlays)
 	$QuitOverlay/Panel/Margin/Content/ConfirmButton.pressed.connect(confirm_quit)
 	_start_music()
@@ -43,6 +46,10 @@ func get_patient_setup_scene_path() -> String:
 
 func get_tutorial_scene_path() -> String:
 	return TUTORIAL_SCENE_PATH
+
+
+func get_controller_check_scene_path() -> String:
+	return CONTROLLER_CHECK_SCENE_PATH
 
 
 func open_patient_setup() -> void:
@@ -87,6 +94,16 @@ func close_overlays() -> void:
 func _open_setup_from_settings() -> void:
 	close_overlays()
 	open_patient_setup()
+
+
+func _open_controller_check_from_settings() -> void:
+	if _leaving:
+		return
+	var result := get_tree().change_scene_to_file(CONTROLLER_CHECK_SCENE_PATH)
+	if result != OK:
+		session_status.text = "Unable to open Controller Check. Please restart the app."
+		return
+	_leaving = true
 
 
 func confirm_quit() -> void:

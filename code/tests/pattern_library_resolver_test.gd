@@ -16,20 +16,29 @@ func _run() -> void:
 		var resolver_script: Script = load(RESOLVER_PATH)
 		_expect(resolver_script != null, "Pattern library resolver loads")
 		if resolver_script != null:
-			_test_deterministic_reachable_selection(resolver_script)
+			_test_shuffled_reachable_selection(resolver_script)
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN pattern library resolver test: " + ("PASS" if failures.is_empty() else "FAIL"))
 	quit(0 if failures.is_empty() else 1)
 
 
-func _test_deterministic_reachable_selection(resolver_script: Script) -> void:
+func _test_shuffled_reachable_selection(resolver_script: Script) -> void:
 	var library: Array = (load(L01_PATH) as Resource).get_pattern_definitions()
 	var first_resolver: RefCounted = resolver_script.new()
 	var second_resolver: RefCounted = resolver_script.new()
+	var alternate_resolver: RefCounted = resolver_script.new()
+	_expect(first_resolver.has_method("set_seed"), "Formation selection exposes a reproducible shuffle seed")
+	if not first_resolver.has_method("set_seed"):
+		return
+	first_resolver.call("set_seed", 321)
+	second_resolver.call("set_seed", 321)
+	alternate_resolver.call("set_seed", 789)
 	var first_run := _select_cycle(first_resolver, library, 1, 80)
 	var second_run := _select_cycle(second_resolver, library, 1, 80)
-	_expect(first_run == second_run, "Selection is deterministic for the same library and start lane")
+	var alternate_run := _select_cycle(alternate_resolver, library, 1, 80)
+	_expect(first_run == second_run, "The same shuffle seed produces a reproducible route")
+	_expect(first_run != alternate_run, "A different shuffle seed produces a different safe route")
 	_expect(first_run.size() == 80, "Every selection cycle finds a reachable formation")
 	for index in first_run.size():
 		var selection: Dictionary = first_run[index]

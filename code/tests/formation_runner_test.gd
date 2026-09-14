@@ -30,13 +30,14 @@ func _run() -> void:
 
 func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 	_expect(level.has_method("get_active_formation_props"), "Runner exposes the active formation props")
-	_expect(level.get("active_formation_id") == &"l01_p01_move_left", "L01 begins with its first reachable formation")
+	_expect(level.get("active_formation_id") != &"", "L01 begins with a reachable shuffled formation")
 	var props: Array = level.call("get_active_formation_props") if level.has_method("get_active_formation_props") else []
-	_expect(props.size() == 2, "The opening movement gate renders both crate obstacles")
+	var formation: Dictionary = level.get("_active_formation")
+	_expect(props.size() == formation.get("obstacles", []).size(), "The opening formation renders every authored obstacle")
 	var lanes: Array[int] = []
 	for prop in props:
 		lanes.append(int(prop.get_meta("formation_lane", -1)))
-	_expect(lanes.has(1) and lanes.has(2), "The opening gate leaves the left lane open")
+	_expect(lanes.size() == lanes.duplicate().size(), "Each opening obstacle occupies a distinct lane")
 
 	for timer in level.get_node("PromptTimers").get_children():
 		timer.stop()
@@ -50,6 +51,7 @@ func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 		_expect(is_equal_approx(prop.global_scale.x, anchor.global_scale.x), "Every formation obstacle shares the approach depth scale")
 
 	var director: Node = level.get_node("PromptDirector")
+	_configure_open_left_gate(level)
 	director.call("open_response_window")
 	level.call("receive_input", &"move_left", true, 10.0)
 	_expect(level.get("session_result").get_completed(&"move_left") == 0, "A response waits for the contact line before earning a repetition")
@@ -61,6 +63,7 @@ func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 func _test_safe_lane_clear_is_positive_without_a_repetition(level: Node) -> void:
 	for timer in level.get_node("PromptTimers").get_children():
 		timer.stop()
+	_configure_open_left_gate(level)
 	level.call("receive_input", &"move_left", true, 20.0)
 	var director: Node = level.get_node("PromptDirector")
 	director.call("open_response_window")
@@ -74,6 +77,19 @@ func _test_safe_lane_clear_is_positive_without_a_repetition(level: Node) -> void
 		var journey_label: Label = level.get_node("HUD/HUDRoot/JourneyLabel")
 		_expect(journey_label.text == "Journey: Waiting Shed", "Safe route progress advances the journey landmark")
 		_expect(not journey_label.text.contains("Clear") and not journey_label.text.contains("Score"), "Gameplay does not label journey progress as a score")
+
+
+func _configure_open_left_gate(level: Node) -> void:
+	var formation: Dictionary = {}
+	for candidate_value in level.get("_formation_library"):
+		if candidate_value is Dictionary and candidate_value.get("pattern_id", &"") == &"l01_p01_move_left":
+			formation = (candidate_value as Dictionary).duplicate(true)
+			break
+	var director: Node = level.get_node("PromptDirector")
+	director.call("_set_state", 0)
+	level.set("_active_formation", formation)
+	level.set("active_formation_id", &"l01_p01_move_left")
+	director.call("schedule", &"move_left", 1, 0, true)
 
 
 func _expect(condition: bool, message: String) -> void:

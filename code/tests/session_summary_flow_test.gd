@@ -48,7 +48,7 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	director.call("open_response_window")
 	director.call("expire_active_prompt")
 	runner.call("_on_resolve_timer_timeout")
-	for _index in 16:
+	for _index in 80:
 		if runner.get("is_session_ended"):
 			break
 		var action: StringName = director.get("current_action")
@@ -106,7 +106,8 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	await process_frame
 	var director: Node = runner.get_node("PromptDirector")
 	director.call("open_response_window")
-	director.call("receive_action", director.get("current_action"))
+	var completed_action: StringName = director.get("current_action")
+	director.call("receive_action", completed_action)
 	runner.get_node("PauseOverlay/Panel/Actions/EndSessionButton").pressed.emit()
 	_expect(runner.get_node("EndConfirmation").visible and runner.get("is_gameplay_paused"), "Early end asks for confirmation and freezes play")
 	runner.call("resume_gameplay")
@@ -116,7 +117,7 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	runner.get_node("PauseOverlay/Panel/Actions/EndLevelButton").pressed.emit()
 	runner.call("confirm_end")
 	_expect(review.call("get_end_reason") == &"level_ended", "Early level ending records its reason")
-	_expect(review.call("get_result").get_completed(&"move_left") == 1, "Early ending preserves partial progress")
+	_expect(review.call("get_result").get_completed(completed_action) == 1, "Early ending preserves partial progress")
 	runner.call("open_summary")
 	await process_frame
 	await process_frame

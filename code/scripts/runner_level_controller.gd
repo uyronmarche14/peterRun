@@ -126,6 +126,10 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		return
 	if is_gameplay_paused or is_session_ended:
 		return
+	# A formation is one discrete clinical response. Once its first input has
+	# been accepted, ignore later movement until the obstacle reaches Peter.
+	if not _active_formation.is_empty() and prompt_director.state == PromptDirectorModel.State.ACTIVE and _pending_response_action != &"":
+		return
 
 	named_action_received.emit(logical_action)
 	# Apply movement first so validation sees the resulting lane.
@@ -157,7 +161,13 @@ func _schedule_next_prompt() -> void:
 		var formation_action := StringName(formation.get("required_action", &""))
 		var prompt_lane := _get_formation_prompt_lane(formation)
 		var safe_lane := int(formation.get("ending_lane", -1)) if formation.get("allow_idle_safe_clear", false) else -1
-		prompt_director.call("schedule", formation_action, prompt_lane, safe_lane, safe_lane >= 0)
+		var action_lanes: Array[int] = []
+		for lane_value in formation.get("action_lanes", []):
+			action_lanes.append(int(lane_value))
+		if not action_lanes.is_empty() and (formation_action == &"jump" or formation_action == &"slide"):
+			prompt_director.call("schedule_with_action_lanes", formation_action, action_lanes)
+		else:
+			prompt_director.call("schedule", formation_action, prompt_lane, safe_lane, safe_lane >= 0)
 		return
 	if not _pattern_sets.is_empty():
 		var pattern: Dictionary = _pattern_sets[_pattern_set_index]
@@ -223,8 +233,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
 			if not _active_formation.is_empty():
-				_show_formation_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
-				world_motion.call("set_prompt_formation", _active_formation_props, _get_formation_lanes())
+				_update_prompt_card(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
 			else:
 				_show_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
 			response_timer.start(level_definition.response_seconds)
@@ -316,10 +325,7 @@ func _show_prompt(action_name: StringName, state_text: String, state_color: Colo
 
 func _show_formation_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
 	_hide_props()
-	prompt_action_label.text = level_definition.get_action_label(action_name)
-	prompt_icon_label.text = level_definition.get_action_icon(action_name)
-	prompt_state_label.text = state_text
-	prompt_state_label.add_theme_color_override("font_color", state_color)
+	_update_prompt_card(action_name, state_text, state_color)
 	var used_by_kind := {}
 	var action_kind := _get_kind_for_action(action_name)
 	for obstacle_value in _active_formation.get("obstacles", []):
@@ -341,6 +347,13 @@ func _show_formation_prompt(action_name: StringName, state_text: String, state_c
 		_active_formation_props.append(prop)
 		if _visible_prompt == null or kind == action_kind:
 			_visible_prompt = prop
+
+
+func _update_prompt_card(action_name: StringName, state_text: String, state_color: Color) -> void:
+	prompt_action_label.text = level_definition.get_action_label(action_name)
+	prompt_icon_label.text = level_definition.get_action_icon(action_name)
+	prompt_state_label.text = state_text
+	prompt_state_label.add_theme_color_override("font_color", state_color)
 
 
 func _hide_props() -> void:

@@ -95,27 +95,40 @@ static func _validate_movement_gate(required_action: StringName, obstacles: Arra
 static func _validate_lane_action(required_action: StringName, obstacles: Array, _open_lanes: Array[int], entry_lanes: Array[int], ending_lane: int, allows_idle_safe_clear: bool, pattern: Dictionary, errors: PackedStringArray) -> void:
 	if allows_idle_safe_clear:
 		errors.append("Jump and slide formations cannot allow idle safe clear.")
-	var action_lane_value: Variant = pattern.get("action_lane", -1)
-	if not _is_valid_lane(action_lane_value):
-		errors.append("Jump and slide formations need an action lane.")
+	var action_lanes := _read_action_lanes(pattern, errors)
+	if action_lanes.is_empty():
 		return
-	var action_lane: int = action_lane_value
-	if ending_lane >= 0 and ending_lane != action_lane:
-		errors.append("Jump and slide ending lane must match the action lane.")
+	if ending_lane >= 0 and not action_lanes.has(ending_lane):
+		errors.append("Jump and slide ending lane must be one of the action lanes.")
 	for entry_lane in entry_lanes:
-		if entry_lane != action_lane:
-			errors.append("Jump and slide entry lanes must match the action lane.")
+		if not action_lanes.has(entry_lane):
+			errors.append("Jump and slide entry lanes must match an action lane.")
 			break
 	var expected_kind := &"puddle" if required_action == &"jump" else &"laundry_line"
-	var has_action_prop := false
-	for obstacle_value in obstacles:
-		if not obstacle_value is Dictionary:
-			continue
-		var obstacle: Dictionary = obstacle_value
-		if StringName(obstacle.get("kind", &"")) == expected_kind and obstacle.get("lane", -1) == action_lane:
-			has_action_prop = true
-	if not has_action_prop:
-		errors.append("Jump and slide formations need their matching prop in the action lane.")
+	for action_lane in action_lanes:
+		var has_action_prop := false
+		for obstacle_value in obstacles:
+			if not obstacle_value is Dictionary:
+				continue
+			var obstacle: Dictionary = obstacle_value
+			if StringName(obstacle.get("kind", &"")) == expected_kind and obstacle.get("lane", -1) == action_lane:
+				has_action_prop = true
+		if not has_action_prop:
+			errors.append("Jump and slide formations need their matching prop in every action lane.")
+			break
+
+
+static func _read_action_lanes(pattern: Dictionary, errors: PackedStringArray) -> Array[int]:
+	if not pattern.has("action_lanes"):
+		var action_lane_value: Variant = pattern.get("action_lane", -1)
+		if not _is_valid_lane(action_lane_value):
+			errors.append("Jump and slide formations need an action lane.")
+			return []
+		return [int(action_lane_value)]
+	var action_lanes := _read_lanes(pattern, "action_lanes", errors)
+	if action_lanes.is_empty():
+		errors.append("Jump and slide formations need at least one action lane.")
+	return action_lanes
 
 
 static func _read_lanes(pattern: Dictionary, property_name: String, errors: PackedStringArray) -> Array[int]:

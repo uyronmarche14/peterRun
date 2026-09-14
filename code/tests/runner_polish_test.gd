@@ -85,6 +85,7 @@ func _test_progress_and_pause() -> void:
 	var bar := level.get_node_or_null("HUD/HUDRoot/ProgressBar") as ProgressBar
 	_expect(bar != null, "HUD exposes repetition progress visually")
 	var director: Node = level.get_node("PromptDirector")
+	_configure_open_left_gate(level)
 	director.call("open_response_window")
 	level.call("receive_input", &"move_left", true, 10.0)
 	level.call("receive_input", &"move_left", true, 10.1)
@@ -110,6 +111,19 @@ func _test_progress_and_pause() -> void:
 	level.call("_update_progress_hud")
 	_expect(level.get_node("HUD/HUDRoot/ProgressLabel").text == "Reps: 10 / 40", "HUD caps each completed action at its planned target")
 	level.free()
+
+
+func _configure_open_left_gate(level: Node) -> void:
+	var formation: Dictionary = {}
+	for candidate_value in level.get("_formation_library"):
+		if candidate_value is Dictionary and candidate_value.get("pattern_id", &"") == &"l01_p01_move_left":
+			formation = (candidate_value as Dictionary).duplicate(true)
+			break
+	var director: Node = level.get_node("PromptDirector")
+	director.call("_set_state", 0)
+	level.set("_active_formation", formation)
+	level.set("active_formation_id", &"l01_p01_move_left")
+	director.call("schedule", &"move_left", 1, 0, true)
 
 
 func _expect(condition: bool, message: String) -> void:

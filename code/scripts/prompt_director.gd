@@ -25,9 +25,23 @@ var resolution: int = Resolution.NONE
 var prompt_lane_index: int = -1
 var safe_lane_index: int = -1
 var allow_idle_safe_clear := false
+var valid_action_lanes: Array = []
 
 
 func schedule(action_name: StringName, lane_index: int = -1, safe_lane: int = -1, idle_safe_clear: bool = false) -> bool:
+	return _schedule(action_name, lane_index, safe_lane, idle_safe_clear, [])
+
+
+func schedule_with_action_lanes(action_name: StringName, action_lanes: Array) -> bool:
+	if action_lanes.is_empty():
+		return false
+	for lane in action_lanes:
+		if lane < 0 or lane > 2:
+			return false
+	return _schedule(action_name, action_lanes[0], -1, false, action_lanes)
+
+
+func _schedule(action_name: StringName, lane_index: int, safe_lane: int, idle_safe_clear: bool, action_lanes: Array) -> bool:
 	if state != State.IDLE or not SessionConfigModel.ACTIONS.has(action_name):
 		return false
 
@@ -35,6 +49,7 @@ func schedule(action_name: StringName, lane_index: int = -1, safe_lane: int = -1
 	prompt_lane_index = lane_index if lane_index >= 0 and lane_index <= 2 else -1
 	safe_lane_index = safe_lane if safe_lane >= 0 and safe_lane <= 2 else -1
 	allow_idle_safe_clear = idle_safe_clear
+	valid_action_lanes = action_lanes.duplicate()
 	resolution = Resolution.NONE
 	_set_state(State.WARNING)
 	return true
@@ -77,6 +92,7 @@ func clear_resolved_prompt() -> bool:
 	prompt_lane_index = -1
 	safe_lane_index = -1
 	allow_idle_safe_clear = false
+	valid_action_lanes.clear()
 	resolution = Resolution.NONE
 	_set_state(State.IDLE)
 	return true
@@ -95,6 +111,8 @@ func _is_spatially_correct(action_name: StringName, lane_index: int, movement_ac
 		return false
 	match action_name:
 		&"jump", &"slide":
+			if not valid_action_lanes.is_empty():
+				return valid_action_lanes.has(lane_index)
 			return lane_index == prompt_lane_index
 		&"move_left":
 			return lane_index == clampi(prompt_lane_index - 1, 0, 2)

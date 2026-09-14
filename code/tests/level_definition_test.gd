@@ -95,7 +95,11 @@ func _test_level(path: String) -> void:
 	var director := runner.get_node("PromptDirector")
 	var first_pattern: Dictionary = definition.call("get_pattern_sets")[0]
 	var actions: Array = first_pattern.get("actions", [])
-	_expect(director.get("current_action") == actions[0], "Resource chooses first action")
+	if definition.call("get_pattern_definitions").is_empty():
+		_expect(director.get("current_action") == actions[0], "Legacy resource chooses its first action")
+	else:
+		_expect(Config.ACTIONS.has(director.get("current_action")), "Formation resource chooses a supported shuffled action")
+		_expect(runner.get("active_formation_id") != &"", "Formation resource exposes its selected formation")
 	_expect(actions.size() == first_pattern.get("lanes", []).size(), "Selected route has aligned pattern data")
 	runner.queue_free()
 	await process_frame

@@ -52,6 +52,19 @@ func _test_valid_formations(pattern_definition: Script) -> void:
 	}
 	_expect(pattern_definition.validate(jump).is_empty(), "A lane-specific jump formation is valid")
 
+	var two_puddle_jump := {
+		"pattern_id": &"l01_two_puddle_jump_01",
+		"category": &"mixed",
+		"obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"puddle", "lane": 1}, {"kind": &"crate", "lane": 2}],
+		"open_lanes": [],
+		"required_action": &"jump",
+		"action_lanes": [0, 1],
+		"entry_lanes": [0, 1],
+		"ending_lane": 0,
+		"allow_idle_safe_clear": false,
+	}
+	_expect(pattern_definition.validate(two_puddle_jump).is_empty(), "A crate plus two puddles permits a jump in either puddle lane")
+
 
 func _test_invalid_formations(pattern_definition: Script) -> void:
 	var invalid_lane := _valid_gate()
@@ -87,8 +100,9 @@ func _test_l01_migration(pattern_definition: Script) -> void:
 	var level: Resource = load(L01_PATH)
 	_expect(level.get_pattern_sets().size() == 8, "L01 retains its eight runner compatibility sets")
 	var formations: Array = level.get_pattern_definitions()
-	_expect(formations.size() == 40, "L01 provides forty curated formations")
+	_expect(formations.size() >= 44, "L01 provides expanded varied formations")
 	_expect(formations.any(func(formation: Dictionary) -> bool: return formation.get("obstacles", []).size() == 3), "L01 includes a readable three-obstacle formation")
+	_expect(formations.any(func(formation: Dictionary) -> bool: return formation.get("action_lanes", []).size() == 2 and formation.get("required_action", &"") == &"jump"), "L01 includes a two-puddle choice where either jump lane works")
 	for formation in formations:
 		_expect(not StringName(formation.get("pattern_id", &"")).is_empty(), "Migrated formation has an identifier")
 		_expect(formation.has("obstacles"), "Migrated formation declares obstacles")

@@ -16,6 +16,7 @@ func _init() -> void:
 	_test_one_active_prompt_rule()
 	_test_neutral_resolution_paths()
 	_test_lane_aware_resolution()
+	_test_multi_lane_action_resolution()
 	_test_safe_lane_clear()
 	_test_runner_level_contains_director()
 	_finish()
@@ -91,6 +92,19 @@ func _test_lane_aware_resolution() -> void:
 	_expect(move_director.receive_action(&"move_left", 0, true), "Move left into the adjacent lane is received")
 	_expect_equal(move_director.resolution, 1, "Move left reaches the expected lane")
 	move_director.free()
+
+
+func _test_multi_lane_action_resolution() -> void:
+	var director: Variant = _new_director()
+	_expect(director.has_method("schedule_with_action_lanes"), "PromptDirector supports formations with multiple valid action lanes")
+	if not director.has_method("schedule_with_action_lanes"):
+		director.free()
+		return
+	_expect(director.schedule_with_action_lanes(&"jump", [0, 1]), "A two-puddle jump formation can declare either action lane")
+	director.open_response_window()
+	_expect(director.receive_action(&"jump", 1, true), "Jumping in either declared puddle lane is received")
+	_expect_equal(director.resolution, 1, "Jumping in either declared puddle lane succeeds")
+	director.free()
 
 
 func _test_safe_lane_clear() -> void:

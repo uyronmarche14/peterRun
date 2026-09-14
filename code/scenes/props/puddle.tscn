@@ -1,12 +1,21 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v01.png" id="1_puddle_art"]
 
 [node name="PuddlePrompt" type="Node2D"]
 
+[node name="ArtSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_puddle_art")
+scale = Vector2(0.375, 0.375)
+
 [node name="PuddleShape" type="Polygon2D" parent="."]
+visible = false
 polygon = PackedVector2Array(-27, 10, -20, 3, -5, -2, 10, 0, 26, 8, 19, 14, 4, 17, -14, 15)
 color = Color(0.22, 0.61, 0.83, 1)
 
 [node name="PuddleHighlight" type="Line2D" parent="."]
+visible = false
 points = PackedVector2Array(-14, 7, -3, 3, 9, 5)
 width = 2.0
 default_color = Color(0.78, 0.94, 1, 0.9)

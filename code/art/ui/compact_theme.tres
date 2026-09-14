@@ -1,4 +1,9 @@
-[gd_resource type="Theme" load_steps=13 format=3]
+[gd_resource type="Theme" load_steps=15 format=3]
+
+[ext_resource type="FontFile" path="res://art/fonts/grillo.otf" id="1_grillo"]
+
+[sub_resource type="SystemFont" id="OfficialHeadline"]
+font_names = PackedStringArray("Segoe UI", "Arial")
 
 [sub_resource type="StyleBoxFlat" id="Normal"]
 content_margin_left = 5.0
@@ -170,7 +175,9 @@ height = 8
 
 [resource]
 default_font_size = 8
+default_font = ExtResource("1_grillo")
 Label/colors/font_color = Color(0.149, 0.196, 0.22, 1)
+OfficialHeadline/fonts/font = SubResource("OfficialHeadline")
 Button/styles/normal = SubResource("Normal")
 Button/styles/hover = SubResource("Hover")
 Button/styles/pressed = SubResource("Pressed")

@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="LevelDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/level_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/props/crate.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/props/puddle.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/props/laundry_line.tscn" id="4"]
+
+[resource]
+script = ExtResource("1")
+level_id = &"l03_rainy_crossing"
+short_name = "L03"
+title = "Rainy Crossing"
+sky_color = Color(0.36, 0.49, 0.62, 1)
+distant_color = Color(0.22, 0.35, 0.42, 1)
+horizon_color = Color(0.18, 0.29, 0.38, 1)
+road_color = Color(0.29, 0.34, 0.37, 1)
+sequence = Array[StringName]([&"jump", &"move_right", &"slide", &"move_left"])
+prompt_lanes = Array[int]([1, 1, 2, 2])
+pattern_sets = Array[Dictionary]([{
+"actions": Array[StringName]([&"jump", &"move_right", &"slide", &"move_left"]),
+"lanes": Array[int]([1, 1, 2, 2])
+}, {
+"actions": Array[StringName]([&"move_left", &"slide", &"move_right", &"jump"]),
+"lanes": Array[int]([1, 0, 0, 1])
+}])
+move_prop = ExtResource("2")
+jump_prop = ExtResource("3")
+slide_prop = ExtResource("4")
+move_prop_id = &"crate"
+jump_prop_id = &"puddle"
+slide_prop_id = &"laundry_line"
+warning_seconds = 2.5
+response_seconds = 2.0
+resolved_seconds = 0.75

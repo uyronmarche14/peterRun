@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/crate.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/props/puddle.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/props/laundry_line.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_route_blender_v02.png" id="5_route_background"]
 
 [resource]
 script = ExtResource("1")
@@ -14,7 +15,90 @@ sky_color = Color(0.78, 0.867, 0.827, 1)
 distant_color = Color(0.45, 0.624, 0.569, 1)
 horizon_color = Color(0.31, 0.51, 0.463, 1)
 road_color = Color(0.62, 0.59, 0.46, 1)
+background_texture = ExtResource("5_route_background")
 sequence = Array[StringName]([&"move_left", &"jump", &"move_right", &"slide"])
+prompt_lanes = Array[int]([1, 0, 0, 1])
+formation_library = Array[Dictionary]([{
+"pattern_id": &"l01_p01_move_left", "category": &"beginner", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p01_jump_left", "category": &"beginner", "obstacles": [{"kind": &"puddle", "lane": 0}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p01_move_right", "category": &"beginner", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p01_slide_center", "category": &"beginner", "obstacles": [{"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p02_move_right", "category": &"beginner", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p02_jump_right", "category": &"beginner", "obstacles": [{"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p02_move_left", "category": &"beginner", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p02_slide_center", "category": &"beginner", "obstacles": [{"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p03_jump_center", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p03_move_left", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p03_slide_left", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 0}], "open_lanes": [], "required_action": &"slide", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p03_move_right", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p04_slide_center", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p04_move_right", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p04_jump_right", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p04_move_left", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p05_jump_center", "category": &"recovery", "obstacles": [{"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p05_slide_center", "category": &"recovery", "obstacles": [{"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p05_move_left", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p05_move_right", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p06_move_right", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p06_slide_right", "category": &"recovery", "obstacles": [{"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p06_move_left", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p06_jump_center", "category": &"recovery", "obstacles": [{"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p07_slide_center", "category": &"mixed", "obstacles": [{"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p07_move_left", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p07_jump_left", "category": &"mixed", "obstacles": [{"kind": &"puddle", "lane": 0}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p07_move_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p08_jump_center", "category": &"mixed", "obstacles": [{"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p08_move_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p08_slide_right", "category": &"mixed", "obstacles": [{"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p08_move_left", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p09_jump_center", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p10_jump_gate_center", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"puddle", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p11_slide_gate_center", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"laundry_line", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p12_move_left", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p13_jump_left", "category": &"recovery", "obstacles": [{"kind": &"puddle", "lane": 0}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p14_slide_left", "category": &"recovery", "obstacles": [{"kind": &"laundry_line", "lane": 0}], "open_lanes": [], "required_action": &"slide", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p15_move_right", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p16_move_right", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}])
 move_prop = ExtResource("2")
 jump_prop = ExtResource("3")
 slide_prop = ExtResource("4")

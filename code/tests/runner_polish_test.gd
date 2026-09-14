@@ -88,7 +88,9 @@ func _test_progress_and_pause() -> void:
 	director.call("open_response_window")
 	level.call("receive_input", &"move_left", true, 10.0)
 	level.call("receive_input", &"move_left", true, 10.1)
-	_expect(level.get("session_result").get_completed(&"move_left") == 1, "Held input earns one repetition")
+	_expect(level.get("session_result").get_completed(&"move_left") == 0, "Input waits for the approaching formation contact")
+	level.call("_on_response_timer_timeout")
+	_expect(level.get("session_result").get_completed(&"move_left") == 1, "Held input earns one repetition at contact")
 	await create_timer(0.1).timeout
 	level.call("pause_gameplay")
 	var player: Node2D = level.get_node("Player")

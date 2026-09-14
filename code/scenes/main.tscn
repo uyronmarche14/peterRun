@@ -67,6 +67,7 @@ layout_mode = 2
 theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Dashboard/Margin/Content"]
+theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 20
@@ -226,9 +227,10 @@ theme_override_constants/margin_bottom = 8
 [node name="Content" type="VBoxContainer" parent="SettingsOverlay/Panel/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 3
+theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Sound & controls"
@@ -271,6 +273,7 @@ alignment = 1
 theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
+theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Finish for now?"
@@ -288,6 +291,17 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 18)
 max_value = 100.0
 value = 35.0
+focus_mode = 0
+
+[node name="RoutePaceLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Route pace · Standard"
+horizontal_alignment = 1
+
+[node name="RoutePaceOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 
 [node name="ControlsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]

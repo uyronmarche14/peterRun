@@ -1,6 +1,8 @@
 class_name WorldMotionController
 extends Node
 
+const GameSettings = preload("res://scripts/game_settings.gd")
+
 # Constant travel in depth projects to increasing screen speed near the player.
 # Warning/response timing comes from the session.
 const FAR_SCALE := 0.55
@@ -20,6 +22,10 @@ var _is_resolving := false
 var _exit_elapsed := 0.0
 var _exit_duration := 0.75
 var _exit_success := false
+var _companion_nodes: Array[Node2D] = []
+var _companion_lanes: Array[int] = []
+var _formation_nodes: Array[Node2D] = []
+var _formation_lanes: Array[int] = []
 var _road_dashes: Array[Line2D] = []
 var _roadside_markers: Array[Node2D] = []
 
@@ -41,7 +47,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if is_motion_paused:
 		return
-	motion_distance += delta
+	motion_distance += delta * GameSettings.visual_pace
 	_update_road()
 	_update_roadside()
 	if not _prompt_is_visible:
@@ -71,6 +77,18 @@ func _apply_prompt_projection() -> void:
 	var depth_scale := _perspective_scale(_prompt_elapsed / _approach_duration)
 	prompt_anchor.position = Vector2(240.0 + (_prompt_lane - 1) * LANE_SPACING * depth_scale / PLAYER_SCALE, _screen_y(depth_scale))
 	prompt_anchor.scale = Vector2.ONE * depth_scale
+	for index in mini(_companion_nodes.size(), _companion_lanes.size()):
+		var companion := _companion_nodes[index]
+		if not is_instance_valid(companion):
+			continue
+		companion.position = Vector2(((_companion_lanes[index] - _prompt_lane) * LANE_SPACING) / PLAYER_SCALE, 0.0)
+		companion.scale = Vector2.ONE
+	for index in mini(_formation_nodes.size(), _formation_lanes.size()):
+		var formation_prop := _formation_nodes[index]
+		if not is_instance_valid(formation_prop):
+			continue
+		formation_prop.position = Vector2(((_formation_lanes[index] - _prompt_lane) * LANE_SPACING) / PLAYER_SCALE, 0.0)
+		formation_prop.scale = Vector2.ONE
 	# Props draw behind the player until their ground contact passes the feet.
 	prompt_anchor.z_index = 2 if prompt_anchor.position.y > PLAYER_PROMPT_Y else 0
 	prompt_ground_shadow.modulate.a = clampf(depth_scale / PLAYER_SCALE, 0.4, 0.8)
@@ -118,6 +136,16 @@ func begin_prompt_approach(lane: int = 1, warning_seconds: float = 2.5, response
 	_apply_prompt_projection()
 
 
+func set_prompt_companions(nodes: Array[Node2D], lanes: Array[int]) -> void:
+	_companion_nodes = nodes
+	_companion_lanes = lanes
+
+
+func set_prompt_formation(nodes: Array[Node2D], lanes: Array[int]) -> void:
+	_formation_nodes = nodes
+	_formation_lanes = lanes
+
+
 func resolve_prompt_approach(success: bool, duration: float = 0.75) -> void:
 	_is_resolving = true
 	_exit_elapsed = 0.0
@@ -130,3 +158,5 @@ func hide_prompt_approach() -> void:
 	_is_resolving = false
 	prompt_anchor.modulate.a = 0.0
 	prompt_ground_shadow.visible = false
+	_formation_nodes.clear()
+	_formation_lanes.clear()

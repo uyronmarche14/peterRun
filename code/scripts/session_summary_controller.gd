@@ -4,6 +4,7 @@ const Review = preload("res://scripts/session_review_store.gd")
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
+const RouteJourney = preload("res://scripts/route_journey.gd")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
 
@@ -45,6 +46,7 @@ func _ready() -> void:
 		content.get_node("Subtitle").text = "Return to the menu to set up a session."
 		content.get_node("Repetitions").hide()
 		content.get_node("Misses").hide()
+		content.get_node("Journey").hide()
 		content.get_node("Actions/RestButton").disabled = true
 		_refresh_rating()
 		return
@@ -63,6 +65,7 @@ func _ready() -> void:
 		content.get_node("Repetitions/" + ACTION_NODES[index]).text = "%s: %d / %d" % [
 			ACTION_LABELS[index], _result.get_completed(action), _config.get_target(action)]
 	content.get_node("Misses").text = "Neutral misses: %d" % _result.neutral_misses
+	content.get_node("Journey").text = RouteJourney.get_summary_text(_result.route_clear_points)
 	_refresh_rating()
 
 

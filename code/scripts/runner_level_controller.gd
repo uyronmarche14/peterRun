@@ -4,6 +4,8 @@ extends Node2D
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
+const PatternLibraryResolverModel = preload("res://scripts/pattern_library_resolver.gd")
+const RouteJourney = preload("res://scripts/route_journey.gd")
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
@@ -16,7 +18,20 @@ signal named_action_received(action_name: StringName)
 var input_adapter := InputAdapterModel.new()
 var level_definition: Resource
 var _planned_sequence: Array[StringName] = []
+var _pattern_sets: Array = []
+var _formation_library: Array = []
+var _formation_resolver := PatternLibraryResolverModel.new()
+var _active_formation: Dictionary = {}
+var active_formation_id: StringName = &""
+var _formation_prop_pools: Dictionary = {}
+var _active_formation_props: Array[Node2D] = []
+var _pending_response_action: StringName = &""
+var _pending_response_lane := -1
+var _pending_response_movement_accepted := false
+var _pattern_set_index := 0
+var _pattern_step_index := 0
 var _prop_nodes: Dictionary = {}
+var _secondary_move_prop: Node2D
 var _visible_prompt: Node2D
 var session_config := SessionConfigModel.new()
 var session_result := SessionResultModel.new()
@@ -32,6 +47,7 @@ var _pending_end_reason: StringName = &""
 @onready var progress_bar: ProgressBar = $HUD/HUDRoot/ProgressBar
 @onready var feedback_toast: PanelContainer = $HUD/HUDRoot/FeedbackToast
 @onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
+@onready var journey_label: Label = $HUD/HUDRoot/JourneyLabel
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
@@ -75,6 +91,8 @@ func _ready() -> void:
 	level_definition = level_definition.duplicate(true)
 	session_config.level_definition = level_definition
 	_planned_sequence = level_definition.get_planned_sequence()
+	_pattern_sets = level_definition.get_pattern_sets()
+	_formation_library = level_definition.get_pattern_definitions()
 	_apply_level_presentation()
 	_schedule_next_prompt()
 
@@ -110,19 +128,70 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		return
 
 	named_action_received.emit(logical_action)
-	prompt_director.call("receive_action", logical_action)
-	player.handle_action(logical_action)
+	# Apply movement first so validation sees the resulting lane.
+	var movement_accepted := player.handle_action(logical_action)
+	if not _active_formation.is_empty() and prompt_director.state == PromptDirectorModel.State.ACTIVE:
+		if _pending_response_action == &"":
+			_pending_response_action = logical_action
+			_pending_response_lane = player.lane_index
+			_pending_response_movement_accepted = movement_accepted
+		return
+	prompt_director.call("receive_action", logical_action, player.lane_index, movement_accepted)
 
 
 func _schedule_next_prompt() -> void:
 	if is_session_ended:
 		return
+	_pending_response_action = &""
+	_pending_response_lane = -1
+	_pending_response_movement_accepted = false
+	_active_formation = {}
+	active_formation_id = &""
+	if not _formation_library.is_empty():
+		var formation := _formation_resolver.select_next(_formation_library, player.lane_index)
+		if formation.is_empty():
+			_show_neutral_end_overlay("Route needs review", "This route does not have a reachable next movement. End the session and review the route setup.", &"configuration_error")
+			return
+		_active_formation = formation
+		active_formation_id = StringName(formation.get("pattern_id", &""))
+		var formation_action := StringName(formation.get("required_action", &""))
+		var prompt_lane := _get_formation_prompt_lane(formation)
+		var safe_lane := int(formation.get("ending_lane", -1)) if formation.get("allow_idle_safe_clear", false) else -1
+		prompt_director.call("schedule", formation_action, prompt_lane, safe_lane, safe_lane >= 0)
+		return
+	if not _pattern_sets.is_empty():
+		var pattern: Dictionary = _pattern_sets[_pattern_set_index]
+		var actions: Array = pattern.get("actions", [])
+		var lanes: Array = pattern.get("lanes", [])
+		if actions.is_empty() or actions.size() != lanes.size():
+			return
+		if _pattern_step_index >= actions.size():
+			_pattern_set_index = (_pattern_set_index + 1) % _pattern_sets.size()
+			_pattern_step_index = 0
+			pattern = _pattern_sets[_pattern_set_index]
+			actions = pattern.get("actions", [])
+			lanes = pattern.get("lanes", [])
+		var pattern_step := _pattern_step_index
+		_pattern_step_index += 1
+		var pattern_action := StringName(actions[pattern_step])
+		var pattern_lane := int(lanes[pattern_step])
+		var safe_lane := -1
+		var idle_safe_clear := false
+		if pattern_action == &"move_left":
+			safe_lane = clampi(pattern_lane - 1, 0, 2)
+			idle_safe_clear = true
+		elif pattern_action == &"move_right":
+			safe_lane = clampi(pattern_lane + 1, 0, 2)
+			idle_safe_clear = true
+		prompt_director.call("schedule", pattern_action, pattern_lane, safe_lane, idle_safe_clear)
+		return
 	if _planned_sequence.is_empty():
 		return
 
 	var action_name: StringName = _planned_sequence[_sequence_index]
+	var planned_index := _sequence_index
 	_sequence_index = (_sequence_index + 1) % _planned_sequence.size()
-	prompt_director.call("schedule", action_name)
+	prompt_director.call("schedule", action_name, level_definition.get_prompt_lane(planned_index, player.lane_index))
 
 
 func _on_prompt_state_changed(state: int, action_name: StringName, resolution: int) -> void:
@@ -132,19 +201,39 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		PromptDirectorModel.State.WARNING:
 			response_timer.stop()
 			resolve_timer.stop()
-			_show_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
-			world_motion.call("begin_prompt_approach", player.lane_index, level_definition.warning_seconds, level_definition.response_seconds)
+			if not _active_formation.is_empty():
+				_show_formation_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
+				world_motion.call("set_prompt_formation", _active_formation_props, _get_formation_lanes())
+				world_motion.call("begin_prompt_approach", 1, level_definition.warning_seconds, level_definition.response_seconds)
+			else:
+				_show_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
+				var companion_lanes: Array[int] = []
+				if action_name == &"move_left":
+					var left_target := clampi(prompt_director.prompt_lane_index - 1, 0, 2)
+					companion_lanes.append(2 if left_target == 0 else 0)
+				elif action_name == &"move_right":
+					var right_target := clampi(prompt_director.prompt_lane_index + 1, 0, 2)
+					companion_lanes.append(0 if right_target == 2 else 2)
+				var companion_nodes: Array[Node2D] = []
+				if not companion_lanes.is_empty() and _secondary_move_prop != null:
+					companion_nodes.append(_secondary_move_prop)
+				world_motion.call("set_prompt_companions", companion_nodes, companion_lanes)
+				world_motion.call("begin_prompt_approach", prompt_director.prompt_lane_index, level_definition.warning_seconds, level_definition.response_seconds)
 			warning_timer.start(level_definition.warning_seconds)
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
-			_show_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
+			if not _active_formation.is_empty():
+				_show_formation_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
+				world_motion.call("set_prompt_formation", _active_formation_props, _get_formation_lanes())
+			else:
+				_show_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
 			response_timer.start(level_definition.response_seconds)
 		PromptDirectorModel.State.RESOLVED:
 			warning_timer.stop()
 			response_timer.stop()
 			_record_prompt_resolution(action_name, resolution)
-			world_motion.call("resolve_prompt_approach", resolution == PromptDirectorModel.Resolution.SUCCESS, level_definition.resolved_seconds)
-			var resolved_text := "Nice step!" if resolution == PromptDirectorModel.Resolution.SUCCESS else "Take your time."
+			world_motion.call("resolve_prompt_approach", resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS, level_definition.resolved_seconds)
+			var resolved_text := "Nice step!" if resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS else "Take your time."
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
 			if session_result.has_met_targets(session_config):
@@ -174,10 +263,42 @@ func _apply_level_presentation() -> void:
 			$LevelWorld/PromptWorldAnchor/PromptProps.add_child(prop)
 			instances[packed] = prop
 		_prop_nodes[action] = instances[packed]
+	if not _formation_library.is_empty():
+		var pool_sizes := {&"crate": 0, &"puddle": 0, &"laundry_line": 0}
+		for formation_value in _formation_library:
+			if not formation_value is Dictionary:
+				continue
+			var formation: Dictionary = formation_value
+			var count_by_kind := {&"crate": 0, &"puddle": 0, &"laundry_line": 0}
+			for obstacle_value in formation.get("obstacles", []):
+				if obstacle_value is Dictionary:
+					var kind := StringName(obstacle_value.get("kind", &""))
+					if count_by_kind.has(kind):
+						count_by_kind[kind] = int(count_by_kind[kind]) + 1
+			for kind in pool_sizes:
+				pool_sizes[kind] = maxi(int(pool_sizes[kind]), int(count_by_kind[kind]))
+		for kind in pool_sizes:
+			var pool: Array[Node2D] = []
+			var packed_scene := _get_scene_for_obstacle(kind)
+			for index in int(pool_sizes[kind]):
+				var prop := packed_scene.instantiate() as Node2D
+				prop.name = "Formation_%s_%d" % [kind, index]
+				prop.visible = false
+				$LevelWorld/PromptWorldAnchor/PromptProps.add_child(prop)
+				pool.append(prop)
+			_formation_prop_pools[kind] = pool
+	_secondary_move_prop = level_definition.move_prop.instantiate()
+	_secondary_move_prop.name = "SecondaryMoveProp"
+	_secondary_move_prop.visible = false
+	$LevelWorld/PromptWorldAnchor/PromptProps.add_child(_secondary_move_prop)
 
 
 func get_visible_prompt() -> Node2D:
 	return _visible_prompt
+
+
+func get_active_formation_props() -> Array[Node2D]:
+	return _active_formation_props.duplicate()
 
 
 func _show_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
@@ -189,11 +310,49 @@ func _show_prompt(action_name: StringName, state_text: String, state_color: Colo
 	_visible_prompt = _prop_nodes.get(action_name)
 	if _visible_prompt != null:
 		_visible_prompt.visible = true
+	if _secondary_move_prop != null and (action_name == &"move_left" or action_name == &"move_right"):
+		_secondary_move_prop.visible = true
+
+
+func _show_formation_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
+	_hide_props()
+	prompt_action_label.text = level_definition.get_action_label(action_name)
+	prompt_icon_label.text = level_definition.get_action_icon(action_name)
+	prompt_state_label.text = state_text
+	prompt_state_label.add_theme_color_override("font_color", state_color)
+	var used_by_kind := {}
+	var action_kind := _get_kind_for_action(action_name)
+	for obstacle_value in _active_formation.get("obstacles", []):
+		if not obstacle_value is Dictionary:
+			continue
+		var obstacle: Dictionary = obstacle_value
+		var kind := StringName(obstacle.get("kind", &""))
+		var pool: Array = _formation_prop_pools.get(kind, [])
+		var pool_index := int(used_by_kind.get(kind, 0))
+		used_by_kind[kind] = pool_index + 1
+		if pool_index >= pool.size() or not pool[pool_index] is Node2D:
+			continue
+		var prop := pool[pool_index] as Node2D
+		prop.visible = true
+		prop.position = Vector2.ZERO
+		prop.scale = Vector2.ONE
+		prop.modulate = Color.WHITE
+		prop.set_meta("formation_lane", int(obstacle.get("lane", 1)))
+		_active_formation_props.append(prop)
+		if _visible_prompt == null or kind == action_kind:
+			_visible_prompt = prop
 
 
 func _hide_props() -> void:
 	for prop in _prop_nodes.values():
 		prop.visible = false
+	if _secondary_move_prop != null:
+		_secondary_move_prop.visible = false
+	for pool_value in _formation_prop_pools.values():
+		for prop_value in pool_value:
+			if prop_value is Node2D:
+				prop_value.visible = false
+	_active_formation_props.clear()
 	_visible_prompt = null
 	prompt_backdrop.visible = false
 	prompt_icon_label.text = "•"
@@ -201,14 +360,17 @@ func _hide_props() -> void:
 
 func _record_prompt_resolution(action_name: StringName, resolution: int) -> void:
 	if resolution == PromptDirectorModel.Resolution.SUCCESS:
-		session_result.record_success(action_name)
+		if session_result.get_completed(action_name) < session_config.get_target(action_name):
+			session_result.record_success(action_name)
+	elif resolution == PromptDirectorModel.Resolution.SAFE_CLEAR:
+		session_result.record_route_clear()
 	else:
 		session_result.record_neutral_miss()
 	_update_progress_hud(resolution == PromptDirectorModel.Resolution.SUCCESS)
 	var completed := 0
 	for action in SessionConfigModel.ACTIONS:
 		completed += mini(session_result.get_completed(action), session_config.get_target(action))
-	feedback_toast.show_result(resolution == PromptDirectorModel.Resolution.SUCCESS, completed)
+	feedback_toast.show_result(resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS, completed)
 
 
 func _update_progress_hud(animate_success: bool = false) -> void:
@@ -219,6 +381,7 @@ func _update_progress_hud(animate_success: bool = false) -> void:
 		target_repetitions += session_config.get_target(action_name)
 	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
 	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
+	journey_label.text = RouteJourney.get_hud_text(session_result.route_clear_points)
 	progress_bar.max_value = maxf(1.0, target_repetitions)
 	if _progress_tween != null:
 		_progress_tween.kill()
@@ -233,7 +396,42 @@ func _on_warning_timer_timeout() -> void:
 
 
 func _on_response_timer_timeout() -> void:
-	prompt_director.call("expire_active_prompt")
+	if not _active_formation.is_empty() and _pending_response_action != &"":
+		prompt_director.call("receive_action", _pending_response_action, _pending_response_lane, _pending_response_movement_accepted)
+	else:
+		prompt_director.call("expire_active_prompt", player.lane_index)
+
+
+func _get_formation_prompt_lane(formation: Dictionary) -> int:
+	var action := StringName(formation.get("required_action", &""))
+	if action == &"jump" or action == &"slide":
+		return int(formation.get("action_lane", 1))
+	var ending_lane := int(formation.get("ending_lane", 1))
+	return clampi(ending_lane + 1 if action == &"move_left" else ending_lane - 1, 0, 2)
+
+
+func _get_formation_lanes() -> Array[int]:
+	var lanes: Array[int] = []
+	for obstacle_value in _active_formation.get("obstacles", []):
+		if obstacle_value is Dictionary:
+			lanes.append(int(obstacle_value.get("lane", 1)))
+	return lanes
+
+
+func _get_kind_for_action(action_name: StringName) -> StringName:
+	match action_name:
+		&"move_left", &"move_right": return &"crate"
+		&"jump": return &"puddle"
+		&"slide": return &"laundry_line"
+	return &""
+
+
+func _get_scene_for_obstacle(kind: StringName) -> PackedScene:
+	match kind:
+		&"crate": return level_definition.get_prop_scene(&"move_left")
+		&"puddle": return level_definition.get_prop_scene(&"jump")
+		&"laundry_line": return level_definition.get_prop_scene(&"slide")
+	return null
 
 
 func _on_resolve_timer_timeout() -> void:

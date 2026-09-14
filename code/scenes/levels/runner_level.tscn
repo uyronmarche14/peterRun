@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -8,6 +8,8 @@
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
 
 [ext_resource type="Script" path="res://scripts/feedback_toast.gd" id="10_toast"]
+
+[ext_resource type="Script" path="res://scripts/route_side_art.gd" id="13_route_side_art"]
 
 [ext_resource type="PackedScene" path="res://scenes/roadside_marker.tscn" id="11_roadside"]
 
@@ -58,37 +60,51 @@ script = ExtResource("1_runner")
 [node name="LevelWorld" type="Node2D" parent="."]
 
 [node name="Sky" type="Polygon2D" parent="LevelWorld"]
+visible = false
 polygon = PackedVector2Array(0, 0, 480, 0, 480, 270, 0, 270)
 color = Color(0.035, 0.141, 0.196, 1)
 
 [node name="BackgroundArt" type="Sprite2D" parent="LevelWorld"]
 centered = false
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+
 
 [node name="DistantHills" type="Polygon2D" parent="LevelWorld"]
+visible = false
 polygon = PackedVector2Array(0, 106, 72, 74, 136, 102, 214, 62, 300, 101, 378, 70, 480, 112, 480, 164, 0, 164)
 color = Color(0.075, 0.278, 0.29, 1)
 
 [node name="Horizon" type="Polygon2D" parent="LevelWorld"]
+visible = false
 polygon = PackedVector2Array(0, 119, 480, 119, 480, 172, 0, 172)
 color = Color(0.098, 0.37, 0.337, 1)
+
+[node name="RouteSideArt" type="Node2D" parent="LevelWorld"]
+visible = false
+script = ExtResource("13_route_side_art")
 
 [node name="RoadAndLanes" type="Node2D" parent="LevelWorld"]
 
 [node name="RoadSurface" type="Polygon2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 polygon = PackedVector2Array(184, 78, 296, 78, 449, 270, 31, 270)
 color = Color(0.102, 0.145, 0.169, 1)
 
 [node name="RoadEdgeLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 points = PackedVector2Array(184, 78, 31, 270)
 width = 2.0
 default_color = Color(0.855, 0.678, 0.302, 0.85)
 
 [node name="RoadEdgeRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 points = PackedVector2Array(296, 78, 449, 270)
 width = 2.0
 default_color = Color(0.855, 0.678, 0.302, 0.85)
 
 [node name="LaneLeft" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 points = PackedVector2Array(221, 78, 170, 270)
 width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
@@ -100,6 +116,7 @@ width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
 
 [node name="LaneRight" type="Line2D" parent="LevelWorld/RoadAndLanes"]
+visible = false
 points = PackedVector2Array(259, 78, 310, 270)
 width = 2.0
 default_color = Color(0.349, 0.667, 0.612, 0.65)
@@ -270,14 +287,24 @@ theme_override_colors/font_color = Color(0.58, 0.75, 0.71, 1)
 theme_override_font_sizes/font_size = 8
 text = "Misses: 0"
 
+[node name="JourneyLabel" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 304
+offset_top = 256
+offset_right = 390
+offset_bottom = 270
+theme_override_colors/font_color = Color(1, 0.78, 0.39, 1)
+theme_override_font_sizes/font_size = 8
+text = "Journey: Home"
+
 [node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_top = 1
+offset_top = 4
 offset_left = 201
 offset_right = 309
-offset_bottom = 16
+offset_bottom = 18
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 9
 horizontal_alignment = 1
 text = "NEXT ACTION"
 

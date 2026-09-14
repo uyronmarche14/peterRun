@@ -18,6 +18,7 @@ func _run() -> void:
 		var director: Node = level.get_node("PromptDirector")
 		director.call("open_response_window")
 		level.call("receive_input", &"move_left", true, 10.0)
+		level.call("_on_response_timer_timeout")
 		var first_message: String = toast.get_node("Message").text
 		_expect(not first_message.is_empty() and toast.visible, "Successful movement shows encouragement")
 		level.call("receive_input", &"move_left", true, 10.1)
@@ -34,6 +35,7 @@ func _run() -> void:
 		level.call("_on_resolve_timer_timeout")
 		director.call("open_response_window")
 		level.call("receive_input", &"jump", true, 11.0)
+		level.call("_on_response_timer_timeout")
 		_expect(toast.get_node("Message").text != first_message, "Consecutive successes receive varied recognition")
 		level.call("_on_resolve_timer_timeout")
 		director.call("open_response_window")

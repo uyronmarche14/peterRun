@@ -5,6 +5,7 @@ const SessionConfigModel = preload("res://scripts/session_config.gd")
 
 var completed_repetitions: Dictionary[StringName, int] = {}
 var neutral_misses := 0
+var route_clear_points := 0
 var rpe := 0
 
 
@@ -23,6 +24,10 @@ func record_success(action_name: StringName) -> bool:
 
 func record_neutral_miss() -> void:
 	neutral_misses += 1
+
+
+func record_route_clear() -> void:
+	route_clear_points += 1
 
 
 func get_completed(action_name: StringName) -> int:

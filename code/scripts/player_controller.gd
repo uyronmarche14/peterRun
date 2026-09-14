@@ -12,6 +12,12 @@ const JUMP_RETURN_SECONDS := 0.32
 const LANDING_SECONDS := 0.22
 const ACTION_RISE_SECONDS := 0.20
 const ACTION_RETURN_SECONDS := 0.28
+const PETER_IDLE = preload("res://art/characters/peter/peter_idle.svg")
+const PETER_RUN_A = preload("res://art/characters/peter/peter_run_a.svg")
+const PETER_RUN_B = preload("res://art/characters/peter/peter_run_b.svg")
+const PETER_JUMP = preload("res://art/characters/peter/peter_jump.svg")
+const PETER_SLIDE = preload("res://art/characters/peter/peter_slide.svg")
+const PETER_LAND = preload("res://art/characters/peter/peter_land.svg")
 
 var _lane_state := PlayerLaneStateModel.new()
 var _lane_tween: Tween
@@ -33,6 +39,7 @@ var _lane_direction := 1.0
 @onready var visual: Node2D = $Visual
 @onready var shadow: Node2D = $Shadow
 @onready var slide_streak: Line2D = $SlideStreak
+@onready var character_sprite: Sprite2D = $Visual/CharacterSprite
 @onready var landing_ring: Line2D = $LandingRing
 @onready var lane_trail: Line2D = $LaneTrail
 
@@ -106,6 +113,8 @@ func _process(delta: float) -> void:
 	_run_phase = fposmod(_run_phase + delta * 10.0, TAU)
 	var stride := sin(_run_phase)
 	var is_running := action_state == PlayerLaneStateModel.ActionState.IDLE
+	if is_running:
+		character_sprite.texture = PETER_RUN_A if sin(_run_phase) >= 0.0 else PETER_RUN_B
 	left_leg.rotation = stride * 0.28 if is_running else -0.18
 	right_leg.rotation = -stride * 0.28 if is_running else 0.18
 	left_leg.position.y = maxf(0.0, stride) * -2.5 if is_running else 0.0
@@ -157,11 +166,13 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 	_action_tween = create_tween()
 
 	if action_name == &"jump":
+		character_sprite.texture = PETER_JUMP
 		_action_tween.tween_property(visual, ^"position:y", JUMP_HEIGHT, JUMP_RISE_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		_action_tween.tween_interval(JUMP_HOLD_SECONDS)
 		_action_tween.tween_property(visual, ^"position:y", 0.0, JUMP_RETURN_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		_play_jump_shadow_animation()
 	else:
+		character_sprite.texture = PETER_SLIDE
 		slide_streak.visible = true
 		_action_tween.tween_property(visual, ^"position", Vector2(5.0, 7.0), ACTION_RISE_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		_action_tween.tween_property(visual, ^"position", Vector2.ZERO, ACTION_RETURN_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
@@ -171,6 +182,7 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 
 
 func _finish_action_animation() -> void:
+	character_sprite.texture = PETER_LAND if action_state == PlayerLaneStateModel.ActionState.JUMP else PETER_IDLE
 	if action_state == PlayerLaneStateModel.ActionState.JUMP:
 		_landing_remaining = LANDING_SECONDS
 		landing_ring.visible = true

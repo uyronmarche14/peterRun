@@ -15,6 +15,8 @@ func _init() -> void:
 	_test_prompt_state_transitions()
 	_test_one_active_prompt_rule()
 	_test_neutral_resolution_paths()
+	_test_lane_aware_resolution()
+	_test_safe_lane_clear()
 	_test_runner_level_contains_director()
 	_finish()
 
@@ -66,6 +68,38 @@ func _test_neutral_resolution_paths() -> void:
 	_expect(not expired_director.receive_action(&"move_right"), "Resolved prompt ignores later actions")
 	wrong_action_director.free()
 	expired_director.free()
+
+
+func _test_lane_aware_resolution() -> void:
+	var puddle_director: Variant = _new_director()
+	puddle_director.schedule(&"jump", 1)
+	puddle_director.open_response_window()
+	_expect(puddle_director.receive_action(&"jump", 0, true), "Jump from another lane is received")
+	_expect_equal(puddle_director.resolution, 2, "Jump outside the puddle lane is a neutral miss")
+	puddle_director.free()
+
+	var aligned_director: Variant = _new_director()
+	aligned_director.schedule(&"jump", 1)
+	aligned_director.open_response_window()
+	_expect(aligned_director.receive_action(&"jump", 1, true), "Jump in the puddle lane is received")
+	_expect_equal(aligned_director.resolution, 1, "Jump in the puddle lane succeeds")
+	aligned_director.free()
+
+	var move_director: Variant = _new_director()
+	move_director.schedule(&"move_left", 1)
+	move_director.open_response_window()
+	_expect(move_director.receive_action(&"move_left", 0, true), "Move left into the adjacent lane is received")
+	_expect_equal(move_director.resolution, 1, "Move left reaches the expected lane")
+	move_director.free()
+
+
+func _test_safe_lane_clear() -> void:
+	var director: Variant = _new_director()
+	director.schedule(&"move_right", 1, 2, true)
+	director.open_response_window()
+	_expect(director.expire_active_prompt(2), "Already-safe lane can clear without another movement")
+	_expect_equal(director.resolution, 3, "Already-safe lane records a route clear")
+	director.free()
 
 
 func _test_runner_level_contains_director() -> void:

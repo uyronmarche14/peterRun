@@ -20,6 +20,7 @@ static func capture(config, result, end_reason: StringName) -> void:
 		_config.set_target(action, config.get_target(action))
 		_result.completed_repetitions[action] = result.get_completed(action)
 	_result.neutral_misses = result.neutral_misses
+	_result.route_clear_points = result.route_clear_points
 	_result.rpe = result.rpe
 	_end_reason = end_reason
 	_decision = &""

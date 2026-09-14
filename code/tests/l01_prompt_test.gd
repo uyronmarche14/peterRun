@@ -41,6 +41,12 @@ func _test_l01_action_mapping_and_sequence() -> void:
 
 	var planned_sequence: Array = catalog.get_planned_sequence()
 	_expect_equal(planned_sequence, [&"move_left", &"jump", &"move_right", &"slide"], "L01 sequence is planned and balanced")
+	var level_definition: Resource = load("res://data/levels/l01_barangay.tres")
+	_expect_equal(level_definition.prompt_lanes, [1, 0, 0, 1], "L01 uses an independent obstacle lane pattern")
+	var pattern_sets: Array = level_definition.get_pattern_sets()
+	_expect_equal(pattern_sets.size(), 8, "L01 provides eight authored pattern sets")
+	for pattern in pattern_sets:
+		_expect_equal(pattern.actions.size(), pattern.lanes.size(), "Pattern action and lane arrays stay aligned")
 
 	var director_script: GDScript = load(PROMPT_DIRECTOR_PATH)
 	var director: Node = director_script.new()

@@ -48,7 +48,10 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	director.call("open_response_window")
 	director.call("expire_active_prompt")
 	runner.call("_on_resolve_timer_timeout")
-	for action in [&"jump", &"move_right", &"slide", &"move_left"]:
+	for _index in 16:
+		if runner.get("is_session_ended"):
+			break
+		var action: StringName = director.get("current_action")
 		director.call("open_response_window")
 		director.call("receive_action", action)
 		if not runner.get("is_session_ended"):
@@ -75,6 +78,9 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	_expect_controls_fit(summary.get_node("Panel"), summary.get_node("Panel").get_global_rect())
 	_expect(summary.get_node("Panel/Margin/Content/Repetitions/Jump").text == "Jump: 1 / 1", "Summary displays completed and planned repetitions")
 	_expect(summary.get_node("Panel/Margin/Content/Misses").text == "Neutral misses: 1", "Summary labels misses neutrally")
+	_expect(summary.has_node("Panel/Margin/Content/Journey"), "Summary includes calm journey context")
+	if summary.has_node("Panel/Margin/Content/Journey"):
+		_expect(summary.get_node("Panel/Margin/Content/Journey").text.begins_with("Journey landmark:"), "Summary labels journey context without a score")
 	_expect(summary.get_node("Panel/Margin/Content/Actions/RetryButton").disabled, "Retry waits for a recorded rating")
 	for invalid in [0, 11, 3.5, "5"]:
 		_expect(not summary.call("select_rating", invalid), "Invalid rating is rejected")
@@ -98,8 +104,9 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	Setup.get_session_config().set_target(&"slide", 15)
 	var runner := _open("res://scenes/levels/runner_level.tscn")
 	await process_frame
-	runner.get_node("PromptDirector").call("open_response_window")
-	runner.get_node("PromptDirector").call("receive_action", &"move_left")
+	var director: Node = runner.get_node("PromptDirector")
+	director.call("open_response_window")
+	director.call("receive_action", director.get("current_action"))
 	runner.get_node("PauseOverlay/Panel/Actions/EndSessionButton").pressed.emit()
 	_expect(runner.get_node("EndConfirmation").visible and runner.get("is_gameplay_paused"), "Early end asks for confirmation and freezes play")
 	runner.call("resume_gameplay")

@@ -1,8 +1,10 @@
-[gd_resource type="Resource" load_steps=3 format=3]
+[gd_resource type="Resource" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/level_catalog.gd" id="1"]
 [ext_resource type="Resource" path="res://data/levels/l01_barangay.tres" id="2"]
+[ext_resource type="Resource" path="res://data/levels/l02_market.tres" id="3"]
+[ext_resource type="Resource" path="res://data/levels/l03_rainy_crossing.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
-levels = Array[Resource]([ExtResource("2")])
+levels = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4")])

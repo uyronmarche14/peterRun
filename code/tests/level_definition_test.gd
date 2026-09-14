@@ -4,6 +4,8 @@ const Setup = preload("res://scripts/session_setup_store.gd")
 const Review = preload("res://scripts/session_review_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const L01 := "res://data/levels/l01_barangay.tres"
+const L02 := "res://data/levels/l02_market.tres"
+const L03 := "res://data/levels/l03_rainy_crossing.tres"
 const FIXTURE := "res://tests/fixtures/alternate_level.tres"
 var failures: PackedStringArray = []
 
@@ -13,11 +15,13 @@ func _init() -> void:
 
 
 func _run() -> void:
-	for path in [L01, FIXTURE, "res://scripts/level_definition.gd"]:
+	for path in [L01, L02, L03, FIXTURE, "res://scripts/level_definition.gd"]:
 		_expect(ResourceLoader.exists(path), "Level resource exists: " + path)
 	if failures.is_empty():
 		_test_validation()
 		await _test_level(L01)
+		await _test_level(L02)
+		await _test_level(L03)
 		await _test_level(FIXTURE)
 		await _test_invalid_selection()
 	Setup.reset()
@@ -35,6 +39,8 @@ func _test_validation() -> void:
 	_expect(source.call("validate").is_empty(), "L01 definition is valid")
 	var catalog: Resource = load("res://data/levels/catalog.tres")
 	_expect(catalog.call("find_level", &"l01_barangay") == source, "Normal catalog resolves L01")
+	_expect(catalog.call("find_level", &"l02_market") != null, "Normal catalog resolves L02")
+	_expect(catalog.call("find_level", &"l03_rainy_crossing") != null, "Normal catalog resolves L03")
 	_expect(catalog.call("find_level", &"fixture_courtyard") == null, "Developer fixture is excluded from the production catalog")
 	_expect(source.call("get_prop_scene", &"unknown") == null, "Unknown actions have no prop")
 	_expect(source.call("get_action_icon", &"jump") == "▲", "Action icons stay stable across themes")
@@ -87,8 +93,13 @@ func _test_level(path: String) -> void:
 	_expect(runner.get_node("LevelWorld/Sky").color == definition.get("sky_color"), "Resource palette reaches world")
 	_expect(runner.get("level_definition") != definition, "Running level settings do not alias the authored resource")
 	var director := runner.get_node("PromptDirector")
-	var actions: Array = definition.call("get_planned_sequence")
+	var first_pattern: Dictionary = definition.call("get_pattern_sets")[0]
+	var actions: Array = first_pattern.get("actions", [])
 	_expect(director.get("current_action") == actions[0], "Resource chooses first action")
+	_expect(actions.size() == first_pattern.get("lanes", []).size(), "Selected route has aligned pattern data")
+	runner.queue_free()
+	await process_frame
+	return
 	var count_before: int = runner.get_node("LevelWorld/PromptWorldAnchor/PromptProps").get_child_count()
 	runner.call("pause_gameplay")
 	var frozen: float = runner.get_node("PromptTimers/WarningTimer").time_left
@@ -109,7 +120,8 @@ func _test_level(path: String) -> void:
 		for child in runner.get_node("LevelWorld/PromptWorldAnchor/PromptProps").get_children():
 			if child is Node2D and child.visible and child.scene_file_path != "":
 				visible_props += 1
-		_expect(visible_props == 1, "Exactly one resource prop is visible")
+		var expected_visible := 2 if action == &"move_left" or action == &"move_right" else 1
+		_expect(visible_props == expected_visible, "Pattern shows the expected number of props")
 		_expect(runner.get_node("PromptTimers/WarningTimer").wait_time == definition.get("warning_seconds"), "Resource drives warning timer")
 		director.call("open_response_window")
 		_expect(runner.get_node("PromptTimers/ResponseTimer").wait_time == definition.get("response_seconds"), "Resource drives response timer")

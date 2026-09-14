@@ -5,6 +5,7 @@ const PATIENT_SETUP_SCENE_PATH := "res://scenes/patient_setup.tscn"
 const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
+const GameSettings = preload("res://scripts/game_settings.gd")
 const MUSIC_PATH := "res://art/audio/hakbang_sa_umaga.wav"
 
 var _leaving := false
@@ -20,6 +21,7 @@ var _music_fade: Tween
 @onready var settings_overlay: Control = $SettingsOverlay
 @onready var quit_overlay: Control = $QuitOverlay
 @onready var volume_slider: HSlider = $SettingsOverlay/Panel/Margin/Content/VolumeSlider
+@onready var route_pace_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/RoutePaceOption
 @onready var controller_check_button: Button = $SettingsOverlay/Panel/Margin/Content/ControllerCheckButton
 
 
@@ -30,12 +32,14 @@ func _ready() -> void:
 	quit_button.pressed.connect(request_quit)
 	music_button.pressed.connect(toggle_music)
 	volume_slider.value_changed.connect(set_music_volume)
+	route_pace_option.item_selected.connect(set_route_pace)
 	$SettingsOverlay/Panel/Margin/Content/CloseButton.pressed.connect(close_overlays)
 	$SettingsOverlay/Panel/Margin/Content/SetupButton.pressed.connect(_open_setup_from_settings)
 	controller_check_button.pressed.connect(_open_controller_check_from_settings)
 	$QuitOverlay/Panel/Margin/Content/CancelButton.pressed.connect(close_overlays)
 	$QuitOverlay/Panel/Margin/Content/ConfirmButton.pressed.connect(confirm_quit)
 	_start_music()
+	_configure_route_pace()
 	$Dashboard.modulate.a = 0.0
 	create_tween().tween_property($Dashboard, "modulate:a", 1.0, 0.45)
 
@@ -150,6 +154,28 @@ func set_music_volume(value: float) -> void:
 	menu_music.volume_db = -80.0 if AudioSettings.volume == 0.0 else linear_to_db(AudioSettings.volume / 100.0) - 12.0
 	volume_slider.set_value_no_signal(AudioSettings.volume)
 	$SettingsOverlay/Panel/Margin/Content/VolumeLabel.text = "Menu music · %d%%" % int(AudioSettings.volume)
+
+
+func _configure_route_pace() -> void:
+	route_pace_option.clear()
+	route_pace_option.add_item("Calm", 0)
+	route_pace_option.add_item("Standard", 1)
+	route_pace_option.add_item("Lively", 2)
+	var selected := 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
+	route_pace_option.select(selected)
+	_update_route_pace_label()
+
+
+func set_route_pace(index: int) -> void:
+	match index:
+		0: GameSettings.set_visual_pace(GameSettings.CALM_PACE)
+		2: GameSettings.set_visual_pace(GameSettings.LIVELY_PACE)
+		_: GameSettings.set_visual_pace(GameSettings.STANDARD_PACE)
+	_update_route_pace_label()
+
+
+func _update_route_pace_label() -> void:
+	$SettingsOverlay/Panel/Margin/Content/RoutePaceLabel.text = "Route pace · %s (visual only)" % GameSettings.get_pace_label()
 
 
 func toggle_music() -> void:

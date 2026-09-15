@@ -9,6 +9,7 @@ const LAYERS := [
 	"road",
 	"lane_overlay",
 ]
+const LayerMotion = preload("res://scripts/l01_layered_route_motion.gd")
 
 var failures: PackedStringArray = []
 
@@ -17,6 +18,7 @@ func _init() -> void:
 	for layer in LAYERS:
 		_test_layer_asset(layer)
 	_test_runner_scene_layer_stack()
+	_test_layer_motion_pauses_deterministically()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 layered-route integration test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -49,6 +51,17 @@ func _test_runner_scene_layer_stack() -> void:
 				_expect(sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "Layer uses crisp nearest filtering: " + layer)
 				_expect(sprite.scale == Vector2(0.5, 0.5), "Layer aligns 960x540 art to the 480x270 canvas: " + layer)
 	runner.free()
+
+
+func _test_layer_motion_pauses_deterministically() -> void:
+	var motion := LayerMotion.new()
+	motion.advance_layer_motion(1.0)
+	var moving_phase: float = motion.motion_phase
+	_expect(moving_phase > 0.0, "L01 layered route advances gently while active")
+	motion.set_motion_paused(true)
+	motion.advance_layer_motion(1.0)
+	_expect(is_equal_approx(motion.motion_phase, moving_phase), "L01 layered route freezes immediately during Pause")
+	motion.free()
 
 
 func _expect(condition: bool, message: String) -> void:

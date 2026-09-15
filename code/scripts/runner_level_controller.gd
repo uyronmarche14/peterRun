@@ -65,6 +65,7 @@ var _pending_end_reason: StringName = &""
 @onready var end_session_message: Label = $EndSessionOverlay/Panel/Message
 @onready var return_button: Button = $EndSessionOverlay/Panel/ReturnButton
 @onready var world_motion: Node = $WorldMotion
+@onready var l01_layered_route: Node2D = $LevelWorld/L01BarangayLayers
 @onready var end_confirmation: CanvasLayer = $EndConfirmation
 
 
@@ -263,6 +264,9 @@ func _apply_level_presentation() -> void:
 	$LevelWorld/Horizon.color = level_definition.horizon_color
 	$LevelWorld/RoadAndLanes/RoadSurface.color = level_definition.road_color
 	$LevelWorld/BackgroundArt.texture = level_definition.background_texture
+	var uses_l01_layers: bool = StringName(level_definition.level_id) == &"l01_barangay"
+	$LevelWorld/BackgroundArt.visible = not uses_l01_layers
+	l01_layered_route.call("set_active", uses_l01_layers)
 	var instances: Dictionary = {}
 	for action in SessionConfigModel.ACTIONS:
 		var packed: PackedScene = level_definition.get_prop_scene(action)
@@ -528,6 +532,7 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 	response_timer.paused = should_pause
 	resolve_timer.paused = should_pause
 	world_motion.call("set_motion_paused", should_pause)
+	l01_layered_route.call("set_motion_paused", should_pause)
 	player.set_gameplay_paused(should_pause)
 	feedback_toast.set_feedback_paused(should_pause)
 	if _progress_tween != null:

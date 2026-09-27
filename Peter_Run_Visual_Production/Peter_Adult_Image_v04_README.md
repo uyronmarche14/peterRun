@@ -13,12 +13,22 @@ The generated images retain Peter's mature Filipino adult identity, swept dark h
 - Original generated transparent strips: `generated/peter_adult_image_v04/source_strips/`
 - Normalized review frames: `generated/peter_adult_image_v04/normalized_frames/`
 - Godot atlases and manifest: `../code/art/characters/peter_adult_image_v04/`
+- Runtime feedback textures: `../code/art/characters/peter_adult_image_v04/effects/`
+- Complete contact-sheet package: `generated/peter_adult_image_v04/contact_sheets/`
 - Deterministic strip preparation: `prepare_peter_adult_image_v04.ps1`
 - Graphical verification: `../code/tests/support/capture_peter_adult_image_v04.gd`
 
 The preparation script detects each complete transparent character figure as a connected component, removes accidental cross-cell fragments, normalizes it to a 256x256 frame, and maintains the existing `(128, 216)` ground pivot. It creates one padded atlas per clip plus a separate soft ground shadow.
 
 The integrated presentation uses a clearly readable `0.36` display scale. Jump frames add a controlled visual lift of up to 36 source pixels at the apex, while the middle slide frames compress vertically around the fixed foot anchor to make the duck clearly lower. Gameplay timing and action acceptance windows remain unchanged.
+
+## Grounded feedback polish
+
+Four transparent 128×64 effects are generated independently from Peter's body art: a cream/mango landing ring, a soft two-sided landing puff, a teal/cream lane-shift trail, and restrained warm road dust for slide. Godot animates only transform and opacity. These layers freeze with the existing pause model, clear during reset/session ending, and are suppressed by Reduced Motion. Because they use the shared player ground anchor rather than adult body pixels, the same effect package can support Young Peter after that character is implemented.
+
+## Contact sheets
+
+`contact_sheets/peter_adult_image_v04_contact_sheet.png` shows every approved pose across all ten clips with duration and loop context. Ten matching per-clip sheets preserve the full 256×256 frame presentation for closer review. `contact_sheet_manifest.json` records the character ID, source canvas, ground pivot, clip names, durations, frame counts, and filenames. These review sheets are production evidence and are not loaded at runtime.
 
 ## Animation set
 

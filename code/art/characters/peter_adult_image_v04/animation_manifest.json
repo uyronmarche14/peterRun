@@ -35,6 +35,15 @@
     "playback_contract":  "Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.",
     "jump_displacement":  "baked_into_frames",
     "shadow":  "ground_shadow.png",
+    "feedback_effects":  {
+                             "landing_ring":  "effects/landing_ring.png",
+                             "landing_dust":  "effects/landing_dust.png",
+                             "lane_shift_trail":  "effects/lane_shift_trail.png",
+                             "slide_dust":  "effects/slide_dust.png",
+                             "character_compatibility":  "Shared ground-anchored effects; no dependency on adult body pixels.",
+                             "reduced_motion":  "All optional effect layers are suppressed when reduced motion is enabled."
+                         },
+    "contact_sheet_package":  "Peter_Run_Visual_Production/generated/peter_adult_image_v04/contact_sheets",
     "animations":  {
                        "idle_ready":  {
                                           "frames":  6,

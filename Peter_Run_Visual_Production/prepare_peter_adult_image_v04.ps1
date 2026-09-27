@@ -160,6 +160,194 @@ function Save-Png([System.Drawing.Bitmap]$bitmap, [string]$path) {
     $bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
 }
 
+function New-FeedbackEffectAssets([string]$outputRoot) {
+    $effectRoot = Join-Path $outputRoot 'effects'
+    New-Item -ItemType Directory -Force -Path $effectRoot | Out-Null
+
+    $effectSpecs = @(
+        @{ Name = 'landing_ring.png'; Draw = {
+            param($graphics)
+            $haloBrush = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(30, 255, 222, 155))
+            $creamPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(205, 255, 242, 205), 3.0)
+            $mangoPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(180, 239, 166, 66), 2.0)
+            try {
+                $graphics.FillEllipse($haloBrush, 18, 23, 92, 24)
+                $graphics.DrawArc($creamPen, 19, 22, 90, 25, 190, 160)
+                $graphics.DrawArc($mangoPen, 27, 27, 74, 17, 8, 164)
+            }
+            finally { $haloBrush.Dispose(); $creamPen.Dispose(); $mangoPen.Dispose() }
+        }}
+        @{ Name = 'landing_dust.png'; Draw = {
+            param($graphics)
+            $soft = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(105, 244, 222, 174))
+            $warm = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(90, 218, 178, 111))
+            $speck = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(150, 255, 237, 196))
+            try {
+                $graphics.FillEllipse($soft, 19, 30, 28, 13)
+                $graphics.FillEllipse($soft, 81, 29, 30, 14)
+                $graphics.FillEllipse($warm, 35, 36, 23, 8)
+                $graphics.FillEllipse($warm, 70, 35, 22, 8)
+                $graphics.FillEllipse($speck, 27, 24, 5, 5)
+                $graphics.FillEllipse($speck, 98, 22, 4, 4)
+                $graphics.FillEllipse($speck, 16, 28, 3, 3)
+            }
+            finally { $soft.Dispose(); $warm.Dispose(); $speck.Dispose() }
+        }}
+        @{ Name = 'lane_shift_trail.png'; Draw = {
+            param($graphics)
+            $creamPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(175, 247, 231, 192), 4.0)
+            $tealPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(145, 89, 160, 153), 2.5)
+            $mangoPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(125, 232, 157, 58), 1.8)
+            try {
+                foreach ($pen in @($creamPen, $tealPen, $mangoPen)) {
+                    $pen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+                    $pen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+                }
+                $graphics.DrawBezier($creamPen, 18, 38, 42, 35, 67, 42, 105, 34)
+                $graphics.DrawBezier($tealPen, 9, 46, 36, 43, 66, 48, 94, 41)
+                $graphics.DrawBezier($mangoPen, 35, 26, 58, 25, 75, 30, 112, 26)
+            }
+            finally { $creamPen.Dispose(); $tealPen.Dispose(); $mangoPen.Dispose() }
+        }}
+        @{ Name = 'slide_dust.png'; Draw = {
+            param($graphics)
+            $soft = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(125, 239, 217, 165))
+            $warm = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(100, 202, 158, 92))
+            $linePen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(145, 255, 235, 190), 2.3)
+            try {
+                $linePen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+                $linePen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+                $graphics.FillEllipse($soft, 58, 31, 35, 14)
+                $graphics.FillEllipse($soft, 30, 35, 37, 13)
+                $graphics.FillEllipse($warm, 12, 39, 31, 10)
+                $graphics.FillEllipse($warm, 79, 38, 27, 9)
+                $graphics.DrawBezier($linePen, 12, 32, 34, 27, 47, 32, 67, 29)
+                $graphics.DrawBezier($linePen, 26, 50, 51, 47, 74, 50, 103, 44)
+            }
+            finally { $soft.Dispose(); $warm.Dispose(); $linePen.Dispose() }
+        }}
+    )
+
+    foreach ($effectSpec in $effectSpecs) {
+        $bitmap = New-TransparentBitmap 128 64
+        $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+        try {
+            $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceOver
+            $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+            $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+            & $effectSpec.Draw $graphics
+        }
+        finally { $graphics.Dispose() }
+        Save-Png $bitmap (Join-Path $effectRoot $effectSpec.Name)
+        $bitmap.Dispose()
+    }
+}
+
+function New-ContactSheetPackage(
+    [string]$normalizedRoot,
+    [string]$outputRoot,
+    [System.Collections.IDictionary]$clipSpecs
+) {
+    New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
+    $background = [System.Drawing.Color]::FromArgb(255, 242, 231, 202)
+    $ink = [System.Drawing.Brushes]::DarkSlateGray
+    $accentBrush = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(255, 40, 100, 98))
+    $rowBrush = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(255, 232, 216, 179))
+    $titleFont = [System.Drawing.Font]::new([System.Drawing.FontFamily]::GenericSansSerif, 18, [System.Drawing.FontStyle]::Bold)
+    $labelFont = [System.Drawing.Font]::new([System.Drawing.FontFamily]::GenericSansSerif, 11, [System.Drawing.FontStyle]::Regular)
+    $smallFont = [System.Drawing.Font]::new([System.Drawing.FontFamily]::GenericSansSerif, 9, [System.Drawing.FontStyle]::Regular)
+    $manifestClips = @()
+    try {
+        foreach ($clipName in $clipSpecs.Keys) {
+            $spec = $clipSpecs[$clipName]
+            $framePaths = @(Get-ChildItem -LiteralPath (Join-Path $normalizedRoot $clipName) -Filter '*.png' | Sort-Object Name | ForEach-Object FullName)
+            $sheetWidth = [Math]::Max(320, 40 + ($framePaths.Count * 176))
+            $sheetHeight = 292
+            $sheet = [System.Drawing.Bitmap]::new($sheetWidth, $sheetHeight, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+            $graphics = [System.Drawing.Graphics]::FromImage($sheet)
+            try {
+                $graphics.Clear($background)
+                $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+                $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                $graphics.DrawString("PETER ADULT v04 - $clipName", $titleFont, $accentBrush, 20, 14)
+                $graphics.DrawString(("{0} poses | {1:0.00}s | {2}" -f $framePaths.Count, [double]$spec.Duration, $(if ($spec.Loop) { 'loop' } else { 'one-shot' })), $labelFont, $ink, 22, 43)
+                $graphics.DrawLine([System.Drawing.Pens]::DarkGray, 18, 246, $sheetWidth - 18, 246)
+                for ($index = 0; $index -lt $framePaths.Count; $index++) {
+                    $frame = [System.Drawing.Bitmap]::new($framePaths[$index])
+                    try {
+                        $destination = [System.Drawing.Rectangle]::new(24 + ($index * 176), 72, 160, 160)
+                        $graphics.DrawImage($frame, $destination, [System.Drawing.Rectangle]::new(0, 0, 256, 256), [System.Drawing.GraphicsUnit]::Pixel)
+                        $graphics.DrawString(("POSE {0:D2}" -f ($index + 1)), $smallFont, $ink, 68 + ($index * 176), 256)
+                    }
+                    finally { $frame.Dispose() }
+                }
+            }
+            finally { $graphics.Dispose() }
+            $sheetName = "${clipName}_contact_sheet.png"
+            Save-Png $sheet (Join-Path $outputRoot $sheetName)
+            $sheet.Dispose()
+            $manifestClips += [ordered]@{
+                id = $clipName
+                sheet = $sheetName
+                frames = $framePaths.Count
+                duration_seconds = [double]$spec.Duration
+                loop = [bool]$spec.Loop
+            }
+        }
+
+        $overviewWidth = 1120
+        $overviewHeight = 94 + ($clipSpecs.Count * 176)
+        $overview = [System.Drawing.Bitmap]::new($overviewWidth, $overviewHeight, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        $overviewGraphics = [System.Drawing.Graphics]::FromImage($overview)
+        try {
+            $overviewGraphics.Clear($background)
+            $overviewGraphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+            $overviewGraphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+            $overviewGraphics.DrawString('PETER ADULT IMAGE v04 - COMPLETE ANIMATION CONTACT SHEET', $titleFont, $accentBrush, 24, 18)
+            $overviewGraphics.DrawString('Fixed 256x256 canvas | ground pivot (128, 216) | rear gameplay view', $labelFont, $ink, 26, 50)
+            $row = 0
+            foreach ($clipName in $clipSpecs.Keys) {
+                $spec = $clipSpecs[$clipName]
+                $rowTop = 86 + ($row * 176)
+                if ($row % 2 -eq 1) { $overviewGraphics.FillRectangle($rowBrush, 12, $rowTop, $overviewWidth - 24, 168) }
+                $overviewGraphics.DrawString($clipName, $labelFont, $accentBrush, 24, $rowTop + 18)
+                $overviewGraphics.DrawString(("{0} poses / {1:0.00}s" -f [int]$spec.Frames, [double]$spec.Duration), $smallFont, $ink, 24, $rowTop + 44)
+                $framePaths = @(Get-ChildItem -LiteralPath (Join-Path $normalizedRoot $clipName) -Filter '*.png' | Sort-Object Name | ForEach-Object FullName)
+                for ($index = 0; $index -lt $framePaths.Count; $index++) {
+                    $frame = [System.Drawing.Bitmap]::new($framePaths[$index])
+                    try {
+                        $destination = [System.Drawing.Rectangle]::new(190 + ($index * 148), $rowTop + 12, 144, 144)
+                        $overviewGraphics.DrawImage($frame, $destination, [System.Drawing.Rectangle]::new(0, 0, 256, 256), [System.Drawing.GraphicsUnit]::Pixel)
+                    }
+                    finally { $frame.Dispose() }
+                }
+                $row++
+            }
+        }
+        finally { $overviewGraphics.Dispose() }
+        Save-Png $overview (Join-Path $outputRoot 'peter_adult_image_v04_contact_sheet.png')
+        $overview.Dispose()
+
+        $contactManifest = [ordered]@{
+            schema_version = 1
+            character_id = 'peter_adult_image_v04'
+            design_reference = 'Peter_Run_Visual_Production/character_concepts/peter_character_v03/peter_character_turnaround_v03.png'
+            canvas = @(256, 256)
+            pivot = @(128, 216)
+            overview = 'peter_adult_image_v04_contact_sheet.png'
+            clips = $manifestClips
+        }
+        [System.IO.File]::WriteAllText(
+            (Join-Path $outputRoot 'contact_sheet_manifest.json'),
+            ($contactManifest | ConvertTo-Json -Depth 8),
+            [System.Text.UTF8Encoding]::new($false)
+        )
+    }
+    finally {
+        $accentBrush.Dispose(); $rowBrush.Dispose(); $titleFont.Dispose(); $labelFont.Dispose(); $smallFont.Dispose()
+    }
+}
+
 function Render-Component(
     [PeterSpriteComponent]$component,
     [int]$sourceHeight,
@@ -314,6 +502,7 @@ finally {
 }
 Save-Png $shadow (Join-Path $runtimeRoot 'ground_shadow.png')
 $shadow.Dispose()
+New-FeedbackEffectAssets $runtimeRoot
 
 $manifest = [ordered]@{
     schema_version = 2
@@ -332,6 +521,15 @@ $manifest = [ordered]@{
     playback_contract = 'Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.'
     jump_displacement = 'baked_into_frames'
     shadow = 'ground_shadow.png'
+    feedback_effects = [ordered]@{
+        landing_ring = 'effects/landing_ring.png'
+        landing_dust = 'effects/landing_dust.png'
+        lane_shift_trail = 'effects/lane_shift_trail.png'
+        slide_dust = 'effects/slide_dust.png'
+        character_compatibility = 'Shared ground-anchored effects; no dependency on adult body pixels.'
+        reduced_motion = 'All optional effect layers are suppressed when reduced motion is enabled.'
+    }
+    contact_sheet_package = 'Peter_Run_Visual_Production/generated/peter_adult_image_v04/contact_sheets'
     animations = $animations
 }
 $manifestJson = $manifest | ConvertTo-Json -Depth 12
@@ -340,4 +538,5 @@ $manifestJson = $manifest | ConvertTo-Json -Depth 12
     $manifestJson,
     [System.Text.UTF8Encoding]::new($false)
 )
+New-ContactSheetPackage $framesRoot (Join-Path $PSScriptRoot 'generated\peter_adult_image_v04\contact_sheets') $clips
 Write-Output "PETER_ADULT_IMAGE_V04_PREPARED $runtimeRoot"

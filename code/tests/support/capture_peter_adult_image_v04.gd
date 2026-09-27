@@ -34,7 +34,7 @@ func _run() -> void:
 		root.size = size
 		await process_frame
 		await process_frame
-		for state in [&"idle_ready", &"walk_forward", &"move_left", &"move_right", &"jump", &"slide", &"rest", &"success_settle", &"neutral_clear", &"paused"]:
+		for state in [&"idle_ready", &"walk_forward", &"move_left", &"move_right", &"jump", &"landing_fx", &"slide", &"rest", &"success_settle", &"neutral_clear", &"paused"]:
 			player.reset_for_practice()
 			match state:
 				&"walk_forward":
@@ -49,9 +49,17 @@ func _run() -> void:
 					player.show_resolved_feedback(false)
 				&"move_left", &"move_right", &"jump", &"slide":
 					player.handle_action(state)
+				&"landing_fx":
+					player.handle_action(&"jump")
 				_:
 					pass
-			step(0.11 if state in [&"move_left", &"move_right"] else (0.24 if state == &"slide" else 0.30))
+			if state == &"landing_fx":
+				var action_tween: Tween = player.get("_action_tween")
+				action_tween.pause()
+				action_tween.custom_step(0.63)
+				player._process(0.04)
+			else:
+				step(0.11 if state in [&"move_left", &"move_right"] else (0.24 if state == &"slide" else 0.30))
 			player.set_gameplay_paused(true)
 			await capture(String(state), size)
 			if state in [&"jump", &"slide", &"move_left"]:

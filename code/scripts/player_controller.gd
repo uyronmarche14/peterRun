@@ -30,7 +30,10 @@ var _lane_direction := 1.0
 @onready var slide_dust: Node2D = $SlideDust
 @onready var character_sprite: Sprite2D = $Visual/CharacterSprite
 @onready var landing_ring: Line2D = $LandingRing
+@onready var landing_dust: Sprite2D = $LandingRing/LandingDust
 @onready var lane_trail: Line2D = $LaneTrail
+@onready var lane_trail_art: Sprite2D = $LaneTrail/TrailArt
+@onready var slide_dust_art: Sprite2D = $SlideDust/DustArt
 
 var lane_index: int:
 	get:
@@ -47,8 +50,7 @@ func _ready() -> void:
 	visual.scale = Vector2.ONE
 	visual.rotation = 0.0
 	shadow.scale = Vector2.ONE
-	slide_streak.visible = false
-	slide_dust.visible = false
+	_reset_feedback_visuals()
 
 
 func handle_action(action_name: StringName) -> bool:
@@ -81,15 +83,12 @@ func reset_for_practice() -> void:
 	character_sprite.play_clip(&"idle_ready")
 	_landing_remaining = 0.0
 	_lane_remaining = 0.0
-	landing_ring.visible = false
-	lane_trail.visible = false
 	position.x = LANE_X[lane_index]
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
 	visual.rotation = 0.0
 	shadow.scale = Vector2.ONE
-	slide_streak.visible = false
-	slide_dust.visible = false
+	_reset_feedback_visuals()
 
 
 func _animate_lane_change() -> void:
@@ -154,14 +153,29 @@ func _update_ground_feedback(delta: float) -> void:
 	landing_ring.visible = _landing_remaining > 0.0 and not Settings.reduced_motion
 	if landing_ring.visible:
 		var fraction := 1.0 - _landing_remaining / LANDING_SECONDS
-		landing_ring.scale = Vector2.ONE * lerpf(0.65, 1.4, fraction)
-		landing_ring.modulate.a = (1.0 - fraction) * 0.5
+		landing_ring.scale = Vector2.ONE * lerpf(0.62, 1.38, fraction)
+		landing_ring.modulate.a = (1.0 - fraction) * 0.72 * Settings.effects_intensity
+		landing_dust.visible = true
+		landing_dust.position = Vector2(0.0, -4.0 * sin(fraction * PI))
+		landing_dust.scale = Vector2.ONE * lerpf(0.56, 0.72, fraction)
+		landing_dust.modulate.a = (1.0 - fraction) * 0.78 * Settings.effects_intensity
+	else:
+		landing_dust.visible = false
 	_lane_remaining = maxf(0.0, _lane_remaining - delta)
 	lane_trail.visible = _lane_remaining > 0.0 and action_state != PlayerLaneStateModel.ActionState.JUMP and not Settings.reduced_motion
 	if lane_trail.visible:
 		var fraction := 1.0 - _lane_remaining / LANE_TWEEN_SECONDS
 		lane_trail.scale.x = _lane_direction
-		lane_trail.modulate.a = sin(fraction * PI) * 0.45
+		lane_trail.position.y = -2.0 * sin(fraction * PI)
+		lane_trail.modulate.a = sin(fraction * PI) * 0.58 * Settings.effects_intensity
+		lane_trail_art.modulate.a = 0.82
+	if slide_dust.visible:
+		var fraction := clampf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001), 0.0, 1.0)
+		var ease_alpha := sin(fraction * PI)
+		slide_dust.position = Vector2(-5.0 - 8.0 * fraction, 14.0 - 2.0 * ease_alpha)
+		slide_dust.modulate.a = ease_alpha * 0.72 * Settings.effects_intensity
+		slide_dust_art.position.x = -14.0 - 4.0 * fraction
+		slide_streak.modulate.a = ease_alpha * 0.62 * Settings.effects_intensity
 
 
 func _play_neutral_action_animation(action_name: StringName) -> void:
@@ -169,8 +183,7 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 		_action_tween.kill()
 	visual.transform = Transform2D.IDENTITY
 	shadow.scale = Vector2.ONE
-	slide_streak.visible = false
-	slide_dust.visible = false
+	_reset_feedback_visuals()
 	_action_tween = create_tween()
 	# The authored frames contain the lift/duck. Only this timer owns action
 	# recovery, retaining the original collision/input semantics.
@@ -194,7 +207,9 @@ func _finish_action_animation() -> void:
 		_landing_remaining = LANDING_SECONDS
 		landing_ring.visible = not Settings.reduced_motion
 		landing_ring.scale = Vector2.ONE * 0.65
-		landing_ring.modulate.a = 0.5
+		landing_ring.modulate.a = 0.72 * Settings.effects_intensity
+		landing_dust.visible = not Settings.reduced_motion
+		landing_dust.modulate.a = 0.78 * Settings.effects_intensity
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
 	visual.rotation = 0.0
@@ -225,6 +240,28 @@ func set_gameplay_paused(should_pause: bool) -> void:
 		_shadow_tween.set_speed_scale(tween_speed)
 
 
+func _reset_feedback_visuals() -> void:
+	slide_streak.visible = false
+	slide_streak.modulate = Color.WHITE
+	slide_dust.visible = false
+	slide_dust.position = Vector2(-5, 14)
+	slide_dust.modulate = Color.WHITE
+	slide_dust_art.position = Vector2(-14, 0)
+	landing_ring.visible = false
+	landing_ring.position = Vector2(0, 15)
+	landing_ring.scale = Vector2.ONE
+	landing_ring.modulate = Color.WHITE
+	landing_dust.visible = false
+	landing_dust.position = Vector2.ZERO
+	landing_dust.scale = Vector2.ONE * 0.56
+	landing_dust.modulate = Color.WHITE
+	lane_trail.visible = false
+	lane_trail.position = Vector2.ZERO
+	lane_trail.scale = Vector2.ONE
+	lane_trail.modulate = Color.WHITE
+	lane_trail_art.modulate = Color.WHITE
+
+
 func _exit_tree() -> void:
 	finish_session_visuals()
 
@@ -242,3 +279,4 @@ func finish_session_visuals() -> void:
 	_lane_tween = null
 	_action_tween = null
 	_shadow_tween = null
+	_reset_feedback_visuals()

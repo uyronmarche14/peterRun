@@ -1,0 +1,86 @@
+{
+    "schema_version":  1,
+    "character_id":  "peter_adult_image_v04",
+    "design_reference":  "Peter_Run_Visual_Production/character_concepts/peter_character_v03/peter_character_turnaround_v03.png",
+    "canvas":  [
+                   256,
+                   256
+               ],
+    "pivot":  [
+                  128,
+                  216
+              ],
+    "overview":  "peter_adult_image_v04_contact_sheet.png",
+    "clips":  [
+                  {
+                      "id":  "idle_ready",
+                      "sheet":  "idle_ready_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  2,
+                      "loop":  true
+                  },
+                  {
+                      "id":  "walk_forward",
+                      "sheet":  "walk_forward_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  1.2,
+                      "loop":  true
+                  },
+                  {
+                      "id":  "move_left",
+                      "sheet":  "move_left_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  0.22,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "move_right",
+                      "sheet":  "move_right_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  0.22,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "jump_low",
+                      "sheet":  "jump_low_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  0.62,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "slide_duck",
+                      "sheet":  "slide_duck_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  0.48,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "rest",
+                      "sheet":  "rest_contact_sheet.png",
+                      "frames":  6,
+                      "duration_seconds":  2,
+                      "loop":  true
+                  },
+                  {
+                      "id":  "success_settle",
+                      "sheet":  "success_settle_contact_sheet.png",
+                      "frames":  4,
+                      "duration_seconds":  0.5,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "neutral_clear",
+                      "sheet":  "neutral_clear_contact_sheet.png",
+                      "frames":  4,
+                      "duration_seconds":  0.25,
+                      "loop":  false
+                  },
+                  {
+                      "id":  "paused",
+                      "sheet":  "paused_contact_sheet.png",
+                      "frames":  1,
+                      "duration_seconds":  0.041666666666666664,
+                      "loop":  false
+                  }
+              ]
+}

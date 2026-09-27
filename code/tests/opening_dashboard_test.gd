@@ -27,11 +27,21 @@ func _run() -> void:
 	_expect(not menu.has_node("Dashboard/Margin/Content/RouteStrip"), "Card drops the landmark strip that disagreed with the in-game journey")
 	_expect_label(menu, ^"Dashboard/Margin/Content/Title", "PETER RUN", "Opening title remains explicit")
 	_expect_font(menu, ^"Dashboard/Margin/Content/Title", "LilitaOne", "Title uses the sign-painter display font")
-	_expect_label(menu, ^"Dashboard/Margin/Content/Subtitle", "Bawat hakbang ng buhay.", "Card carries the Filipino tagline under the title")
-	_expect_font(menu, ^"Dashboard/Margin/Content/Subtitle", "Fredoka", "Tagline uses the rounded display font")
-	var tagline := menu.get_node_or_null(^"Dashboard/Margin/Content/Subtitle") as Label
-	_expect(tagline != null and tagline.get_theme_font_size("font_size") >= 12, "Tagline is at least 12 px on the native canvas")
-	_expect(not menu.has_node("RouteTagline"), "Tagline no longer floats over the busy sky")
+	_expect_label(menu, ^"Dashboard/Margin/Content/Subtitle", "One step at a time.", "Card keeps the calm English subtitle")
+	_expect_font(menu, ^"Dashboard/Margin/Content/Subtitle", "Fredoka", "Subtitle uses the rounded display font")
+	_expect_label(menu, ^"%Quote", "Bawat hakbang ng buhay.", "Inspiration line sits over the scenery")
+	_expect_label(menu, ^"%Translation", "Every step of life.", "Inspiration line has a quiet English gloss")
+	_expect_font(menu, ^"%Quote", "Fredoka", "Inspiration line uses the rounded display font")
+	var quote := menu.get_node_or_null(^"%Quote") as Label
+	if quote != null:
+		_expect(quote.get_theme_font_size("font_size") >= 16, "Inspiration line is large (at least 16 px native)")
+		_expect((menu.get_node("HeroQuote/Pill") as PanelContainer).get_theme_stylebox("panel").bg_color.a >= 0.5, "Inspiration line sits on a readable backing over bright art")
+		await process_frame
+		var quote_rect := (menu.get_node("HeroQuote") as Control).get_global_rect()
+		_expect(not quote_rect.intersects((menu.get_node("Dashboard") as Control).get_global_rect()), "Inspiration line stays clear of the card")
+		_expect(not quote_rect.intersects((menu.get_node("MusicCredit") as Control).get_global_rect()), "Inspiration line stays clear of the music controls")
+		_expect(quote_rect.end.x <= 480.0 and quote_rect.position.y >= 0.0, "Inspiration line stays on screen")
+	_expect(not menu.has_node("RouteTagline"), "The old hard-to-read sky label is replaced")
 	_expect_label(menu, ^"Dashboard/Margin/Content/WelcomeBadge/Label", "MABUHAY! · WELCOME", "Greeting is a badge on the card")
 	_expect(not menu.has_node("Welcome"), "Corner greeting label is replaced by the badge")
 	var credit := menu.get_node_or_null(^"MusicCredit") as Label

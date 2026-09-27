@@ -41,6 +41,19 @@ corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
+[sub_resource type="StyleBoxFlat" id="QuotePill"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 5.0
+bg_color = Color(0.03, 0.2, 0.22, 0.58)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.02, 0.1, 0.12, 0.25)
+shadow_size = 4
+
 [sub_resource type="StyleBoxFlat" id="CreditPill"]
 content_margin_left = 6.0
 content_margin_top = 1.0
@@ -154,8 +167,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.42, 0.08, 1)
 theme_override_fonts/font = SubResource("FredokaSemiBold")
-theme_override_font_sizes/font_size = 12
-text = "Bawat hakbang ng buhay."
+theme_override_font_sizes/font_size = 11
+text = "One step at a time."
 horizontal_alignment = 1
 
 [node name="RouteTicket" type="PanelContainer" parent="Dashboard/Margin/Content"]
@@ -234,6 +247,43 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 7
 text = "Supervised session · Keyboard or MOVE controller"
+horizontal_alignment = 1
+
+[node name="HeroQuote" type="CenterContainer" parent="."]
+offset_left = 236.0
+offset_top = 40.0
+offset_right = 470.0
+offset_bottom = 92.0
+mouse_filter = 2
+
+[node name="Pill" type="PanelContainer" parent="HeroQuote"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("QuotePill")
+
+[node name="Content" type="VBoxContainer" parent="HeroQuote/Pill"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Quote" type="Label" parent="HeroQuote/Pill/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.1, 0.12, 0.5)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = SubResource("FredokaBold")
+theme_override_font_sizes/font_size = 16
+text = "Bawat hakbang ng buhay."
+horizontal_alignment = 1
+
+[node name="Translation" type="Label" parent="HeroQuote/Pill/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.83, 0.43, 1)
+theme_override_fonts/font = SubResource("FredokaSemiBold")
+theme_override_font_sizes/font_size = 8
+text = "Every step of life."
 horizontal_alignment = 1
 
 [node name="CharacterMount" type="Node2D" parent="."]

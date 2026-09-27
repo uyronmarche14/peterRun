@@ -160,7 +160,7 @@ func _test_invalid_selection() -> void:
 	Setup.get_session_config().selected_level_id = &"missing_level"
 	var ready := _open("res://scenes/ready.tscn")
 	await process_frame
-	_expect(ready.get_node("Panel/Margin/Content/StartSessionButton").disabled, "Unknown level cannot silently start L01")
+	_expect(ready.get_node("%StartSessionButton").disabled, "Unknown level cannot silently start L01")
 	ready.call("start_session")
 	_expect(current_scene == ready, "Start handler also blocks invalid selection")
 	ready.free()

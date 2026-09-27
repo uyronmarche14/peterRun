@@ -35,6 +35,8 @@ const ICONS := {&"move_left": "‹", &"move_right": "›", &"jump": "▲", &"sli
 @export var horizon_color := Color(0.098, 0.37, 0.337, 1)
 @export var road_color := Color(0.102, 0.145, 0.169, 1)
 @export var background_texture: Texture2D
+# Hidden routes stay in the catalog for development but are not offered in Setup.
+@export var show_in_setup := true
 # Data describes the existing cadence; a theme cannot silently change it.
 @export var warning_seconds := 2.5
 @export var response_seconds := 2.0

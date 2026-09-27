@@ -8,20 +8,32 @@ const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
+const ControlHints = preload("res://scripts/control_hints.gd")
 
 @onready var session_details: Label = $Panel/Margin/Content/SessionSummary/SessionDetails
-@onready var start_session_button: Button = $Panel/Margin/Content/StartSessionButton
-@onready var back_button: Button = $Panel/Margin/Content/BackButton
-@onready var test_controls_button: Button = $Panel/Margin/Content/ControlsRow/TestControlsButton
-@onready var practice_button: Button = $Panel/Margin/Content/ControlsRow/PracticeButton
+@onready var start_session_button: Button = %StartSessionButton
+@onready var back_button: Button = %BackButton
+@onready var test_controls_button: Button = %TestControlsButton
+@onready var practice_button: Button = %PracticeButton
+@onready var keyboard_note: Label = %KeyboardNote
 
 
 func _ready() -> void:
 	_refresh_session_details()
+	_refresh_control_note()
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	start_session_button.pressed.connect(start_session)
 	back_button.pressed.connect(return_to_setup)
 	test_controls_button.pressed.connect(open_controller_check)
 	practice_button.pressed.connect(return_to_tutorial)
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	_refresh_control_note()
+
+
+func _refresh_control_note() -> void:
+	keyboard_note.text = ControlHints.footer_text(ControlHints.uses_gamepad())
 
 
 func get_runner_scene_path() -> String:

@@ -2,10 +2,10 @@ extends SceneTree
 
 const CONTROLLER_CHECK_PATH := "res://scenes/controller_check.tscn"
 const TILE_PATHS := {
-	"MoveLeft": "MovementGrid/MoveLeft",
-	"MoveRight": "MovementGrid/MoveRight",
-	"Jump": "MovementGrid/Jump",
-	"Slide": "MovementGrid/Slide",
+	"MoveLeft": "MoveLeft",
+	"MoveRight": "MoveRight",
+	"Jump": "Jump",
+	"Slide": "Slide",
 	"Pause": "Pause",
 }
 
@@ -26,14 +26,14 @@ func _run() -> void:
 		_expect(controller_check.has_node(tile_path), "Controller Check includes the %s action tile" % tile_name)
 		_expect(controller_check.has_node(tile_path + "/Content/Status"), "%s status uses the responsive tile content layout" % tile_name)
 	var pause_tile := controller_check.get_node_or_null("Panel/Margin/Content/ActionTiles/Pause") as PanelContainer
-	_expect(pause_tile != null and pause_tile.size_flags_horizontal == Control.SIZE_EXPAND_FILL, "Pause occupies a full-width final controller tile")
+	_expect(pause_tile != null and pause_tile.size_flags_horizontal == Control.SIZE_EXPAND_FILL, "Pause shares the equal-width tile row")
 	if controller_check.has_method("receive_test_action"):
 		controller_check.call("receive_test_action", &"move_left", true, 1.0)
-		_expect(_tile_status(controller_check, "MoveLeft") == "Detected", "Move Left tile confirms a named action")
+		_expect(_tile_status(controller_check, "MoveLeft") == "✓ Detected", "Move Left tile confirms a named action")
 		controller_check.call("receive_test_action", &"move_left", false, 1.1)
 		controller_check.call("receive_test_action", &"pause_session", true, 2.0)
-		_expect(_tile_status(controller_check, "Pause") == "Detected", "Pause tile confirms a named action")
-		_expect(controller_check.get_node("Panel/Margin/Content/ControllerSummary/ControllerStatus").text.contains("2 of 5"), "Controller Check reports the number of confirmed actions")
+		_expect(_tile_status(controller_check, "Pause") == "✓ Detected", "Pause tile confirms a named action")
+		_expect(controller_check.get_node("%ControllerStatus").text.contains("2 of 5"), "Controller Check reports the number of confirmed actions")
 	controller_check.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)

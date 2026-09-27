@@ -18,16 +18,16 @@ func _run() -> void:
 	var player := level.get_node_or_null(^"Player") as Node2D
 	_expect(player != null, "RunnerLevel has a player")
 	if player != null:
-		level.call("_unhandled_input", _keyboard_event(KEY_A, true))
+		level.call("_input", _keyboard_event(KEY_A, true))
 		_expect_equal(player.get("lane_index"), 0, "Real A key moves player one lane left")
-		level.call("_unhandled_input", _keyboard_event(KEY_A, false))
+		level.call("_input", _keyboard_event(KEY_A, false))
 
-		level.call("_unhandled_input", _keyboard_event(KEY_W, true))
+		level.call("_input", _keyboard_event(KEY_W, true))
 		_expect_equal(player.get("action_state"), 1, "Real W key starts the jump action")
 		await create_timer(0.08).timeout
 		var visual := player.get_node_or_null(^"Visual") as Node2D
 		_expect(visual != null and visual.transform == Transform2D.IDENTITY and player.character_sprite.animation == &"jump_low", "Real jump input selects authored lift instead of a duplicate runtime lift")
-		level.call("_unhandled_input", _keyboard_event(KEY_W, false))
+		level.call("_input", _keyboard_event(KEY_W, false))
 
 	level.free()
 	_finish()

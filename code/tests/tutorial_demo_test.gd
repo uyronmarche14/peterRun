@@ -14,7 +14,7 @@ func _run() -> void:
 	var setup: Node = load("res://scenes/patient_setup.tscn").instantiate()
 	root.add_child(setup)
 	await process_frame
-	_expect(setup.get_node("Panel/Margin/Content/LevelLabel").text == "Route: Barangay Morning", "Setup describes a route, not a difficulty level")
+	_expect(setup.get_node("%RouteCaption").text == "Route" and setup.get_node("%LevelLabel").text == "L01 · Barangay Morning", "Setup describes a route, not a difficulty level")
 	setup.free()
 	var tutorial: Node = load("res://scenes/tutorial.tscn").instantiate()
 	root.add_child(tutorial)

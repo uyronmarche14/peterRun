@@ -12,15 +12,15 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const MIN_TARGET_REPETITIONS := 1
 const MAX_TARGET_REPETITIONS := 15
 
-@onready var affected_side_option: OptionButton = $Panel/Margin/Content/AffectedSideOption
-@onready var level_option: OptionButton = $Panel/Margin/Content/LevelOption
-@onready var level_label: Label = $Panel/Margin/Content/LevelLabel
-@onready var target_repetitions_spin_box: SpinBox = $Panel/Margin/Content/TargetRepetitionsSpinBox
-@onready var session_summary: Label = $Panel/Margin/Content/SessionSummary
-@onready var continue_button: Button = $Panel/Margin/Content/ContinueButton
-@onready var back_button: Button = $Panel/Margin/Content/BackButton
-@onready var test_controls_button: Button = $Panel/Margin/Content/ControlsRow/TestControlsButton
-@onready var practice_button: Button = $Panel/Margin/Content/ControlsRow/PracticeButton
+@onready var affected_side_option: OptionButton = %AffectedSideOption
+@onready var level_option: OptionButton = %LevelOption
+@onready var level_label: Label = %LevelLabel
+@onready var target_repetitions_spin_box: SpinBox = %TargetRepetitionsSpinBox
+@onready var session_summary: Label = %SessionSummary
+@onready var continue_button: Button = %ContinueButton
+@onready var back_button: Button = %BackButton
+@onready var test_controls_button: Button = %TestControlsButton
+@onready var practice_button: Button = %PracticeButton
 
 
 func _ready() -> void:
@@ -81,18 +81,21 @@ func return_to_main_menu() -> void:
 func _configure_controls() -> void:
 	var current_config: Variant = SessionSetupStoreModel.get_session_config()
 	affected_side_option.clear()
-	affected_side_option.add_item("Right affected side", SessionConfigModel.AffectedSide.RIGHT)
-	affected_side_option.add_item("Left affected side", SessionConfigModel.AffectedSide.LEFT)
+	affected_side_option.add_item("Right side", SessionConfigModel.AffectedSide.RIGHT)
+	affected_side_option.add_item("Left side", SessionConfigModel.AffectedSide.LEFT)
 	level_option.clear()
 	var selected_level_index := 0
 	for definition: Resource in LevelCatalog.levels:
-		if definition == null:
+		if definition == null or not definition.show_in_setup:
 			continue
 		level_option.add_item("%s · %s" % [definition.short_name, definition.title])
 		level_option.set_item_metadata(level_option.item_count - 1, definition.level_id)
 		if definition.level_id == current_config.selected_level_id:
 			selected_level_index = level_option.item_count - 1
 	level_option.select(selected_level_index)
+	# A one-item dropdown is noise; show the single route as text instead.
+	level_option.visible = level_option.item_count > 1
+	level_label.visible = not level_option.visible
 	target_repetitions_spin_box.min_value = MIN_TARGET_REPETITIONS
 	target_repetitions_spin_box.max_value = MAX_TARGET_REPETITIONS
 	target_repetitions_spin_box.step = 1
@@ -110,7 +113,7 @@ func _get_selected_affected_side() -> int:
 
 func _refresh_level_label() -> void:
 	var definition: Resource = LevelCatalog.find_level(_get_selected_level_id())
-	level_label.text = "Route: " + (definition.title if definition != null else "Unavailable")
+	level_label.text = ("%s · %s" % [definition.short_name, definition.title]) if definition != null else "Unavailable"
 
 
 func _get_selected_level_id() -> StringName:
@@ -122,7 +125,7 @@ func _update_summary() -> void:
 		return
 	var side_name := "left" if _get_selected_affected_side() == SessionConfigModel.AffectedSide.LEFT else "right"
 	var per_action := int(target_repetitions_spin_box.value)
-	session_summary.text = "%d per action · %d total · %s side" % [per_action, per_action * SessionConfigModel.ACTIONS.size(), side_name]
+	session_summary.text = "%d total  ·  %d per movement  ·  %s side" % [per_action * SessionConfigModel.ACTIONS.size(), per_action, side_name]
 
 
 func _on_affected_side_selected(_index: int) -> void:

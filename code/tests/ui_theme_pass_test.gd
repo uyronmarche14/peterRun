@@ -4,8 +4,8 @@ var failures: PackedStringArray = []
 var capture := false
 const COMPACT_THEME_PATH := "res://art/ui/compact_theme.tres"
 const SCREENS := {
-	"main": Vector2(205, 195), "patient_setup": Vector2(340, 265),
-	"controller_check": Vector2(340, 255), "ready": Vector2(320, 200),
+	"main": Vector2(205, 195), "patient_setup": Vector2(250, 205),
+	"controller_check": Vector2(280, 160), "ready": Vector2(260, 160),
 	"tutorial": Vector2(330, 235), "session_summary": Vector2(310, 220),
 }
 
@@ -30,7 +30,7 @@ func _run() -> void:
 			_check_card(card, SCREENS[screen_name], "res://art/ui/dashboard_route_card.tres" if screen_name == "main" else "res://art/ui/menu_card.tres")
 			_check_controls(screen)
 			if screen_name == "patient_setup":
-				var stepper: SpinBox = screen.get_node("Panel/Margin/Content/TargetRepetitionsSpinBox")
+				var stepper: SpinBox = screen.get_node("%TargetRepetitionsSpinBox")
 				_expect(stepper.has_node("Stepper/Row/Increase"), "Repetition field offers full-size horizontal controls")
 				if stepper.has_node("Stepper/Row/Increase"):
 					stepper.value = 1

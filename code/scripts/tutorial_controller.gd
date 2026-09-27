@@ -6,6 +6,7 @@ const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const Store = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const Hints = preload("res://scripts/control_hints.gd")
 const PRACTICE_ACTIONS: Array[StringName] = [&"move_left", &"move_right", &"jump", &"slide"]
 
 const ACTIONS: Array[Dictionary] = [
@@ -70,6 +71,7 @@ func _ready() -> void:
 	start_practice_button.pressed.connect(start_practice)
 	show_first_demo_button.pressed.connect(show_first_demo)
 	demo_timer.timeout.connect(_on_demo_finished)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	practice_area.resized.connect(_centre_practice)
 	_centre_practice()
 	_show_welcome()
@@ -79,16 +81,20 @@ func _centre_practice() -> void:
 	practice_canvas.position.x = (practice_area.size.x - 480.0 * practice_canvas.scale.x) / 2.0
 
 
-func _unhandled_input(event: InputEvent) -> void:
+# _input runs before GUI focus navigation, so a focused button cannot turn the
+# D-pad (also bound to ui_left/ui_right) into menu movement. Every action is
+# checked because one stick axis is both a press of one lane and a release of the other.
+func _input(event: InputEvent) -> void:
+	var handled := false
 	for action in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action):
 			receive_practice_input(action, true, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
-		if event.is_action_released(action):
+			handled = true
+		elif event.is_action_released(action):
 			receive_practice_input(action, false, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
+			handled = true
+	if handled:
+		get_viewport().set_input_as_handled()
 
 
 func receive_practice_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:
@@ -188,15 +194,31 @@ func show_action_index(index: int) -> void:
 	_refresh_status()
 
 
-func _practice_instruction() -> String:
-	match current_action_index:
-		0:
-			return "Press A to move to the left marker."
-		1:
-			return "Press D to move to the right marker."
-		2:
-			return "Press W to jump over the puddle."
-	return "Press S to slide under the laundry line."
+func _practice_instruction(gamepad: bool = Hints.uses_gamepad()) -> String:
+	var action: StringName = PRACTICE_ACTIONS[current_action_index]
+	var input_name := Hints.input_name(_source_for(action), gamepad)
+	match action:
+		&"move_left":
+			return "Press %s to move to the left marker." % input_name
+		&"move_right":
+			return "Press %s to move to the right marker." % input_name
+		&"jump":
+			return "Press %s to jump over the puddle." % input_name
+	return "Press %s to slide under the laundry line." % input_name
+
+
+# Ask the adapter so the hint always names the input that produces this lesson.
+func _source_for(action: StringName) -> StringName:
+	for source in PRACTICE_ACTIONS:
+		if input_adapter.call("_map_affected_side", source) == action:
+			return source
+	return action
+
+
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
+	instruction_label.text = _practice_instruction()
+	if not connected and not is_tutorial_paused:
+		toggle_tutorial_pause()
 
 
 func _refresh_status() -> void:

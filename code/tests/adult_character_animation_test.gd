@@ -2,6 +2,9 @@ extends SceneTree
 
 const ROOT := "res://art/characters/peter_adult_image_v04"
 const MANIFEST_PATH := ROOT + "/animation_manifest.json"
+const EXPECTED_DISPLAY_SCALE := 0.32
+const EXPECTED_JUMP_LIFT := [0, -4, -12, -18, -7, 0]
+const EXPECTED_SLIDE_SCALE := [1.0, 0.96, 0.90, 0.88, 0.95, 1.0]
 const REQUIRED_CLIPS := {
 	"idle_ready": [2.0, true, 6],
 	"walk_forward": [1.2, true, 6],
@@ -36,6 +39,10 @@ func _run() -> void:
 	_expect(manifest.get("design_reference", "") == "Peter_Run_Visual_Production/character_concepts/peter_character_v03/peter_character_turnaround_v03.png", "Manifest identifies the approved adult design")
 	_expect(manifest.get("source_directory", "") == "Peter_Run_Visual_Production/generated/peter_adult_image_v04/source_strips", "Manifest identifies the preserved image source strips")
 	_expect(manifest.get("generation_method", "").contains("identity-preserving reference prompts"), "Manifest records the approved image-generation method")
+	var adjustments: Dictionary = manifest.get("visual_adjustments", {})
+	_expect(is_equal_approx(float(adjustments.get("display_scale", 0.0)), EXPECTED_DISPLAY_SCALE), "Adult Peter is slightly larger without changing the ground anchor")
+	_expect(adjustments.get("jump_lift_pixels", []) == EXPECTED_JUMP_LIFT, "Jump artwork uses the higher approved visual arc")
+	_expect(adjustments.get("slide_vertical_scale", []) == EXPECTED_SLIDE_SCALE, "Slide artwork uses the deeper approved crouch")
 	var canvas: Array = manifest.get("canvas", [])
 	var pivot: Array = manifest.get("pivot", [])
 	_expect(canvas.size() == 2 and int(canvas[0]) == 256 and int(canvas[1]) == 256 and pivot.size() == 2 and int(pivot[0]) == 128 and int(pivot[1]) == 216, "Every clip keeps the fixed runtime canvas and ground anchor")
@@ -62,6 +69,7 @@ func _run() -> void:
 		var player := player_scene.instantiate()
 		root.add_child(player)
 		var sprite: Sprite2D = player.get_node(^"Visual/CharacterSprite")
+		_expect(sprite.scale == Vector2.ONE * EXPECTED_DISPLAY_SCALE, "Player scene displays the slightly larger adult Peter")
 		_expect(sprite.call("frame_path", &"walk_forward", 0).begins_with(ROOT + "/"), "Player sprite resolves the approved adult-image atlas root")
 		player.set_walking(true)
 		player._process(0.18)

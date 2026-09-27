@@ -20,6 +20,7 @@ func _run() -> void:
 		Setup.reset()
 		await _test_completion_and_rating(review)
 		await _test_early_end_and_retry(review)
+		await _test_collision_outcome(review)
 		await _test_empty_summary(review)
 		Setup.reset()
 	# Allow the stopped menu playback to leave the audio mixer before shutdown.
@@ -44,10 +45,8 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	var runner := _open("res://scenes/levels/runner_level.tscn")
 	await process_frame
 	var director: Node = runner.get_node("PromptDirector")
-	# One unmatched prompt, then each of the four correct actions.
-	director.call("open_response_window")
-	director.call("expire_active_prompt")
-	runner.call("_on_resolve_timer_timeout")
+	# Collision now ends a run, so this completion path uses only correct
+	# contact responses. Collision coverage lives in formation_runner_test.
 	for _index in 80:
 		if runner.get("is_session_ended"):
 			break
@@ -58,7 +57,7 @@ func _test_completion_and_rating(review: GDScript) -> void:
 			runner.call("_on_resolve_timer_timeout")
 	_expect(runner.get("is_session_ended"), "Meeting targets ends gameplay immediately")
 	var result: Variant = review.call("get_result")
-	_expect(result != null and result.neutral_misses == 1, "Completion preserves neutral misses")
+	_expect(result != null and result.neutral_misses == 0, "A collision-free completion preserves no neutral misses")
 	if result == null:
 		runner.free()
 		return
@@ -77,10 +76,11 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	var summary := current_scene
 	_expect_controls_fit(summary.get_node("Panel"), summary.get_node("Panel").get_global_rect())
 	_expect(summary.get_node("Panel/Margin/Content/Repetitions/Jump").text == "Jump: 1 / 1", "Summary displays completed and planned repetitions")
-	_expect(summary.get_node("Panel/Margin/Content/Misses").text == "Neutral misses: 1", "Summary labels misses neutrally")
+	_expect_outcome(summary, "Outcome: Planned repetitions complete", "Summary identifies planned completion")
+	_expect(summary.get_node("Panel/Margin/Content/Misses").text == "Neutral misses: 0", "Summary labels collision-free completion neutrally")
 	_expect(summary.has_node("Panel/Margin/Content/Journey"), "Summary includes calm journey context")
 	if summary.has_node("Panel/Margin/Content/Journey"):
-		_expect(summary.get_node("Panel/Margin/Content/Journey").text.begins_with("Journey landmark:"), "Summary labels journey context without a score")
+		_expect(summary.get_node("Panel/Margin/Content/Journey").text == "Journey landmark: Barangay Plaza", "Completed repetitions reach the final journey landmark without a score")
 	_expect(summary.get_node("Panel/Margin/Content/Actions/RetryButton").disabled, "Retry waits for a recorded rating")
 	for invalid in [0, 11, 3.5, "5"]:
 		_expect(not summary.call("select_rating", invalid), "Invalid rating is rejected")
@@ -122,6 +122,7 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	await process_frame
 	await process_frame
 	var summary := current_scene
+	_expect_outcome(summary, "Outcome: Level ended by therapist", "Summary identifies a therapist-ended level")
 	summary.call("retry_session")
 	_expect(current_scene == summary, "An unrated retry cannot bypass the disabled button")
 	summary.call("select_rating", 4)
@@ -143,12 +144,23 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	current_scene.call("open_summary")
 	await process_frame
 	await process_frame
+	_expect_outcome(current_scene, "Outcome: Session ended by therapist", "Summary identifies a therapist-ended session")
 	_expect(current_scene.get_node("Panel/Margin/Content/Actions/FinishButton").text == "Finish without rating", "An explicit unrated exit remains available")
 	current_scene.call("finish_session")
 	await process_frame
 	await process_frame
 	_expect(review.call("get_result").rpe == 0, "Unrated exit does not invent a rating")
 	current_scene.free()
+
+
+func _test_collision_outcome(review: GDScript) -> void:
+	var config := Config.new()
+	var result: Variant = (load("res://scripts/session_result.gd") as GDScript).new()
+	review.call("capture", config, result, &"collision")
+	var summary := _open(SummaryPath)
+	await process_frame
+	_expect_outcome(summary, "Outcome: Run ended after obstacle contact", "Summary identifies obstacle contact separately from a neutral miss")
+	summary.free()
 
 
 func _test_empty_summary(review: GDScript) -> void:
@@ -166,6 +178,13 @@ func _test_empty_summary(review: GDScript) -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _expect_outcome(summary: Node, expected_text: String, message: String) -> void:
+	var outcome := summary.get_node_or_null("Panel/Margin/Content/Outcome") as Label
+	_expect(outcome != null, message + " has an outcome row")
+	if outcome != null:
+		_expect(outcome.text == expected_text, message)
 
 
 func _expect_controls_fit(node: Node, bounds: Rect2) -> void:

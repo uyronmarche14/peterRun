@@ -25,6 +25,9 @@ func _run() -> void:
 	if config != null and result != null:
 		for action_name in [&"move_left", &"move_right", &"jump", &"slide"]:
 			config.set_target(action_name, 1)
+		# This test isolates counter/HUD presentation. Physical formation contact
+		# is covered by formation_collision_resolver_test and formation_runner_test.
+		level.set("_active_formation", {})
 
 		level.call("_on_prompt_state_changed", 3, &"jump", 1)
 		_expect_equal(result.get_completed(&"jump"), 1, "Matching prompt action increments its repetition")

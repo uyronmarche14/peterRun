@@ -37,6 +37,15 @@ func show_result(success: bool, completed: int) -> void:
 			_success_index += 1
 	else:
 		message.text = "Take your time."
+	_show_message()
+
+
+func show_safe_passage() -> void:
+	message.text = "Path is clear."
+	_show_message()
+
+
+func _show_message() -> void:
 	# Replace the current message; never build a backlog of stale notifications.
 	elapsed = 0.0
 	modulate.a = 0.0

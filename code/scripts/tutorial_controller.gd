@@ -32,8 +32,12 @@ var is_tutorial_paused := false
 var step_completed := false
 var input_adapter: RefCounted
 var is_demonstrating := false
+var tutorial_started := false
 
 @onready var progress_label: Label = $Panel/Margin/Content/ProgressLabel
+@onready var welcome: VBoxContainer = $Panel/Margin/Content/Welcome
+@onready var start_practice_button: Button = $Panel/Margin/Content/Welcome/Actions/StartPracticeButton
+@onready var show_first_demo_button: Button = $Panel/Margin/Content/Welcome/Actions/ShowFirstDemoButton
 @onready var action_icon_label: Label = $Panel/Margin/Content/ActionCard/ActionIconLabel
 @onready var action_label: Label = $Panel/Margin/Content/ActionCard/ActionLabel
 @onready var instruction_label: Label = $Panel/Margin/Content/ActionCard/InstructionLabel
@@ -63,10 +67,12 @@ func _ready() -> void:
 	back_button.pressed.connect(return_to_controller_check)
 	repeat_button.pressed.connect(repeat_action)
 	demo_button.pressed.connect(demonstrate_action)
+	start_practice_button.pressed.connect(start_practice)
+	show_first_demo_button.pressed.connect(show_first_demo)
 	demo_timer.timeout.connect(_on_demo_finished)
 	practice_area.resized.connect(_centre_practice)
 	_centre_practice()
-	show_action_index(0)
+	_show_welcome()
 
 
 func _centre_practice() -> void:
@@ -86,6 +92,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func receive_practice_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:
+	if not tutorial_started:
+		return
 	if not pressed:
 		input_adapter.release_action(source_action)
 		return
@@ -105,11 +113,13 @@ func receive_practice_input(source_action: StringName, pressed: bool, now_second
 
 
 func repeat_action() -> void:
+	if not tutorial_started:
+		return
 	show_action_index(current_action_index)
 
 
 func demonstrate_action() -> void:
-	if is_tutorial_paused or is_demonstrating:
+	if not tutorial_started or is_tutorial_paused or is_demonstrating:
 		return
 	show_action_index(current_action_index)
 	is_demonstrating = true
@@ -117,6 +127,34 @@ func demonstrate_action() -> void:
 	practice_player.handle_action(PRACTICE_ACTIONS[current_action_index])
 	demo_timer.start()
 	_refresh_status()
+
+
+func start_practice() -> void:
+	if tutorial_started:
+		return
+	tutorial_started = true
+	welcome.hide()
+	progress_label.show()
+	$Panel/Margin/Content/ActionCard.show()
+	tutorial_status.show()
+	$Panel/Margin/Content/NavigationRow.show()
+	pause_tutorial_button.show()
+	show_action_index(0)
+
+
+func show_first_demo() -> void:
+	start_practice()
+	demonstrate_action()
+
+
+func _show_welcome() -> void:
+	tutorial_started = false
+	welcome.show()
+	progress_label.hide()
+	$Panel/Margin/Content/ActionCard.hide()
+	tutorial_status.hide()
+	$Panel/Margin/Content/NavigationRow.hide()
+	pause_tutorial_button.hide()
 
 
 func _on_demo_finished() -> void:
@@ -132,7 +170,7 @@ func get_ready_scene_path() -> String:
 
 
 func show_action_index(index: int) -> void:
-	if is_tutorial_paused or is_demonstrating:
+	if not tutorial_started or is_tutorial_paused or is_demonstrating:
 		return
 	current_action_index = clampi(index, 0, ACTIONS.size() - 1)
 	step_completed = false
@@ -151,12 +189,11 @@ func show_action_index(index: int) -> void:
 
 
 func _practice_instruction() -> String:
-	var left_affected: bool = input_adapter.affected_side == Config.AffectedSide.LEFT
 	match current_action_index:
 		0:
-			return "Press %s to move to the left marker." % ("D" if left_affected else "A")
+			return "Press A to move to the left marker."
 		1:
-			return "Press %s to move to the right marker." % ("A" if left_affected else "D")
+			return "Press D to move to the right marker."
 		2:
 			return "Press W to jump over the puddle."
 	return "Press S to slide under the laundry line."
@@ -178,11 +215,13 @@ func _refresh_status() -> void:
 
 
 func show_previous_action() -> void:
+	if not tutorial_started:
+		return
 	show_action_index(current_action_index - 1)
 
 
 func show_next_action() -> void:
-	if is_tutorial_paused or is_demonstrating or not step_completed:
+	if not tutorial_started or is_tutorial_paused or is_demonstrating or not step_completed:
 		return
 	if current_action_index == ACTIONS.size() - 1:
 		skip_to_ready()
@@ -195,6 +234,8 @@ func skip_to_ready() -> void:
 
 
 func toggle_tutorial_pause() -> void:
+	if not tutorial_started:
+		return
 	is_tutorial_paused = not is_tutorial_paused
 	practice_player.set_gameplay_paused(is_tutorial_paused)
 	demo_timer.paused = is_tutorial_paused

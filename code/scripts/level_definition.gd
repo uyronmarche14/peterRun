@@ -111,7 +111,57 @@ func get_pattern_sets() -> Array:
 
 
 func get_pattern_definitions() -> Array:
+	if formation_library.is_empty() and level_id in [&"l02_market", &"l03_rainy_crossing"]:
+		return _build_shared_formation_library()
 	return formation_library.duplicate(true)
+
+
+func _build_shared_formation_library() -> Array:
+	# L02/L03 deliberately use the same safe formation contract as L01. Their
+	# palette and scenery remain level-specific; their response cadence remains
+	# the prescribed 2.5 / 2.0 / 0.75 seconds.
+	var formations: Array = []
+	for entry_lane in [1, 2]:
+		formations.append(_make_movement_formation(&"move_left", entry_lane, entry_lane - 1, entry_lane == 2))
+	for entry_lane in [0, 1]:
+		formations.append(_make_movement_formation(&"move_right", entry_lane, entry_lane + 1, entry_lane == 0))
+	for action_name in [&"jump", &"slide"]:
+		for action_lane in [0, 1, 2]:
+			formations.append(_make_lane_action_formation(action_name, action_lane))
+	return formations
+
+
+func _make_movement_formation(action_name: StringName, entry_lane: int, ending_lane: int, recovery: bool) -> Dictionary:
+	var obstacles: Array[Dictionary] = []
+	for lane in [0, 1, 2]:
+		if lane != ending_lane:
+			obstacles.append({"kind": &"crate", "lane": lane})
+	return {
+		"pattern_id": StringName("%s_%s_from_%d" % [level_id, action_name, entry_lane]),
+		"category": &"recovery" if recovery else &"normal",
+		"required_action": action_name,
+		"obstacles": obstacles,
+		"open_lanes": [ending_lane],
+		"entry_lanes": [entry_lane],
+		"ending_lane": ending_lane,
+		"allow_idle_safe_clear": false,
+	}
+
+
+func _make_lane_action_formation(action_name: StringName, action_lane: int) -> Dictionary:
+	var kind: StringName = &"puddle" if action_name == &"jump" else &"laundry_line"
+	var category: StringName = &"recovery" if action_lane == 2 else &"normal"
+	return {
+		"pattern_id": StringName("%s_%s_lane_%d" % [level_id, action_name, action_lane]),
+		"category": category,
+		"required_action": action_name,
+		"obstacles": [{"kind": kind, "lane": action_lane}],
+		"open_lanes": [0, 1, 2],
+		"action_lanes": [action_lane],
+		"entry_lanes": [action_lane],
+		"ending_lane": action_lane,
+		"allow_idle_safe_clear": false,
+	}
 
 
 func get_prop_scene(action: StringName) -> PackedScene:

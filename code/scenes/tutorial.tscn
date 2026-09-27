@@ -78,16 +78,46 @@ theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 13
-text = "Let’s practise!"
+text = "Practise the movements"
 horizontal_alignment = 1
 
 [node name="Guidance" type="Label" parent="Panel/Margin/Content"]
-visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "One movement at a time, at your pace."
+text = "Four movements, at your pace. Nothing is scored."
 horizontal_alignment = 1
+
+[node name="Welcome" type="VBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Message" type="Label" parent="Panel/Margin/Content/Welcome"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_font_sizes/font_size = 9
+text = "Start with a calm practice, watch an example, or continue when ready."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="Panel/Margin/Content/Welcome"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StartPracticeButton" type="Button" parent="Panel/Margin/Content/Welcome/Actions"]
+theme_type_variation = &"PrimaryButton"
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Start practice"
+
+[node name="ShowFirstDemoButton" type="Button" parent="Panel/Margin/Content/Welcome/Actions"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Show me first"
 
 [node name="ProgressLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
@@ -148,14 +178,14 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Previous"
+text = "Back"
 
 [node name="RepeatButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Repeat"
+text = "Try again"
 
 [node name="NextButton" type="Button" parent="Panel/Margin/Content/NavigationRow"]
 theme_type_variation = &"PrimaryButton"

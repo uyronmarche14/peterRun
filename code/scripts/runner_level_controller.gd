@@ -2,6 +2,7 @@ class_name RunnerLevelController
 extends Node2D
 
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
+const FormationCollisionResolverModel = preload("res://scripts/formation_collision_resolver.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
 const PatternLibraryResolverModel = preload("res://scripts/pattern_library_resolver.gd")
@@ -28,6 +29,7 @@ var _active_formation_props: Array[Node2D] = []
 var _pending_response_action: StringName = &""
 var _pending_response_lane := -1
 var _pending_response_movement_accepted := false
+var _prefer_recovery_next := false
 var _pattern_set_index := 0
 var _pattern_step_index := 0
 var _prop_nodes: Dictionary = {}
@@ -66,6 +68,7 @@ var _pending_end_reason: StringName = &""
 @onready var return_button: Button = $EndSessionOverlay/Panel/ReturnButton
 @onready var world_motion: Node = $WorldMotion
 @onready var l01_layered_route: Node2D = $LevelWorld/L01BarangayLayers
+@onready var contact_effects: Node2D = $ContactEffects
 @onready var end_confirmation: CanvasLayer = $EndConfirmation
 
 
@@ -94,7 +97,11 @@ func _ready() -> void:
 	_planned_sequence = level_definition.get_planned_sequence()
 	_pattern_sets = level_definition.get_pattern_sets()
 	_formation_library = level_definition.get_pattern_definitions()
+	var route_seed := maxi(1, int(Time.get_ticks_usec() % 2147483647))
+	session_result.route_seed = route_seed
+	_formation_resolver.set_seed(route_seed)
 	_apply_level_presentation()
+	player.set_walking(true)
 	_schedule_next_prompt()
 
 
@@ -127,19 +134,19 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		return
 	if is_gameplay_paused or is_session_ended:
 		return
-	# A formation is one discrete clinical response. Once its first input has
-	# been accepted, ignore later movement until the obstacle reaches Peter.
-	if not _active_formation.is_empty() and prompt_director.state == PromptDirectorModel.State.ACTIVE and _pending_response_action != &"":
-		return
-
 	named_action_received.emit(logical_action)
 	# Apply movement first so validation sees the resulting lane.
 	var movement_accepted := player.handle_action(logical_action)
-	if not _active_formation.is_empty() and prompt_director.state == PromptDirectorModel.State.ACTIVE:
-		if _pending_response_action == &"":
+	if not _active_formation.is_empty() and prompt_director.state in [PromptDirectorModel.State.WARNING, PromptDirectorModel.State.ACTIVE]:
+		# Keep the latest deliberate movement, but leave Peter correctable until
+		# the formation reaches the contact line. A correct warning-phase
+		# movement is a real prescribed movement; do not require it twice.
+		if movement_accepted:
 			_pending_response_action = logical_action
 			_pending_response_lane = player.lane_index
 			_pending_response_movement_accepted = movement_accepted
+			var guidance := "ACTION READY" if _has_pending_formation_response_ready() else ("MOVE NOW" if prompt_director.state == PromptDirectorModel.State.ACTIVE else "GET READY")
+			_update_formation_guidance(guidance, Color(0.35, 0.78, 0.66, 1.0))
 		return
 	prompt_director.call("receive_action", logical_action, player.lane_index, movement_accepted)
 
@@ -153,7 +160,11 @@ func _schedule_next_prompt() -> void:
 	_active_formation = {}
 	active_formation_id = &""
 	if not _formation_library.is_empty():
-		var formation := _formation_resolver.select_next(_formation_library, player.lane_index)
+		var remaining_targets := _get_remaining_targets()
+		var formation := _formation_resolver.select_next_for_targets(_formation_library, player.lane_index, remaining_targets, _prefer_recovery_next)
+		# A recovery preference is a one-formation reset after a neutral miss;
+		# it must not turn the entire remaining route into recovery-only play.
+		_prefer_recovery_next = false
 		if formation.is_empty():
 			_show_neutral_end_overlay("Route needs review", "This route does not have a reachable next movement. End the session and review the route setup.", &"configuration_error")
 			return
@@ -214,6 +225,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 			resolve_timer.stop()
 			if not _active_formation.is_empty():
 				_show_formation_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
+				_update_formation_guidance("GET READY", Color(1.0, 0.855, 0.51, 1.0))
 				world_motion.call("set_prompt_formation", _active_formation_props, _get_formation_lanes())
 				world_motion.call("begin_prompt_approach", 1, level_definition.warning_seconds, level_definition.response_seconds)
 			else:
@@ -234,16 +246,24 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
 			if not _active_formation.is_empty():
-				_update_prompt_card(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
+				_update_formation_guidance("MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
 			else:
 				_show_prompt(action_name, "MOVE NOW", Color(0.35, 0.78, 0.66, 1.0))
 			response_timer.start(level_definition.response_seconds)
 		PromptDirectorModel.State.RESOLVED:
 			warning_timer.stop()
 			response_timer.stop()
+			var collided := not _active_formation.is_empty() and FormationCollisionResolverModel.player_hits_formation(_active_formation, player.lane_index, resolution)
+			if collided:
+				_show_collision_end_overlay()
+				return
 			_record_prompt_resolution(action_name, resolution)
 			world_motion.call("resolve_prompt_approach", resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS, level_definition.resolved_seconds)
-			var resolved_text := "Nice step!" if resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS else "Take your time."
+			var resolved_text := "Take your time."
+			if resolution == PromptDirectorModel.Resolution.SUCCESS:
+				resolved_text = "Nice step!"
+			elif resolution == PromptDirectorModel.Resolution.SAFE_CLEAR:
+				resolved_text = "Path is clear."
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
 			if session_result.has_met_targets(session_config):
@@ -360,6 +380,33 @@ func _update_prompt_card(action_name: StringName, state_text: String, state_colo
 	prompt_state_label.add_theme_color_override("font_color", state_color)
 
 
+func _update_formation_guidance(state_text: String, state_color: Color) -> void:
+	if _has_pending_formation_response_ready():
+		_update_prompt_card(StringName(_active_formation.get("required_action", &"")), "ACTION READY", state_color)
+		return
+	if _active_formation.get("allow_idle_safe_clear", false) and player.lane_index == int(_active_formation.get("ending_lane", -1)) and _pending_response_action == &"":
+		prompt_action_label.text = "SAFE PATH"
+		prompt_icon_label.text = "✓"
+		prompt_state_label.text = state_text
+		prompt_state_label.add_theme_color_override("font_color", state_color)
+		return
+	_update_prompt_card(StringName(_active_formation.get("required_action", &"")), state_text, state_color)
+
+
+func _has_pending_formation_response_ready() -> bool:
+	if _pending_response_action == &"" or not _pending_response_movement_accepted:
+		return false
+	var required_action := StringName(_active_formation.get("required_action", &""))
+	if _pending_response_action != required_action:
+		return false
+	if required_action == &"jump" or required_action == &"slide":
+		var action_lanes: Array = _active_formation.get("action_lanes", [])
+		if not action_lanes.is_empty():
+			return action_lanes.has(player.lane_index)
+		return player.lane_index == int(_active_formation.get("action_lane", -1))
+	return player.lane_index == int(_active_formation.get("ending_lane", -1))
+
+
 func _hide_props() -> void:
 	for prop in _prop_nodes.values():
 		prop.visible = false
@@ -379,15 +426,20 @@ func _record_prompt_resolution(action_name: StringName, resolution: int) -> void
 	if resolution == PromptDirectorModel.Resolution.SUCCESS:
 		if session_result.get_completed(action_name) < session_config.get_target(action_name):
 			session_result.record_success(action_name)
-	elif resolution == PromptDirectorModel.Resolution.SAFE_CLEAR:
-		session_result.record_route_clear()
-	else:
+	elif resolution == PromptDirectorModel.Resolution.NEUTRAL_MISS:
 		session_result.record_neutral_miss()
+	_prefer_recovery_next = resolution == PromptDirectorModel.Resolution.NEUTRAL_MISS
 	_update_progress_hud(resolution == PromptDirectorModel.Resolution.SUCCESS)
 	var completed := 0
 	for action in SessionConfigModel.ACTIONS:
 		completed += mini(session_result.get_completed(action), session_config.get_target(action))
-	feedback_toast.show_result(resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS, completed)
+	if resolution == PromptDirectorModel.Resolution.SAFE_CLEAR:
+		feedback_toast.show_safe_passage()
+	else:
+		feedback_toast.show_result(resolution == PromptDirectorModel.Resolution.SUCCESS, completed)
+	var effect_action: StringName = &"neutral" if resolution == PromptDirectorModel.Resolution.SAFE_CLEAR else action_name
+	contact_effects.play_for_action(effect_action, resolution, player.position)
+	player.show_resolved_feedback(resolution == PromptDirectorModel.Resolution.SUCCESS)
 
 
 func _update_progress_hud(animate_success: bool = false) -> void:
@@ -398,7 +450,7 @@ func _update_progress_hud(animate_success: bool = false) -> void:
 		target_repetitions += session_config.get_target(action_name)
 	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
 	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
-	journey_label.text = RouteJourney.get_hud_text(session_result.route_clear_points)
+	journey_label.text = RouteJourney.get_hud_text(RouteJourney.get_progress(completed_repetitions, target_repetitions))
 	progress_bar.max_value = maxf(1.0, target_repetitions)
 	if _progress_tween != null:
 		_progress_tween.kill()
@@ -414,9 +466,16 @@ func _on_warning_timer_timeout() -> void:
 
 func _on_response_timer_timeout() -> void:
 	if not _active_formation.is_empty() and _pending_response_action != &"":
-		prompt_director.call("receive_action", _pending_response_action, _pending_response_lane, _pending_response_movement_accepted)
+		prompt_director.call("receive_action", _pending_response_action, player.lane_index, _pending_response_movement_accepted)
 	else:
 		prompt_director.call("expire_active_prompt", player.lane_index)
+
+
+func _get_remaining_targets() -> Dictionary:
+	var remaining := {}
+	for action_name in SessionConfigModel.ACTIONS:
+		remaining[action_name] = maxi(0, session_config.get_target(action_name) - session_result.get_completed(action_name))
+	return remaining
 
 
 func _get_formation_prompt_lane(formation: Dictionary) -> int:
@@ -535,6 +594,7 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 	l01_layered_route.call("set_motion_paused", should_pause)
 	player.set_gameplay_paused(should_pause)
 	feedback_toast.set_feedback_paused(should_pause)
+	contact_effects.set_effects_paused(should_pause)
 	if _progress_tween != null:
 		_progress_tween.set_speed_scale(0.0 if should_pause else 1.0)
 
@@ -557,7 +617,12 @@ func _show_neutral_end_overlay(title: String, message: String, reason: StringNam
 	pause_overlay.visible = false
 	end_confirmation.visible = false
 	SessionReviewStore.capture(session_config, session_result, reason)
+	player.finish_session_visuals()
 	end_session_title.text = title
 	end_session_message.text = message
 	end_session_overlay.visible = true
 	feedback_toast.dismiss()
+
+
+func _show_collision_end_overlay() -> void:
+	_show_neutral_end_overlay("Run ended", "Peter reached an obstacle. Completed repetitions are saved for review.", &"collision")

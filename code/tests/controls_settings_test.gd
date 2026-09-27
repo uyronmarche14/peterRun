@@ -23,6 +23,9 @@ func _test_keyboard_and_gamepad_bindings() -> void:
 
 func _test_settings_exposes_control_help_and_check_route() -> void:
 	var dashboard: Node = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
+	_expect_node(dashboard, ^"SettingsOverlay/Panel/Margin/Content/EffectsLabel", "effects preference in Settings")
+	_expect_node(dashboard, ^"SettingsOverlay/Panel/Margin/Content/EffectsOption", "effects intensity selector in Settings")
+	_expect_node(dashboard, ^"SettingsOverlay/Panel/Margin/Content/ReducedMotionToggle", "reduced-motion preference in Settings")
 	_expect_node(dashboard, ^"SettingsOverlay/Panel/Margin/Content/ControlsLabel", "controls heading in Settings")
 	_expect_node(dashboard, ^"SettingsOverlay/Panel/Margin/Content/ControlsDetail", "keyboard and controller help in Settings")
 	_expect_button(dashboard, ^"SettingsOverlay/Panel/Margin/Content/ControllerCheckButton", "Check controller")

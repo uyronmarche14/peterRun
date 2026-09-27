@@ -101,9 +101,9 @@ func _test_clear_slide_pose() -> void:
 		_expect(player.call("handle_action", &"slide"), "Player accepts a slide action from idle")
 		await create_timer(0.16).timeout
 		var visual := player.get_node_or_null(^"Visual") as Node2D
-		_expect(visual != null and visual.position.x >= 4.0, "Slide pose moves forward clearly")
-		_expect(visual != null and visual.position.y >= 5.0, "Slide pose stays low and grounded")
-		_expect(visual != null and visual.rotation <= -0.05, "Slide pose leans forward")
+		_expect(player.character_sprite.animation == &"slide_duck", "Slide selects the original authored duck animation")
+		_expect(visual != null and visual.transform == Transform2D.IDENTITY, "Authored slide remains grounded without duplicate squash or lean")
+		_expect(player.character_sprite.get_clip_frame() > 0, "Slide advances through genuine animation frames")
 		_expect(slide_streak != null and slide_streak.visible, "Slide streak is visible during the glide")
 		await create_timer(0.4).timeout
 		_expect_equal(player.get("action_state"), 0, "Slide animation returns to idle")

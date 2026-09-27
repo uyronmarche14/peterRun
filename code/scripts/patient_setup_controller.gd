@@ -7,7 +7,9 @@ const LevelCatalog = preload("res://data/levels/catalog.tres")
 
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const MAIN_MENU_SCENE_PATH := "res://scenes/main.tscn"
-const MIN_TARGET_REPETITIONS := 10
+const READY_SCENE_PATH := "res://scenes/ready.tscn"
+const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
+const MIN_TARGET_REPETITIONS := 1
 const MAX_TARGET_REPETITIONS := 15
 
 @onready var affected_side_option: OptionButton = $Panel/Margin/Content/AffectedSideOption
@@ -17,16 +19,24 @@ const MAX_TARGET_REPETITIONS := 15
 @onready var session_summary: Label = $Panel/Margin/Content/SessionSummary
 @onready var continue_button: Button = $Panel/Margin/Content/ContinueButton
 @onready var back_button: Button = $Panel/Margin/Content/BackButton
+@onready var test_controls_button: Button = $Panel/Margin/Content/ControlsRow/TestControlsButton
+@onready var practice_button: Button = $Panel/Margin/Content/ControlsRow/PracticeButton
 
 
 func _ready() -> void:
 	_configure_controls()
-	continue_button.pressed.connect(continue_to_controller_check)
+	continue_button.pressed.connect(continue_to_ready)
 	back_button.pressed.connect(return_to_main_menu)
+	test_controls_button.pressed.connect(continue_to_controller_check)
+	practice_button.pressed.connect(continue_to_tutorial)
 
 
 func get_controller_check_scene_path() -> String:
 	return CONTROLLER_CHECK_SCENE_PATH
+
+
+func get_ready_scene_path() -> String:
+	return READY_SCENE_PATH
 
 
 func set_affected_side(affected_side: int) -> void:
@@ -52,6 +62,16 @@ func save_session_settings() -> void:
 func continue_to_controller_check() -> void:
 	save_session_settings()
 	get_tree().change_scene_to_file(CONTROLLER_CHECK_SCENE_PATH)
+
+
+func continue_to_ready() -> void:
+	save_session_settings()
+	get_tree().change_scene_to_file(READY_SCENE_PATH)
+
+
+func continue_to_tutorial() -> void:
+	save_session_settings()
+	get_tree().change_scene_to_file(TUTORIAL_SCENE_PATH)
 
 
 func return_to_main_menu() -> void:

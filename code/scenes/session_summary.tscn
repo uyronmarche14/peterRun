@@ -65,6 +65,13 @@ text = "Barangay Morning"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 
+[node name="Outcome" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Outcome: Session review"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.083, 0.369, 0.388, 1)
+
 [node name="RepsHeading" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8

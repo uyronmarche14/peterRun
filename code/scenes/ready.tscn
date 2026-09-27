@@ -39,10 +39,10 @@ offset_right = 0
 offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.2625
-anchor_top = 0.2222222222222222
-anchor_right = 0.7375
-anchor_bottom = 0.7777777777777778
+anchor_left = 0.17
+anchor_top = 0.14
+anchor_right = 0.83
+anchor_bottom = 0.86
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("10_card")
@@ -101,8 +101,26 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Start L01 Session"
 
+[node name="ControlsRow" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TestControlsButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Test controls"
+
+[node name="PracticeButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Practise movements"
+
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Back to Tutorial"
+text = "Edit session"

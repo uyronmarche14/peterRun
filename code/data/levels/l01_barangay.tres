@@ -110,6 +110,34 @@ formation_library = Array[Dictionary]([{
 "pattern_id": &"l01_p21_jump_gate_left", "category": &"mixed", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
 }, {
 "pattern_id": &"l01_p22_jump_gate_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p23_move_left_open_left", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p24_move_left_open_left", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p25_move_left_open_left", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [0], "required_action": &"move_left", "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p26_move_left_open_center", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p27_move_left_open_center", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p28_move_left_open_center", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_left", "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p29_move_right_open_center", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p30_move_right_open_center", "category": &"recovery", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p31_move_right_open_center", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [1], "required_action": &"move_right", "entry_lanes": [0, 1], "ending_lane": 1, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p32_move_right_open_right", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p33_move_right_open_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [2], "required_action": &"move_right", "entry_lanes": [1, 2], "ending_lane": 2, "allow_idle_safe_clear": true
+}, {
+"pattern_id": &"l01_p34_slide_gate_left", "category": &"mixed", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p35_slide_gate_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_p36_slide_choice_outer", "category": &"mixed", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lanes": [0, 2], "entry_lanes": [0, 2], "ending_lane": 0, "allow_idle_safe_clear": false
 }])
 move_prop = ExtResource("2")
 jump_prop = ExtResource("3")

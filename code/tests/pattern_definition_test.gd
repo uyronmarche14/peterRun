@@ -20,6 +20,7 @@ func _run() -> void:
 			_test_valid_formations(pattern_definition)
 			_test_invalid_formations(pattern_definition)
 			_test_l01_migration(pattern_definition)
+			_test_l01_balanced_action_library()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN pattern definition test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -108,6 +109,27 @@ func _test_l01_migration(pattern_definition: Script) -> void:
 		_expect(formation.has("obstacles"), "Migrated formation declares obstacles")
 		_expect(formation.has("open_lanes"), "Migrated formation declares open lanes")
 		_expect(pattern_definition.validate(formation).is_empty(), "Migrated formation is valid: " + str(formation.get("pattern_id", "unknown")))
+
+
+func _test_l01_balanced_action_library() -> void:
+	var level: Resource = load(L01_PATH)
+	var formations: Array = level.get_pattern_definitions()
+	var action_counts := {&"move_left": 0, &"move_right": 0, &"jump": 0, &"slide": 0}
+	var slide_gate_lanes: Array[int] = []
+	for formation in formations:
+		var action := StringName(formation.get("required_action", &""))
+		if action_counts.has(action):
+			action_counts[action] = int(action_counts[action]) + 1
+		if action != &"slide" or formation.get("obstacles", []).size() != 3:
+			continue
+		for obstacle in formation.get("obstacles", []):
+			if obstacle is Dictionary and obstacle.get("kind", &"") == &"laundry_line":
+				slide_gate_lanes.append(int(obstacle.get("lane", -1)))
+	_expect(formations.size() == 60, "L01 provides a 60-formation balanced library")
+	for action_name in action_counts:
+		_expect(action_counts[action_name] == 15, "L01 gives %s an equal 15 safe formation choices" % action_name)
+	for lane in [0, 1, 2]:
+		_expect(slide_gate_lanes.has(lane), "L01 includes a readable Slide gate in lane %d" % lane)
 
 
 func _valid_gate() -> Dictionary:

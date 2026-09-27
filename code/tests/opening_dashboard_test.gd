@@ -2,6 +2,7 @@ extends SceneTree
 
 var failures: PackedStringArray = []
 const MUSIC := "res://art/audio/hakbang_sa_umaga.wav"
+const HERO_ART := "res://art/backgrounds/dashboard_barangay_morning_hero_v01.png"
 
 
 func _init() -> void:
@@ -10,12 +11,22 @@ func _init() -> void:
 
 func _run() -> void:
 	_expect(FileAccess.file_exists(MUSIC), "Original menu instrumental exists")
+	_expect(FileAccess.file_exists(HERO_ART), "Opening uses a Blender-authored Barangay Morning hero image")
 	var menu: Node = load("res://scenes/main.tscn").instantiate()
 	root.add_child(menu)
 	current_scene = menu
 	await process_frame
 	_expect(menu.has_method("toggle_music"), "Opening offers music control")
-	_expect(menu.has_node("BarangayBackdrop"), "Opening has an original barangay environment")
+	_expect(menu.has_node("DashboardHero"), "Opening has the dedicated Barangay Morning hero illustration")
+	_expect(menu.has_node("OpeningLife"), "Opening has reduced-motion-aware calm life animation")
+	_expect(menu.has_node("Dashboard/Margin/Content/RouteTicket"), "Dashboard contains a route-ticket treatment")
+	_expect(menu.has_node("Dashboard/Margin/Content/RouteStrip"), "Dashboard contains a visual journey strip")
+	_expect_label(menu, ^"Dashboard/Margin/Content/Title", "PETER RUN", "Opening title remains explicit")
+	_expect_label(menu, ^"Dashboard/Margin/Content/Subtitle", "One step at a time.", "Opening uses the calm subtitle")
+	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteName", "BARANGAY MORNING", "Route ticket names Barangay Morning")
+	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteDetail", "L01 · GUIDED MOVEMENT ROUTE", "Route ticket explains the guided route")
+	var route_strip := menu.get_node_or_null(^"Dashboard/Margin/Content/RouteStrip") as Label
+	_expect(route_strip != null and route_strip.text.contains("Sari-sari Store") and route_strip.text.contains("Barangay Hall"), "Journey strip gives non-scoring landmark context")
 	_expect(menu.has_node("SettingsOverlay"), "Settings opens an actual settings panel")
 	_expect(menu.has_node("QuitOverlay"), "Quit has confirmation")
 	for overlay_name in ["SettingsOverlay", "QuitOverlay"]:
@@ -69,3 +80,8 @@ func _run() -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _expect_label(root_node: Node, path: NodePath, expected: String, message: String) -> void:
+	var label := root_node.get_node_or_null(path) as Label
+	_expect(label != null and label.text == expected, message)

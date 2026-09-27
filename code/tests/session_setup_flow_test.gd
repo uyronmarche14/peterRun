@@ -36,7 +36,7 @@ func _run() -> void:
 
 func _test_main_menu_route() -> void:
 	var dashboard: Control = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
-	_expect_button(dashboard, ^"Dashboard/Margin/Content/StartSessionButton", "Start Session")
+	_expect_button(dashboard, ^"Dashboard/Margin/Content/StartSessionButton", "▶  Start Session")
 	_expect(dashboard.has_method("open_patient_setup"), "Main Menu opens Patient Setup")
 	_expect(dashboard.has_method("get_patient_setup_scene_path"), "Main Menu exposes the Patient Setup route")
 	if dashboard.has_method("get_patient_setup_scene_path"):
@@ -53,8 +53,19 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	await process_frame
 	_expect_node(setup, ^"Panel/Margin/Content/AffectedSideOption", "affected-side selector")
 	_expect_node(setup, ^"Panel/Margin/Content/TargetRepetitionsSpinBox", "target repetition selector")
-	_expect_button(setup, ^"Panel/Margin/Content/ContinueButton", "Continue to Controller Check")
+	var repetition_stepper := setup.get_node("Panel/Margin/Content/TargetRepetitionsSpinBox") as SpinBox
+	_expect(repetition_stepper.min_value == 1, "Target repetitions can be lowered to one per action")
+	_expect(repetition_stepper.max_value == 15, "Target repetitions retain the approved maximum")
+	if setup.has_method("set_target_repetitions"):
+		setup.call("set_target_repetitions", 1)
+		_expect_label(setup, ^"Panel/Margin/Content/SessionSummary", "1 per action · 4 total · right side", "Setup shows a four-movement minimum session")
+	_expect_button(setup, ^"Panel/Margin/Content/ContinueButton", "Review session")
+	_expect_button(setup, ^"Panel/Margin/Content/ControlsRow/TestControlsButton", "Test controls")
+	_expect_button(setup, ^"Panel/Margin/Content/ControlsRow/PracticeButton", "Practise movements")
 	_expect_button(setup, ^"Panel/Margin/Content/BackButton", "Back")
+	_expect(setup.has_method("get_ready_scene_path"), "Patient Setup exposes the direct Ready route")
+	if setup.has_method("get_ready_scene_path"):
+		_expect_equal(setup.call("get_ready_scene_path"), READY_SCENE_PATH, "Review session bypasses optional control and practice screens")
 	_expect(setup.has_method("save_session_settings"), "Patient Setup saves session settings")
 	if setup.has_method("save_session_settings"):
 		setup.call("set_affected_side", SessionConfigModel.AffectedSide.LEFT)
@@ -73,21 +84,24 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var controller_check: Control = (load(CONTROLLER_CHECK_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(controller_check)
 	await process_frame
-	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerSummary/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
-	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Continue to Tutorial")
+	_expect(controller_check.get_node("Panel/Margin/Content/ControllerSummary/ControllerStatus").text.contains("Keyboard fallback ready"), "honest keyboard fallback status")
+	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Continue to ready")
 	_expect_button(controller_check, ^"Panel/Margin/Content/BackButton", "Back")
-	_expect(controller_check.has_method("get_tutorial_scene_path"), "Controller Check exposes the Tutorial route")
-	if controller_check.has_method("get_tutorial_scene_path"):
-		_expect_equal(controller_check.call("get_tutorial_scene_path"), TUTORIAL_SCENE_PATH, "Keyboard fallback continues to Tutorial")
+	_expect(controller_check.has_method("get_ready_scene_path"), "Controller Check exposes the Ready route")
+	if controller_check.has_method("get_ready_scene_path"):
+		_expect_equal(controller_check.call("get_ready_scene_path"), READY_SCENE_PATH, "Controller Check returns to Ready instead of forcing practice")
 	controller_check.queue_free()
 	await process_frame
 
 	var tutorial: Control = (load(TUTORIAL_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(tutorial)
 	await process_frame
+	_expect_node(tutorial, ^"Panel/Margin/Content/Welcome", "Tutorial welcome")
+	_expect_button(tutorial, ^"Panel/Margin/Content/Welcome/Actions/StartPracticeButton", "Start practice")
+	tutorial.call("start_practice")
 	_expect_label(tutorial, ^"Panel/Margin/Content/ActionCard/ActionLabel", "MOVE LEFT", "Tutorial begins with one action")
 	_expect_node(tutorial, ^"Panel/Margin/Content/ActionCard/ActionIconLabel", "Tutorial action icon")
-	_expect_button(tutorial, ^"Panel/Margin/Content/NavigationRow/PreviousButton", "Previous")
+	_expect_button(tutorial, ^"Panel/Margin/Content/NavigationRow/PreviousButton", "Back")
 	_expect_button(tutorial, ^"Panel/Margin/Content/NavigationRow/NextButton", "Next")
 	_expect_button(tutorial, ^"Panel/Margin/Content/UtilityRow/SkipButton", "Skip Tutorial")
 	_expect_button(tutorial, ^"Panel/Margin/Content/UtilityRow/PauseTutorialButton", "Pause Tutorial")
@@ -110,7 +124,9 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	await process_frame
 	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
 	_expect_button(ready, ^"Panel/Margin/Content/StartSessionButton", "Start L01 Session")
-	_expect_button(ready, ^"Panel/Margin/Content/BackButton", "Back to Tutorial")
+	_expect_button(ready, ^"Panel/Margin/Content/ControlsRow/TestControlsButton", "Test controls")
+	_expect_button(ready, ^"Panel/Margin/Content/ControlsRow/PracticeButton", "Practise movements")
+	_expect_button(ready, ^"Panel/Margin/Content/BackButton", "Edit session")
 	_expect(ready.has_method("get_runner_scene_path"), "Ready screen exposes the L01 route")
 	if ready.has_method("get_runner_scene_path"):
 		_expect_equal(ready.call("get_runner_scene_path"), RUNNER_LEVEL_PATH, "Ready screen starts L01")

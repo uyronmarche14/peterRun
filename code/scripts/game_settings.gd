@@ -7,6 +7,8 @@ const STANDARD_PACE := 1.0
 const LIVELY_PACE := 1.15
 
 static var visual_pace := STANDARD_PACE
+static var reduced_motion := false
+static var effects_intensity := 1.0
 
 
 static func set_visual_pace(value: float) -> void:
@@ -20,3 +22,12 @@ static func get_pace_label() -> String:
 	if is_equal_approx(visual_pace, LIVELY_PACE):
 		return "Lively"
 	return "Standard"
+
+
+static func set_reduced_motion(value: bool) -> void:
+	reduced_motion = value
+
+
+static func set_effects_intensity(value: float) -> void:
+	if is_equal_approx(value, 0.5) or is_equal_approx(value, 1.0):
+		effects_intensity = value

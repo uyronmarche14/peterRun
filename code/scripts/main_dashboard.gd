@@ -10,6 +10,7 @@ const MUSIC_PATH := "res://art/audio/hakbang_sa_umaga.wav"
 
 var _leaving := false
 var _music_fade: Tween
+var _opening_elapsed := 0.0
 
 @onready var session_status: Label = $Dashboard/Margin/Content/SessionStatus
 @onready var start_session_button: Button = $Dashboard/Margin/Content/StartSessionButton
@@ -18,30 +19,63 @@ var _music_fade: Tween
 @onready var quit_button: Button = $Dashboard/Margin/Content/SecondaryActions/QuitButton
 @onready var menu_music: AudioStreamPlayer = $MenuMusic
 @onready var music_button: Button = $MusicButton
+@onready var character_mount: Node2D = $CharacterMount
 @onready var settings_overlay: Control = $SettingsOverlay
 @onready var quit_overlay: Control = $QuitOverlay
 @onready var volume_slider: HSlider = $SettingsOverlay/Panel/Margin/Content/VolumeSlider
 @onready var route_pace_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/RoutePaceOption
+@onready var effects_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/EffectsOption
+@onready var reduced_motion_toggle: Button = $SettingsOverlay/Panel/Margin/Content/ReducedMotionToggle
 @onready var controller_check_button: Button = $SettingsOverlay/Panel/Margin/Content/ControllerCheckButton
 
 
 func _ready() -> void:
+	$CharacterMount/OpeningPlayer.set_resting_preview()
 	start_session_button.pressed.connect(open_patient_setup)
 	tutorial_button.pressed.connect(open_tutorial)
 	settings_button.pressed.connect(open_settings)
 	quit_button.pressed.connect(request_quit)
+
 	music_button.pressed.connect(toggle_music)
+	for button in [start_session_button, tutorial_button, settings_button, quit_button]:
+		button.button_down.connect(_soften_button.bind(button))
+		button.button_up.connect(_restore_button.bind(button))
 	volume_slider.value_changed.connect(set_music_volume)
 	route_pace_option.item_selected.connect(set_route_pace)
+	effects_option.item_selected.connect(set_effects_intensity)
+	reduced_motion_toggle.toggled.connect(set_reduced_motion)
 	$SettingsOverlay/Panel/Margin/Content/CloseButton.pressed.connect(close_overlays)
-	$SettingsOverlay/Panel/Margin/Content/SetupButton.pressed.connect(_open_setup_from_settings)
 	controller_check_button.pressed.connect(_open_controller_check_from_settings)
 	$QuitOverlay/Panel/Margin/Content/CancelButton.pressed.connect(close_overlays)
 	$QuitOverlay/Panel/Margin/Content/ConfirmButton.pressed.connect(confirm_quit)
 	_start_music()
 	_configure_route_pace()
+	_configure_comfort_preferences()
 	$Dashboard.modulate.a = 0.0
 	create_tween().tween_property($Dashboard, "modulate:a", 1.0, 0.45)
+
+
+
+func _process(delta: float) -> void:
+	if GameSettings.reduced_motion:
+		character_mount.position.y = 0.0
+		return
+	_opening_elapsed = fmod(_opening_elapsed + delta, TAU)
+	character_mount.position.y = sin(_opening_elapsed * 1.15) * 0.7
+
+
+func _soften_button(button: Button) -> void:
+	if GameSettings.reduced_motion:
+		return
+	var tween := create_tween()
+	tween.tween_property(button, "modulate", Color(1.0, 0.90, 0.67, 1.0), 0.07)
+
+
+func _restore_button(button: Button) -> void:
+	if GameSettings.reduced_motion:
+		return
+	var tween := create_tween()
+	tween.tween_property(button, "modulate", Color.WHITE, 0.16)
 
 
 func get_patient_setup_scene_path() -> String:
@@ -127,7 +161,7 @@ func _start_music() -> void:
 		menu_music.stream = load(MUSIC_PATH) as AudioStreamWAV
 	if menu_music.stream == null:
 		music_button.disabled = true
-		music_button.text = "Music unavailable"
+		music_button.text = "♫  Music unavailable"
 		volume_slider.editable = false
 		return
 	var track := menu_music.stream as AudioStreamWAV
@@ -158,9 +192,9 @@ func set_music_volume(value: float) -> void:
 
 func _configure_route_pace() -> void:
 	route_pace_option.clear()
-	route_pace_option.add_item("Calm", 0)
-	route_pace_option.add_item("Standard", 1)
-	route_pace_option.add_item("Lively", 2)
+	route_pace_option.add_item("Route pace: Calm", 0)
+	route_pace_option.add_item("Route pace: Standard", 1)
+	route_pace_option.add_item("Route pace: Lively", 2)
 	var selected := 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
 	route_pace_option.select(selected)
 	_update_route_pace_label()
@@ -178,6 +212,31 @@ func _update_route_pace_label() -> void:
 	$SettingsOverlay/Panel/Margin/Content/RoutePaceLabel.text = "Route pace · %s (visual only)" % GameSettings.get_pace_label()
 
 
+func _configure_comfort_preferences() -> void:
+	effects_option.clear()
+	effects_option.add_item("Effects: Subtle", 0)
+	effects_option.add_item("Effects: Standard", 1)
+	effects_option.select(0 if is_equal_approx(GameSettings.effects_intensity, 0.5) else 1)
+	reduced_motion_toggle.button_pressed = GameSettings.reduced_motion
+	_update_comfort_labels()
+
+
+func set_effects_intensity(index: int) -> void:
+	GameSettings.set_effects_intensity(0.5 if index == 0 else 1.0)
+	_update_comfort_labels()
+
+
+func set_reduced_motion(enabled: bool) -> void:
+	GameSettings.set_reduced_motion(enabled)
+	_update_comfort_labels()
+
+
+func _update_comfort_labels() -> void:
+	var intensity_label := "Subtle" if is_equal_approx(GameSettings.effects_intensity, 0.5) else "Standard"
+	$SettingsOverlay/Panel/Margin/Content/EffectsLabel.text = "Contact effects - %s" % intensity_label
+	reduced_motion_toggle.text = "Reduced motion: %s" % ("On" if GameSettings.reduced_motion else "Off")
+
+
 func toggle_music() -> void:
 	if menu_music.stream == null:
 		return
@@ -187,7 +246,7 @@ func toggle_music() -> void:
 
 
 func _update_music_label() -> void:
-	music_button.text = "Music: On" if AudioSettings.enabled else "Music: Off"
+	music_button.text = "♫  Music: On" if AudioSettings.enabled else "♫  Music: Off"
 
 
 func _exit_tree() -> void:

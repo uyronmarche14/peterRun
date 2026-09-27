@@ -1,13 +1,16 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_dashboard.gd" id="1_dashboard"]
 
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
 
-[ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="2_art"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/dashboard_barangay_morning_hero_v01.png" id="2_hero"]
+[ext_resource type="Script" path="res://scripts/opening_barangay_life.gd" id="2_life"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 
 [ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
+[ext_resource type="StyleBox" path="res://art/ui/dashboard_route_card.tres" id="11_dashboard_card"]
+[ext_resource type="StyleBox" path="res://art/ui/route_ticket.tres" id="12_ticket"]
 
 [node name="Main" type="Control"]
 theme = ExtResource("9_compact")
@@ -26,11 +29,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.027, 0.169, 0.22, 1)
+color = Color(0.047, 0.251, 0.267, 1)
 mouse_filter = 2
 
-[node name="BarangayBackdrop" type="Node2D" parent="."]
-script = ExtResource("2_art")
+[node name="DashboardHero" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_hero")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="OpeningLife" type="Node2D" parent="."]
+script = ExtResource("2_life")
 
 [node name="TopGlow" type="ColorRect" parent="."]
 layout_mode = 0
@@ -46,25 +61,25 @@ offset_right = 0
 offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.05
-anchor_top = 0.2037037037037037
-anchor_right = 0.45416666666666666
-anchor_bottom = 0.8037037037037037
+anchor_left = 0.04583333333333333
+anchor_top = 0.17777777777777778
+anchor_right = 0.4625
+anchor_bottom = 0.8777777777777778
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = ExtResource("10_card")
+theme_override_styles/panel = ExtResource("11_dashboard_card")
 
 [node name="Margin" type="MarginContainer" parent="Dashboard"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 11
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 11
+theme_override_constants/margin_bottom = 9
 
 [node name="Content" type="VBoxContainer" parent="Dashboard/Margin"]
 alignment = 1
 layout_mode = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="Dashboard/Margin/Content"]
 theme_type_variation = &"OfficialHeadline"
@@ -81,6 +96,36 @@ theme_override_font_sizes/font_size = 8
 text = "One step at a time."
 horizontal_alignment = 1
 
+[node name="RouteTicket" type="PanelContainer" parent="Dashboard/Margin/Content"]
+custom_minimum_size = Vector2(0, 29)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("12_ticket")
+
+[node name="Margin" type="MarginContainer" parent="Dashboard/Margin/Content/RouteTicket"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 3
+
+[node name="Content" type="VBoxContainer" parent="Dashboard/Margin/Content/RouteTicket/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="RouteName" type="Label" parent="Dashboard/Margin/Content/RouteTicket/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(1, 0.957, 0.839, 1)
+text = "BARANGAY MORNING"
+horizontal_alignment = 1
+
+[node name="RouteDetail" type="Label" parent="Dashboard/Margin/Content/RouteTicket/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+theme_override_colors/font_color = Color(1, 0.83, 0.43, 1)
+text = "L01 · GUIDED MOVEMENT ROUTE"
+horizontal_alignment = 1
+
 [node name="SessionStatus" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
@@ -89,22 +134,23 @@ text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="RouteName" type="Label" parent="Dashboard/Margin/Content"]
+[node name="RouteStrip" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 9
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-text = "Barangay Morning"
+theme_override_font_sizes/font_size = 6
+text = "Start  →  Sari-sari Store  →  Waiting Shed  →  Barangay Hall"
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="Divider" type="HSeparator" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 
 [node name="StartSessionButton" type="Button" parent="Dashboard/Margin/Content"]
 theme_type_variation = &"PrimaryButton"
-custom_minimum_size = Vector2(0, 16)
+custom_minimum_size = Vector2(0, 19)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Start Session"
+text = "▶  Start Session"
 
 [node name="SecondaryActions" type="HBoxContainer" parent="Dashboard/Margin/Content"]
 layout_mode = 2
@@ -115,27 +161,27 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Tutorial"
+text = "?  Tutorial"
 
 [node name="SettingsButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Settings"
+text = "⚙  Settings"
 
 [node name="QuitButton" type="Button" parent="Dashboard/Margin/Content/SecondaryActions"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Quit"
+text = "↗  Quit"
 
 [node name="SafetyNote" type="Label" parent="Dashboard/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 7
-text = "Supervised prototype • Keyboard mode"
+text = "Supervised session · Keyboard mode available"
 horizontal_alignment = 1
 [node name="Welcome" type="Label" parent="."]
 offset_left = 24.0
@@ -146,27 +192,16 @@ theme_override_font_sizes/font_size = 7
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 text = "MABUHAY!  /  WELCOME"
 
-[node name="RouteCaption" type="Label" parent="."]
-offset_left = 277.0
-offset_top = 51
-offset_right = 468.0
-offset_bottom = 80.0
-theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-text = "Sa bawat hakbang,\nmay bagong simula."
-
-[node name="StoreSign" type="Label" parent="."]
-offset_left = 282.0
-offset_top = 129.0
-offset_right = 350.0
-offset_bottom = 139.0
-theme_override_font_sizes/font_size = 8
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-text = "SARI-SARI"
-horizontal_alignment = 1
+[node name="BanigDivider" type="ColorRect" parent="."]
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 96.0
+offset_bottom = 20.0
+color = Color(0.96, 0.61, 0.14, 0.9)
+mouse_filter = 2
 
 [node name="CharacterMount" type="Node2D" parent="."]
-position = Vector2(175, 0)
+position = Vector2(88, 0)
 
 [node name="OpeningPlayer" parent="CharacterMount" instance=ExtResource("3_player")]
 position = Vector2(240, 236)
@@ -179,7 +214,7 @@ offset_right = 460.0
 offset_bottom = 23
 theme_override_font_sizes/font_size = 8
 focus_mode = 0
-text = "Music: On"
+text = "♫  Music: On"
 
 [node name="MusicCredit" type="Label" parent="."]
 offset_left = 24.0
@@ -189,6 +224,66 @@ offset_bottom = 264.0
 theme_override_font_sizes/font_size = 7
 theme_override_colors/font_color = Color(1, 0.957, 0.839, 1)
 text = "Hakbang sa Umaga · Original menu instrumental"
+
+[node name="DashboardHitTargets" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StartSessionButton" type="Button" parent="DashboardHitTargets"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 87.0
+offset_top = 141.0
+offset_right = 212.0
+offset_bottom = 165.0
+text = "Start Session"
+
+[node name="TutorialButton" type="Button" parent="DashboardHitTargets"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 77.0
+offset_top = 168.0
+offset_right = 112.0
+offset_bottom = 187.0
+text = "Tutorial"
+
+[node name="SettingsButton" type="Button" parent="DashboardHitTargets"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 115.0
+offset_top = 168.0
+offset_right = 150.0
+offset_bottom = 187.0
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="DashboardHitTargets"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 153.0
+offset_top = 168.0
+offset_right = 189.0
+offset_bottom = 187.0
+text = "Quit"
+
+[node name="MusicButton" type="Button" parent="DashboardHitTargets"]
+modulate = Color(1, 1, 1, 0)
+offset_left = 367.0
+offset_top = 31.0
+offset_right = 415.0
+offset_bottom = 47.0
+text = "Music: On"
+
+[node name="RouteTagline" type="Label" parent="."]
+offset_left = 286.0
+offset_top = 48.0
+offset_right = 466.0
+offset_bottom = 79.0
+theme_override_colors/font_color = Color(0.047, 0.251, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+text = "Bawat hakbang\nng buhay."
+horizontal_alignment = 1
 
 [node name="MenuMusic" type="AudioStreamPlayer" parent="."]
 volume_db = -30.0
@@ -212,9 +307,9 @@ offset_top = 0
 offset_right = 0
 offset_left = 0
 anchor_left = 0.3125
-anchor_top = 0.2222222222222222
+anchor_top = 0.2037037037037037
 anchor_right = 0.6875
-anchor_bottom = 0.7777777777777778
+anchor_bottom = 0.7962962962962963
 theme_override_styles/panel = ExtResource("10_card")
 
 [node name="Margin" type="MarginContainer" parent="SettingsOverlay/Panel"]
@@ -227,7 +322,7 @@ theme_override_constants/margin_bottom = 8
 [node name="Content" type="VBoxContainer" parent="SettingsOverlay/Panel/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 0
+theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 theme_type_variation = &"OfficialHeadline"
@@ -288,12 +383,13 @@ horizontal_alignment = 1
 
 [node name="VolumeSlider" type="HSlider" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 18)
+custom_minimum_size = Vector2(0, 16)
 max_value = 100.0
 value = 35.0
 focus_mode = 0
 
 [node name="RoutePaceLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Route pace · Standard"
@@ -304,7 +400,28 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
 focus_mode = 0
 
+[node name="EffectsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Contact effects - Standard"
+horizontal_alignment = 1
+
+[node name="EffectsOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+focus_mode = 0
+
+[node name="ReducedMotionToggle" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+custom_minimum_size = Vector2(0, 16)
+focus_mode = 0
+toggle_mode = true
+text = "Reduced motion: Off"
+
 [node name="ControlsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Play controls"
@@ -325,6 +442,7 @@ focus_mode = 0
 text = "Check controller"
 
 [node name="SetupButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
+visible = false
 theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 8
 layout_mode = 2

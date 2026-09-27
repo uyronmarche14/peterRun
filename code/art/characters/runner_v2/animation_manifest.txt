@@ -1,0 +1,34 @@
+RUNNER V2 — original fictional adult 2.5D sprite animation manifest
+Canvas: 512 x 512 RGBA PNG; transparent padding; pivot: [256, 416] between the feet.
+View: rear three-quarter toward the Barangay Hall route; warm morning lighting; separate ground shadow.
+No text, logos, copied characters, medical devices, scores, enemies, or baked backgrounds.
+
+idle_ready: 8 fps
+idle_ready loop: seamless
+idle_ready frames: 8
+walk_forward: 10 fps
+walk_forward loop: seamless
+walk_forward frames: 10
+move_left: 10 fps
+move_left loop: one-shot
+move_left frames: 8
+move_right: 10 fps
+move_right loop: one-shot
+move_right frames: 8
+jump_low: 12 fps
+jump_low loop: one-shot
+jump_low frames: 10
+slide_duck: 10 fps
+slide_duck loop: one-shot
+slide_duck frames: 10
+success_settle: 8 fps
+success_settle loop: one-shot
+success_settle frames: 8
+neutral_clear: 8 fps
+neutral_clear loop: one-shot
+neutral_clear frames: 6
+rest: 6 fps
+rest loop: seamless
+rest frames: 6
+paused: 1 pose
+ground_shadow: separate soft oval RGBA sprite

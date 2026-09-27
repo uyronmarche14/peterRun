@@ -1,6 +1,7 @@
 extends SceneTree
 
 const RUNNER_LEVEL_PATH := "res://scenes/levels/runner_level.tscn"
+const Review = preload("res://scripts/session_review_store.gd")
 
 var failures: PackedStringArray = []
 
@@ -20,8 +21,14 @@ func _run() -> void:
 	root.add_child(safe_clear_level)
 	await process_frame
 	await process_frame
-	_test_safe_lane_clear_is_positive_without_a_repetition(safe_clear_level)
+	_test_idle_safe_lane_does_not_award_progress(safe_clear_level)
 	safe_clear_level.free()
+	var collision_level: Node = (load(RUNNER_LEVEL_PATH) as PackedScene).instantiate()
+	root.add_child(collision_level)
+	await process_frame
+	await process_frame
+	_test_collision_ends_the_run(collision_level)
+	collision_level.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN formation runner test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -58,25 +65,45 @@ func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 	level.call("_on_response_timer_timeout")
 	_expect(director.get("state") == 3, "The formation resolves when its response window reaches contact")
 	_expect(level.get("session_result").get_completed(&"move_left") == 1, "Moving into the open lane earns one matching repetition")
+	_expect(not level.get("is_session_ended"), "A correct safe-lane response does not end the run")
 
 
-func _test_safe_lane_clear_is_positive_without_a_repetition(level: Node) -> void:
+func _test_idle_safe_lane_does_not_award_progress(level: Node) -> void:
 	for timer in level.get_node("PromptTimers").get_children():
 		timer.stop()
 	_configure_open_left_gate(level)
-	level.call("receive_input", &"move_left", true, 20.0)
+	# Peter arrives in the open lane from the preceding formation. This is not
+	# a new warning-phase response for the current formation.
+	level.get_node("Player").call("handle_action", &"move_left")
+	level.set("_pending_response_action", &"")
+	level.set("_pending_response_movement_accepted", false)
 	var director: Node = level.get_node("PromptDirector")
 	director.call("open_response_window")
 	level.call("_on_response_timer_timeout")
-	_expect(level.get("session_result").route_clear_points == 1, "Already occupying the open lane records route progress")
-	_expect(level.get("session_result").get_completed(&"move_left") == 0, "Already-safe route progress does not add a therapy repetition")
+	_expect(not _has_property(level.get("session_result"), &"route_clear_points"), "Session results do not contain route points")
+	_expect(level.get("session_result").get_completed(&"move_left") == 0, "No movement in an already-open lane adds no therapy repetition")
+	_expect(level.get("session_result").neutral_misses == 0, "An already-open lane remains a safe passage, not a miss")
 	var toast: Control = level.get_node("HUD/HUDRoot/FeedbackToast")
-	_expect(toast.get_node("Message").text != "Take your time.", "Safe route progress receives positive feedback")
+	_expect(toast.get_node("Message").text == "Path is clear.", "Idle safe passage receives non-reward wording")
 	_expect(level.has_node("HUD/HUDRoot/JourneyLabel"), "Gameplay shows a calm journey landmark")
 	if level.has_node("HUD/HUDRoot/JourneyLabel"):
 		var journey_label: Label = level.get_node("HUD/HUDRoot/JourneyLabel")
-		_expect(journey_label.text == "Journey: Waiting Shed", "Safe route progress advances the journey landmark")
+		_expect(journey_label.text == "Journey: Home", "No movement does not advance the journey landmark")
 		_expect(not journey_label.text.contains("Clear") and not journey_label.text.contains("Score"), "Gameplay does not label journey progress as a score")
+
+
+func _test_collision_ends_the_run(level: Node) -> void:
+	Review.reset()
+	for timer in level.get_node("PromptTimers").get_children():
+		timer.stop()
+	_configure_open_left_gate(level)
+	var director: Node = level.get_node("PromptDirector")
+	director.call("open_response_window")
+	level.call("_on_response_timer_timeout")
+	_expect(level.get("is_session_ended"), "A blocked-lane contact ends the run")
+	_expect(level.get_node("EndSessionOverlay").visible, "Collision shows the end-of-run overlay")
+	_expect(level.get("session_result").neutral_misses == 0, "Obstacle contact is not counted as a neutral miss")
+	_expect(Review.get_end_reason() == &"collision", "Obstacle contact has a distinct review outcome")
 
 
 func _configure_open_left_gate(level: Node) -> void:
@@ -95,3 +122,10 @@ func _configure_open_left_gate(level: Node) -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _has_property(instance: Object, property_name: StringName) -> bool:
+	for property in instance.get_property_list():
+		if StringName(property.get("name", &"")) == property_name:
+			return true
+	return false

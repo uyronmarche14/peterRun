@@ -29,6 +29,7 @@ func _ready() -> void:
 		var button := Button.new()
 		button.name = "Rating%d" % rating
 		button.text = str(rating)
+		button.theme_type_variation = &"EffortRatingButton"
 		button.custom_minimum_size = Vector2(18, 18)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.focus_mode = Control.FOCUS_NONE
@@ -44,6 +45,7 @@ func _ready() -> void:
 	if _result == null or _config == null:
 		content.get_node("Title").text = "No session to review"
 		content.get_node("Subtitle").text = "Return to the menu to set up a session."
+		content.get_node("Outcome").hide()
 		content.get_node("Repetitions").hide()
 		content.get_node("Misses").hide()
 		content.get_node("Journey").hide()
@@ -53,20 +55,36 @@ func _ready() -> void:
 	match Review.get_end_reason():
 		&"completed":
 			content.get_node("Title").text = (_level.short_name + " complete") if _level != null else "Session review"
+		&"collision":
+			content.get_node("Title").text = "Run ended"
 		&"level_ended":
 			content.get_node("Title").text = "Level review"
 		_:
 			content.get_node("Title").text = "Session review"
+	content.get_node("Outcome").text = _get_outcome_text(Review.get_end_reason())
 	var side := "Left" if _config.affected_side == Config.AffectedSide.LEFT else "Right"
 	content.get_node("Subtitle").text = "%s  ·  %s affected side" % [_level.title if _level != null else "Level unavailable", side]
 	retry_button.text = ("Retry " + _level.short_name) if _level != null else "Retry"
+	var completed_repetitions := 0
+	var target_repetitions := 0
 	for index in range(Config.ACTIONS.size()):
 		var action: StringName = Config.ACTIONS[index]
+		completed_repetitions += mini(_result.get_completed(action), _config.get_target(action))
+		target_repetitions += _config.get_target(action)
 		content.get_node("Repetitions/" + ACTION_NODES[index]).text = "%s: %d / %d" % [
 			ACTION_LABELS[index], _result.get_completed(action), _config.get_target(action)]
 	content.get_node("Misses").text = "Neutral misses: %d" % _result.neutral_misses
-	content.get_node("Journey").text = RouteJourney.get_summary_text(_result.route_clear_points)
+	content.get_node("Journey").text = RouteJourney.get_summary_text(RouteJourney.get_progress(completed_repetitions, target_repetitions))
 	_refresh_rating()
+
+
+func _get_outcome_text(end_reason: StringName) -> String:
+	match end_reason:
+		&"completed": return "Outcome: Planned repetitions complete"
+		&"collision": return "Outcome: Run ended after obstacle contact"
+		&"level_ended": return "Outcome: Level ended by therapist"
+		&"session_ended": return "Outcome: Session ended by therapist"
+	return "Outcome: Session review"
 
 
 func select_rating(value: Variant) -> bool:

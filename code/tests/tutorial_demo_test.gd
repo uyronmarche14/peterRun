@@ -32,6 +32,7 @@ func _run() -> void:
 
 
 func _test_demonstration(tutorial: Node) -> void:
+	tutorial.call("start_practice")
 	var button: Button = tutorial.get_node("Panel/Margin/Content/NavigationRow/DemoButton")
 	var next: Button = tutorial.get_node("Panel/Margin/Content/NavigationRow/NextButton")
 	var player: Node2D = tutorial.get("practice_player")
@@ -68,19 +69,22 @@ func _test_demonstration(tutorial: Node) -> void:
 			var tween: Tween = player.get("_action_tween")
 			tween.pause()
 			tween.custom_step(0.20)
-			_expect(player.get_node("Visual").position.y < -25 if index == 2 else player.get_node("SlideStreak").visible, "Jump/slide demonstration uses the real action animation")
+			player.call("_process", 0.20)
+			_expect(player.character_sprite.animation == (&"jump_low" if index == 2 else &"slide_duck") and player.character_sprite.get_clip_frame() > 0, "Jump/slide demonstration advances real authored action frames")
+			_expect(player.get_node("Visual").transform == Transform2D.IDENTITY, "Demo never adds duplicate lift or squash to authored poses")
 		tutorial.get_node("DemoTimer").stop()
 		tutorial.call("_on_demo_finished")
 	_expect(Setup.get_session_config().get_target(&"jump") == 10, "Demonstrations never change session targets")
-	# Left-affected mapping remains a practice-input concern, not a visual direction change.
+	# Affected side is recorded for review; practice directions remain literal.
 	tutorial.get("input_adapter").affected_side = Config.AffectedSide.LEFT
 	tutorial.call("show_action_index", 0)
 	tutorial.call("demonstrate_action")
 	_expect(player.get("lane_index") == 0, "Left-affected demo still shows logical left")
 	tutorial.get_node("DemoTimer").stop()
 	tutorial.call("_on_demo_finished")
-	tutorial.call("receive_practice_input", &"move_right", true, 5.0)
-	_expect(tutorial.get("step_completed"), "Mapped physical input still completes the demonstrated action")
+	tutorial.call("receive_practice_input", &"move_left", false, 4.9)
+	tutorial.call("receive_practice_input", &"move_left", true, 5.0)
+	_expect(tutorial.get("step_completed"), "Literal left input completes the demonstrated action")
 
 
 func _expect(condition: bool, message: String) -> void:

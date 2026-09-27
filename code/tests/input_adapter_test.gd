@@ -8,7 +8,7 @@ var failures: PackedStringArray = []
 
 func _init() -> void:
 	_test_right_side_preserves_named_actions()
-	_test_left_side_inverts_only_lateral_actions()
+	_test_left_side_preserves_literal_lateral_actions()
 	_test_held_action_and_cooldown_allow_one_event()
 	_test_different_actions_remain_independent()
 	_test_unknown_action_is_rejected()
@@ -36,11 +36,11 @@ func _test_right_side_preserves_named_actions() -> void:
 	_expect_equal(adapter.accept_action(&"pause_session", 0.0), &"pause_session", "Pause stays semantic")
 
 
-func _test_left_side_inverts_only_lateral_actions() -> void:
+func _test_left_side_preserves_literal_lateral_actions() -> void:
 	var adapter := InputAdapter.new(SessionConfig.AffectedSide.LEFT, 0.5)
-	_expect_equal(adapter.accept_action(&"move_left", 0.0), &"move_right", "Left side reverses move_left")
+	_expect_equal(adapter.accept_action(&"move_left", 0.0), &"move_left", "Left side keeps physical move_left literal")
 	adapter.release_action(&"move_left")
-	_expect_equal(adapter.accept_action(&"move_right", 0.0), &"move_left", "Left side reverses move_right")
+	_expect_equal(adapter.accept_action(&"move_right", 0.0), &"move_right", "Left side keeps physical move_right literal")
 	adapter.release_action(&"move_right")
 	_expect_equal(adapter.accept_action(&"jump", 0.0), &"jump", "Left side does not alter jump")
 	adapter.release_action(&"jump")

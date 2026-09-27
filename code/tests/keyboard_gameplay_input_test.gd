@@ -26,7 +26,7 @@ func _run() -> void:
 		_expect_equal(player.get("action_state"), 1, "Real W key starts the jump action")
 		await create_timer(0.08).timeout
 		var visual := player.get_node_or_null(^"Visual") as Node2D
-		_expect(visual != null and visual.position.y < -1.0, "Jump visibly rises above the running position")
+		_expect(visual != null and visual.transform == Transform2D.IDENTITY and player.character_sprite.animation == &"jump_low", "Real jump input selects authored lift instead of a duplicate runtime lift")
 		level.call("_unhandled_input", _keyboard_event(KEY_W, false))
 
 	level.free()

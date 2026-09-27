@@ -39,10 +39,10 @@ offset_right = 0
 offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.2625
-anchor_top = 0.23333333333333334
-anchor_right = 0.7375
-anchor_bottom = 0.7666666666666667
+anchor_left = 0.15
+anchor_top = 0.05555555555555555
+anchor_right = 0.85
+anchor_bottom = 0.9444444444444444
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("10_card")
@@ -64,7 +64,7 @@ theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 13
-text = "Controller Check"
+text = "Test your controls"
 horizontal_alignment = 1
 
 [node name="ControllerSummary" type="VBoxContainer" parent="Panel/Margin/Content"]
@@ -75,14 +75,14 @@ theme_override_constants/separation = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "Keyboard fallback ready"
+text = "0 of 5 actions detected · Keyboard fallback ready"
 horizontal_alignment = 1
 
 [node name="StatusDetail" type="Label" parent="Panel/Margin/Content/ControllerSummary"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "Keyboard: A / D / W / S.\nMOVE hardware requires a separate check."
+text = "Use each control once. This verifies named game actions, not a device connection."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -90,16 +90,138 @@ autowrap_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 7
-text = "Pause is always available during play."
+text = "Detected actions are safe to repeat. Pause stays available during play."
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="ActionTiles" type="VBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="MovementGrid" type="GridContainer" parent="Panel/Margin/Content/ActionTiles"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="MoveLeft" type="PanelContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_card")
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveLeft"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveLeft/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "‹  MOVE LEFT  ·  A / D-pad"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveLeft/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Waiting"
+horizontal_alignment = 1
+
+[node name="MoveRight" type="PanelContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_card")
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveRight"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveRight/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "›  MOVE RIGHT  ·  D / D-pad"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/MoveRight/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Waiting"
+horizontal_alignment = 1
+
+[node name="Jump" type="PanelContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_card")
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Jump"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Jump/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "▲  JUMP  ·  W / A button"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Jump/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Waiting"
+horizontal_alignment = 1
+
+[node name="Slide" type="PanelContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_card")
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Slide"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Slide/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "▼  SLIDE  ·  S / B button"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Panel/Margin/Content/ActionTiles/MovementGrid/Slide/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Waiting"
+horizontal_alignment = 1
+
+[node name="Pause" type="PanelContainer" parent="Panel/Margin/Content/ActionTiles"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = ExtResource("10_card")
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin/Content/ActionTiles/Pause"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="Panel/Margin/Content/ActionTiles/Pause/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Ⅱ  PAUSE  ·  P / Start"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Panel/Margin/Content/ActionTiles/Pause/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "Waiting"
+horizontal_alignment = 1
+
+[node name="ResetButton" type="Button" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Test again"
 
 [node name="KeyboardFallbackButton" type="Button" parent="Panel/Margin/Content"]
 theme_type_variation = &"PrimaryButton"
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Continue to Tutorial"
+text = "Continue to ready"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 16)

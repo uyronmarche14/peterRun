@@ -14,6 +14,11 @@ func _run() -> void:
 	var tutorial: Control = load("res://scenes/tutorial.tscn").instantiate()
 	root.add_child(tutorial)
 	await process_frame
+	_expect(tutorial.has_method("start_practice"), "Tutorial has an intentional practice start")
+	_expect(tutorial.has_node("Panel/Margin/Content/Welcome"), "Tutorial explains practice before asking for a movement")
+	_expect(not tutorial.get("tutorial_started"), "Tutorial begins with an unpressured welcome state")
+	if tutorial.has_method("start_practice"):
+		tutorial.call("start_practice")
 	_expect(tutorial.has_method("receive_practice_input"), "Tutorial accepts named practice actions")
 	if tutorial.has_method("receive_practice_input"):
 		var next: Button = tutorial.get_node("Panel/Margin/Content/NavigationRow/NextButton")
@@ -44,7 +49,7 @@ func _run() -> void:
 		jump_tween.pause()
 		jump_tween.custom_step(0.15)
 		var visual: Node2D = tutorial.practice_player.get_node("Visual")
-		_expect(visual.position.y < -15.0, "Jump lesson visibly lifts the player")
+		_expect(visual.transform == Transform2D.IDENTITY and tutorial.practice_player.character_sprite.animation == &"jump_low", "Jump lesson selects authored lift without duplicate transform")
 		tutorial.call("toggle_tutorial_pause")
 		var pose := visual.transform
 		await create_timer(0.2).timeout
@@ -54,10 +59,10 @@ func _run() -> void:
 		tutorial.call("toggle_tutorial_pause")
 		tutorial.call("show_next_action")
 		tutorial.call("receive_practice_input", &"slide", true, 6.0)
-		var slide_tween: Tween = tutorial.practice_player.get("_slide_scale_tween")
+		var slide_tween: Tween = tutorial.practice_player.get("_action_tween")
 		slide_tween.pause()
 		slide_tween.custom_step(0.15)
-		_expect(tutorial.practice_player.get_node("Visual").scale.y < 0.8, "Slide lesson has a visible low pose")
+		_expect(tutorial.practice_player.character_sprite.animation == &"slide_duck" and tutorial.practice_player.get_node("Visual").scale == Vector2.ONE, "Slide lesson uses authored low pose without squash")
 		_expect(tutorial.step_completed and next.text == "Continue", "Final action unlocks Ready")
 		_expect(Store.get_session_config().get_target(&"jump") == 10, "Practice leaves session targets unchanged")
 	tutorial.free()
@@ -65,11 +70,13 @@ func _run() -> void:
 	tutorial = load("res://scenes/tutorial.tscn").instantiate()
 	root.add_child(tutorial)
 	await process_frame
+	if tutorial.has_method("start_practice"):
+		tutorial.call("start_practice")
 	if tutorial.has_method("receive_practice_input"):
 		var hint: Label = tutorial.get_node("Panel/Margin/Content/ActionCard/InstructionLabel")
-		_expect(hint.text.contains("D"), "Left-affected setup shows the mapped keyboard hint")
-		tutorial.call("receive_practice_input", &"move_right", true, 10.0)
-		_expect(tutorial.step_completed and tutorial.practice_player.lane_index == 0, "Practice honours affected-side inversion")
+		_expect(hint.text.contains("A"), "Left-affected setup keeps the literal left keyboard hint")
+		tutorial.call("receive_practice_input", &"move_left", true, 10.0)
+		_expect(tutorial.step_completed and tutorial.practice_player.lane_index == 0, "Practice keeps literal left input for a left-affected setup")
 		# With no input there is no expiry or neutral miss in practice.
 		tutorial.call("show_action_index", 3)
 		await create_timer(0.6).timeout
@@ -91,6 +98,8 @@ func _test_ready_routes() -> void:
 	if not tutorial.has_method("receive_practice_input"):
 		tutorial.free()
 		return
+	if tutorial.has_method("start_practice"):
+		tutorial.call("start_practice")
 	tutorial.call("show_action_index", 3)
 	tutorial.call("receive_practice_input", &"slide", true, 20.0)
 	tutorial.get_node("Panel/Margin/Content/NavigationRow/NextButton").pressed.emit()

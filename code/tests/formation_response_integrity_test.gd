@@ -11,7 +11,8 @@ func _init() -> void:
 
 func _run() -> void:
 	await _test_active_formation_keeps_its_world_layout()
-	await _test_first_response_locks_player_and_scores_once()
+	await _test_response_can_be_corrected_until_contact()
+	await _test_correct_warning_phase_movement_counts_at_contact()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN formation response integrity test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -45,7 +46,7 @@ func _test_active_formation_keeps_its_world_layout() -> void:
 	level.free()
 
 
-func _test_first_response_locks_player_and_scores_once() -> void:
+func _test_response_can_be_corrected_until_contact() -> void:
 	var level := await _make_level()
 	var director: Node = level.get_node("PromptDirector")
 	_configure_open_left_gate(level)
@@ -55,10 +56,27 @@ func _test_first_response_locks_player_and_scores_once() -> void:
 	var player: Node = level.get_node("Player")
 	var lane_after_first_input: int = player.get("lane_index")
 	level.call("receive_input", &"move_right", true, 10.5)
-	_expect(player.get("lane_index") == lane_after_first_input, "Later response inputs cannot move Peter away from the recorded action")
+	_expect(player.get("lane_index") != lane_after_first_input, "Later response inputs can correct Peter before contact")
+	level.call("receive_input", &"move_left", true, 11.0)
+	_expect(player.get("lane_index") == lane_after_first_input, "The final contact position can return to the correct lane")
 	level.call("_on_response_timer_timeout")
-	_expect(level.get("session_result").get_completed(&"move_left") == 1, "One valid response awards exactly one matching repetition")
-	_expect(level.get("session_result").neutral_misses == 0, "A valid locked response does not create a neutral miss")
+	_expect(level.get("session_result").get_completed(&"move_left") == 1, "One final valid response awards exactly one matching repetition")
+	_expect(level.get("session_result").neutral_misses == 0, "A corrected response remains a valid repetition")
+	level.free()
+
+
+func _test_correct_warning_phase_movement_counts_at_contact() -> void:
+	var level := await _make_level()
+	_configure_open_left_gate(level)
+	level.call("receive_input", &"move_left", true, 20.0)
+	level.call("receive_input", &"move_left", false, 20.01)
+	_expect(level.get_node("Player").get("lane_index") == 0, "Correct warning-phase movement reaches the safe left lane")
+	var director: Node = level.get_node("PromptDirector")
+	director.call("open_response_window")
+	_expect(level.get_node("HUD/HUDRoot/PromptStateLabel").text == "ACTION READY", "Early correct movement is acknowledged without asking for a second press")
+	level.call("_on_response_timer_timeout")
+	_expect(level.get("session_result").get_completed(&"move_left") == 1, "Correct warning-phase movement earns one repetition at contact")
+	_expect(level.get("session_result").neutral_misses == 0, "Correct warning-phase movement is not logged as a miss")
 	level.free()
 
 

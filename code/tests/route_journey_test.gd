@@ -20,6 +20,13 @@ func _run() -> void:
 			_expect(journey.get_hud_text(2) == "Journey: Sari-sari Store", "Second route progress reaches the sari-sari store")
 			_expect(journey.get_hud_text(9) == "Journey: Barangay Plaza", "Journey landmark text caps at the plaza")
 			_expect(not journey.get_hud_text(2).contains("Clear") and not journey.get_hud_text(2).contains("Score"), "Journey text is not competitive scoring")
+		_expect(journey != null and journey.has_method("get_progress"), "Route journey derives landmarks from completed repetitions")
+		if journey != null and journey.has_method("get_progress"):
+			_expect(journey.get_progress(0, 12) == 0, "No completed movement remains at Home")
+			_expect(journey.get_progress(3, 12) == 0, "Idle passage cannot reach the first landmark")
+			_expect(journey.get_progress(4, 12) == 1, "One-third of planned movements reaches the waiting shed")
+			_expect(journey.get_progress(8, 12) == 2, "Two-thirds of planned movements reaches the sari-sari store")
+			_expect(journey.get_progress(12, 12) == 3, "All planned movements reach the Barangay Plaza")
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN route journey test: " + ("PASS" if failures.is_empty() else "FAIL"))

@@ -11,6 +11,7 @@ var failures: PackedStringArray = []
 
 func _init() -> void:
 	_test_visual_pace_settings()
+	_test_comfort_motion_settings()
 	_test_expandable_route_catalog()
 	_finish()
 
@@ -24,6 +25,12 @@ func _test_visual_pace_settings() -> void:
 	_expect(is_equal_approx(settings_script.get("visual_pace"), 1.15), "Visual pace accepts the lively setting")
 	settings_script.call("set_visual_pace", 99.0)
 	_expect(is_equal_approx(settings_script.get("visual_pace"), 1.15), "Visual pace stays within the approved range")
+
+
+func _test_comfort_motion_settings() -> void:
+	var settings_script: GDScript = load(GAME_SETTINGS_PATH)
+	_expect(settings_script.has_method("set_reduced_motion"), "Game settings expose reduced-motion comfort control")
+	_expect(settings_script.has_method("set_effects_intensity"), "Game settings expose effects-intensity comfort control")
 
 
 func _test_expandable_route_catalog() -> void:

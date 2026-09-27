@@ -27,6 +27,7 @@ var failures: PackedStringArray = []
 func _init() -> void:
 	for entry in CASES:
 		_test_prop(entry)
+	_test_puddle_world_detail()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 prompt-art integration test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -53,6 +54,15 @@ func _test_prop(entry: Dictionary) -> void:
 		_expect(sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "ArtSprite uses nearest-neighbour filtering: " + entry.scene)
 		_expect(sprite.scale == entry.art_scale, "ArtSprite uses its readable 2.5D presentation scale: " + entry.scene)
 	prop.queue_free()
+
+
+func _test_puddle_world_detail() -> void:
+	var puddle: Node2D = (load("res://scenes/props/puddle.tscn") as PackedScene).instantiate()
+	var rim := puddle.get_node_or_null("PuddleRim") as Line2D
+	var reflection := puddle.get_node_or_null("PuddleReflection") as Line2D
+	_expect(rim != null and rim.visible, "Jump puddle has a visible high-contrast edge")
+	_expect(reflection != null and reflection.visible, "Jump puddle has a visible reflective water cue")
+	puddle.queue_free()
 
 
 func _expect(condition: bool, message: String) -> void:

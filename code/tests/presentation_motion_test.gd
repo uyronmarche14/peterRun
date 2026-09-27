@@ -48,7 +48,7 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 		action_tween.pause()
 		action_tween.custom_step(0.20)
 		var visual := player.get_node_or_null(^"Visual") as Node2D
-		_expect(visual != null and visual.position.y <= -26.0, "Jump has a readable, smooth peak")
+		_expect(visual != null and visual.transform == Transform2D.IDENTITY and player.character_sprite.animation == &"jump_low", "Jump uses the smooth authored lift without runtime pose deformation")
 
 	# Sample the new full lifecycle deterministically; props reach the player
 	# at the end of the response window, not at the end of the warning.

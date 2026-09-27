@@ -36,6 +36,9 @@ func _run() -> void:
 		director.call("receive_action", director.get("current_action"))
 		_expect(toast.get_node("Message").text != first_message, "Consecutive successes receive varied recognition")
 		level.call("_on_resolve_timer_timeout")
+		# This test exercises a non-contact neutral miss. Obstacle contact is a
+		# distinct run-ending outcome and must not be treated as toast feedback.
+		level.set("_active_formation", {})
 		director.call("open_response_window")
 		director.call("expire_active_prompt")
 		_expect(toast.get_node("Message").text == "Take your time.", "Miss feedback stays neutral")

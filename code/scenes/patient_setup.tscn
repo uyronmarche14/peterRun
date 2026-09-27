@@ -41,10 +41,10 @@ offset_right = 0
 offset_left = 0
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.24583333333333332
-anchor_top = 0.15185185185185185
-anchor_right = 0.7541666666666667
-anchor_bottom = 0.8481481481481481
+anchor_left = 0.15
+anchor_top = 0.05555555555555555
+anchor_right = 0.85
+anchor_bottom = 0.9444444444444444
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("10_card")
@@ -66,16 +66,22 @@ theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 13
-text = "Patient Setup"
+text = "Set up this session"
 horizontal_alignment = 1
 
 [node name="Guidance" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "Confirm the session settings before starting."
+text = "Choose the route, movement setup, and planned repetitions."
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="SessionHeading" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.083, 0.369, 0.388, 1)
+theme_override_font_sizes/font_size = 9
+text = "SESSION"
 
 [node name="LevelLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
@@ -88,11 +94,17 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 
+[node name="MovementHeading" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.083, 0.369, 0.388, 1)
+theme_override_font_sizes/font_size = 9
+text = "MOVEMENT SETUP"
+
 [node name="AffectedSideLabel" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "Affected side"
+text = "Affected side · recorded for this supervised session"
 
 [node name="AffectedSideOption" type="OptionButton" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 16)
@@ -103,7 +115,7 @@ theme_override_font_sizes/font_size = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
-text = "Planned repetitions per action"
+text = "Repetitions per movement"
 
 [node name="TargetRepetitionsSpinBox" type="SpinBox" parent="Panel/Margin/Content"]
 script = ExtResource("12_stepper")
@@ -117,6 +129,30 @@ theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 8
 autowrap_mode = 2
 
+[node name="ControlsHeading" type="Label" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.083, 0.369, 0.388, 1)
+theme_override_font_sizes/font_size = 9
+text = "CONTROLS"
+
+[node name="ControlsRow" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TestControlsButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Test controls"
+
+[node name="PracticeButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Practise movements"
+
 [node name="Spacer" type="Control" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
@@ -126,7 +162,7 @@ theme_type_variation = &"PrimaryButton"
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Continue to Controller Check"
+text = "Review session"
 
 [node name="BackButton" type="Button" parent="Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 16)

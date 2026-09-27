@@ -40,11 +40,6 @@ func release_action(source_action: StringName) -> void:
 
 
 func _map_affected_side(source_action: StringName) -> StringName:
-	if affected_side != SessionConfigModel.AffectedSide.LEFT:
-		return source_action
-
-	if source_action == &"move_left":
-		return &"move_right"
-	if source_action == &"move_right":
-		return &"move_left"
+	# Physical directions remain literal for every session. Affected side is
+	# recorded for setup/review, not used to reverse Left and Right in-game.
 	return source_action

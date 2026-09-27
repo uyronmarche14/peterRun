@@ -1,16 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/player_controller.gd" id="1_player"]
-[ext_resource type="Texture2D" path="res://art/characters/peter/peter_idle.svg" id="2_peter_idle"]
+[ext_resource type="Script" path="res://scripts/classic_runner_sprite.gd" id="2_classic"]
+[ext_resource type="Texture2D" path="res://art/characters/peter_original_v01/ground_shadow.png" id="3_shadow"]
 
 [node name="Player" type="Node2D"]
 z_index = 1
 position = Vector2(240, 226)
 script = ExtResource("1_player")
 
-[node name="Shadow" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-19, 15, -11, 10, 11, 10, 19, 15, 11, 19, -11, 19)
-color = Color(0.012, 0.035, 0.047, 0.55)
+[node name="Shadow" type="Node2D" parent="."]
+position = Vector2(0, 15)
+
+[node name="GroundSprite" type="Sprite2D" parent="Shadow"]
+texture_filter = 2
+texture = ExtResource("3_shadow")
+scale = Vector2(0.3, 0.3)
+centered = false
+offset = Vector2(-128, -216)
 
 [node name="SlideStreak" type="Line2D" parent="."]
 visible = false
@@ -18,12 +25,29 @@ points = PackedVector2Array(-29, 13, -17, 13, -11, 11)
 width = 2.0
 default_color = Color(1, 0.75, 0.32, 0.78)
 
+[node name="SlideDust" type="Node2D" parent="."]
+visible = false
+position = Vector2(-5, 14)
+
+[node name="Near" type="Line2D" parent="SlideDust"]
+points = PackedVector2Array(-23, 1, -15, -2, -8, 1)
+width = 1.4
+default_color = Color(0.92, 0.81, 0.53, 0.78)
+
+[node name="Far" type="Line2D" parent="SlideDust"]
+points = PackedVector2Array(-31, 5, -23, 2, -17, 4)
+width = 1.0
+default_color = Color(0.84, 0.7, 0.43, 0.52)
+
 [node name="Visual" type="Node2D" parent="."]
 
 [node name="CharacterSprite" type="Sprite2D" parent="Visual"]
-texture = ExtResource("2_peter_idle")
-position = Vector2(0, -2)
-scale = Vector2(0.72, 0.72)
+texture_filter = 2
+script = ExtResource("2_classic")
+position = Vector2(0, 15)
+scale = Vector2(0.3, 0.3)
+centered = false
+offset = Vector2(-128, -216)
 
 [node name="LandingRing" type="Line2D" parent="."]
 visible = false

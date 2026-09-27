@@ -73,7 +73,9 @@ func _centre_practice() -> void:
 	practice_canvas.position.x = (practice_area.size.x - 480.0 * practice_canvas.scale.x) / 2.0
 
 
-func _unhandled_input(event: InputEvent) -> void:
+# _input runs before GUI focus navigation, so a focused button cannot turn the
+# D-pad (also bound to ui_left/ui_right) into menu movement.
+func _input(event: InputEvent) -> void:
 	for action in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action):
 			receive_practice_input(action, true, Time.get_ticks_msec() / 1000.0)

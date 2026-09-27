@@ -66,7 +66,7 @@ func _configure_controls() -> void:
 	level_option.clear()
 	var selected_level_index := 0
 	for definition: Resource in LevelCatalog.levels:
-		if definition == null:
+		if definition == null or not definition.show_in_setup:
 			continue
 		level_option.add_item("%s · %s" % [definition.short_name, definition.title])
 		level_option.set_item_metadata(level_option.item_count - 1, definition.level_id)

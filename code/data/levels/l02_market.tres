@@ -10,6 +10,7 @@ script = ExtResource("1")
 level_id = &"l02_market"
 short_name = "L02"
 title = "Market Morning"
+show_in_setup = false
 sky_color = Color(0.93, 0.8, 0.56, 1)
 distant_color = Color(0.49, 0.45, 0.37, 1)
 horizon_color = Color(0.67, 0.49, 0.31, 1)

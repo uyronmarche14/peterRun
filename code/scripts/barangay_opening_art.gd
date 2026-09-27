@@ -40,11 +40,6 @@ func _draw() -> void:
 	_plant(Vector2(275, 224), 1.0)
 	_plant(Vector2(461, 230), 1.1)
 	_plant(Vector2(400, 182), 0.55)
-	# Banig-inspired restrained border detail, not a national emblem.
-	for i in range(18):
-		draw_rect(Rect2(24+i*5, 25, 3, 2), Color("#9b7540") if i % 2 == 0 else Color("#5d8b78"))
-
-
 func _plant(base: Vector2, amount: float) -> void:
 	draw_rect(Rect2(base + Vector2(-8,-8)*amount, Vector2(16,11)*amount), Color("#b98256"))
 	draw_line(base, base + Vector2(0,-36)*amount, Color("#194c43"), 2)

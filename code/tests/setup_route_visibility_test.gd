@@ -17,11 +17,12 @@ func _run() -> void:
 	var setup: Control = load("res://scenes/patient_setup.tscn").instantiate()
 	root.add_child(setup)
 	await process_frame
-	var option: OptionButton = setup.get_node("Panel/Margin/Content/LevelOption")
+	var option: OptionButton = setup.get_node("%LevelOption")
 	var ids: Array = []
 	for index in option.item_count:
 		ids.append(StringName(option.get_item_metadata(index)))
 	_expect(ids == [&"l01_barangay"], "Setup offers only Barangay Morning (got %s)" % [ids])
+	_expect(not option.visible, "A single route is shown as text, not a one-item dropdown")
 	setup.free()
 
 	# A previously stored hidden route falls back to a visible one.

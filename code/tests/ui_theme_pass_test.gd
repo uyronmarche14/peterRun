@@ -4,7 +4,7 @@ var failures: PackedStringArray = []
 var capture := false
 const SCREENS := {
 	"main": Vector2(200, 175), "patient_setup": Vector2(250, 205),
-	"controller_check": Vector2(240, 160), "ready": Vector2(240, 160),
+	"controller_check": Vector2(280, 160), "ready": Vector2(260, 160),
 	"tutorial": Vector2(330, 235), "session_summary": Vector2(310, 220),
 }
 
@@ -27,14 +27,14 @@ func _run() -> void:
 			_check_card(card, SCREENS[screen_name])
 			_check_controls(screen)
 			if screen_name == "patient_setup":
-				var stepper: SpinBox = screen.get_node("Panel/Margin/Content/TargetRepetitionsSpinBox")
+				var stepper: SpinBox = screen.get_node("%TargetRepetitionsSpinBox")
 				_expect(stepper.has_node("Stepper/Row/Increase"), "Repetition field offers full-size horizontal controls")
 				if stepper.has_node("Stepper/Row/Increase"):
-					stepper.value = 10
+					stepper.value = 1
 					stepper.get_node("Stepper/Row/Decrease").pressed.emit()
-					_expect(stepper.value == 10, "Stepper retains minimum target")
+					_expect(stepper.value == 1, "Stepper retains the customizable minimum target")
 					await _click(stepper.get_node("Stepper/Row/Increase"))
-					_expect(stepper.value == 11, "Stepper increments the existing configuration value")
+					_expect(stepper.value == 2, "Stepper increments the customizable target")
 					stepper.value = 15
 					stepper.get_node("Stepper/Row/Increase").pressed.emit()
 					_expect(stepper.value == 15, "Stepper retains maximum target")

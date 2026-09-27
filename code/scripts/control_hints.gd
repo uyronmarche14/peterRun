@@ -15,7 +15,7 @@ const FACE_BUTTONS := {
 	&"playstation": {&"jump": "Cross", &"slide": "Circle", &"pause_session": "Options"},
 	&"nintendo": {&"jump": "B", &"slide": "A", &"pause_session": "+"},
 }
-const KEYBOARD_FOOTER := "Keyboard · A D W S    /    P to pause"
+const KEYBOARD_FOOTER := "Keyboard · A D W S to move · P to pause"
 
 
 static func uses_gamepad() -> bool:
@@ -55,4 +55,4 @@ static func footer_text(gamepad: bool, joy_name: String = connected_gamepad_name
 	if not gamepad:
 		return KEYBOARD_FOOTER
 	var buttons: Dictionary = FACE_BUTTONS[gamepad_style(joy_name)]
-	return "Controller · D-pad, %s jump, %s slide  /  %s to pause" % [buttons[&"jump"], buttons[&"slide"], buttons[&"pause_session"]]
+	return "Controller · D-pad, %s jump, %s slide · %s to pause" % [buttons[&"jump"], buttons[&"slide"], buttons[&"pause_session"]]

@@ -1,9 +1,10 @@
-[gd_resource type="Theme" load_steps=15 format=3]
+[gd_resource type="Theme" load_steps=18 format=3]
 
-[ext_resource type="FontFile" path="res://art/fonts/grillo.otf" id="1_grillo"]
+[sub_resource type="SystemFont" id="DefaultUIFont"]
+font_names = PackedStringArray("Trebuchet MS", "Segoe UI", "Arial")
 
 [sub_resource type="SystemFont" id="OfficialHeadline"]
-font_names = PackedStringArray("Segoe UI", "Arial")
+font_names = PackedStringArray("Trebuchet MS", "Segoe UI", "Arial")
 
 [sub_resource type="StyleBoxFlat" id="Normal"]
 content_margin_left = 5.0
@@ -101,6 +102,54 @@ corner_radius_top_right = 3
 corner_radius_bottom_left = 3
 corner_radius_bottom_right = 3
 
+[sub_resource type="StyleBoxFlat" id="EffortRatingNormal"]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.89, 0.91, 0.82, 1)
+border_color = Color(0.45, 0.66, 0.57, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="EffortRatingHover"]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.16, 0.46, 0.42, 1)
+border_color = Color(0.09, 0.32, 0.3, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="EffortRatingSelected"]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.083, 0.369, 0.388, 1)
+border_color = Color(0.083, 0.369, 0.388, 1)
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+
 [sub_resource type="StyleBoxFlat" id="Focus"]
 content_margin_left = 5.0
 content_margin_right = 5.0
@@ -175,7 +224,7 @@ height = 8
 
 [resource]
 default_font_size = 8
-default_font = ExtResource("1_grillo")
+default_font = SubResource("DefaultUIFont")
 Label/colors/font_color = Color(0.149, 0.196, 0.22, 1)
 OfficialHeadline/fonts/font = SubResource("OfficialHeadline")
 Button/styles/normal = SubResource("Normal")
@@ -202,6 +251,15 @@ PrimaryButton/styles/normal = SubResource("Primary")
 PrimaryButton/styles/hover = SubResource("PrimaryHover")
 PrimaryButton/colors/font_color = Color(1, 0.957, 0.839, 1)
 PrimaryButton/colors/font_hover_color = Color(1, 0.98, 0.9, 1)
+EffortRatingButton/base_type = &"Button"
+EffortRatingButton/styles/normal = SubResource("EffortRatingNormal")
+EffortRatingButton/styles/hover = SubResource("EffortRatingHover")
+EffortRatingButton/styles/pressed = SubResource("EffortRatingSelected")
+EffortRatingButton/styles/disabled = SubResource("Disabled")
+EffortRatingButton/colors/font_color = Color(0.12, 0.28, 0.26, 1)
+EffortRatingButton/colors/font_hover_color = Color(1, 0.957, 0.839, 1)
+EffortRatingButton/colors/font_pressed_color = Color(1, 0.957, 0.839, 1)
+EffortRatingButton/colors/font_disabled_color = Color(0.38, 0.43, 0.37, 1)
 LineEdit/styles/normal = SubResource("Input")
 LineEdit/styles/focus = SubResource("Focus")
 LineEdit/colors/font_color = Color(0.149, 0.196, 0.22, 1)

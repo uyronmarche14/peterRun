@@ -51,10 +51,10 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	var setup: Control = (load(PATIENT_SETUP_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(setup)
 	await process_frame
-	_expect_node(setup, ^"Panel/Margin/Content/AffectedSideOption", "affected-side selector")
-	_expect_node(setup, ^"Panel/Margin/Content/TargetRepetitionsSpinBox", "target repetition selector")
-	_expect_button(setup, ^"Panel/Margin/Content/ContinueButton", "Continue to Controller Check")
-	_expect_button(setup, ^"Panel/Margin/Content/BackButton", "Back")
+	_expect_node(setup, ^"%AffectedSideOption", "affected-side selector")
+	_expect_node(setup, ^"%TargetRepetitionsSpinBox", "target repetition selector")
+	_expect_button(setup, ^"%ContinueButton", "Review session")
+	_expect_button(setup, ^"%BackButton", "Back")
 	_expect(setup.has_method("save_session_settings"), "Patient Setup saves session settings")
 	if setup.has_method("save_session_settings"):
 		setup.call("set_affected_side", SessionConfigModel.AffectedSide.LEFT)
@@ -73,9 +73,9 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var controller_check: Control = (load(CONTROLLER_CHECK_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(controller_check)
 	await process_frame
-	_expect_label(controller_check, ^"Panel/Margin/Content/ControllerSummary/ControllerStatus", "Keyboard fallback ready", "honest keyboard fallback status")
-	_expect_button(controller_check, ^"Panel/Margin/Content/KeyboardFallbackButton", "Continue to Tutorial")
-	_expect_button(controller_check, ^"Panel/Margin/Content/BackButton", "Back")
+	_expect_label(controller_check, ^"%ControllerStatus", "0 of 5 detected · Keyboard", "honest keyboard fallback status")
+	_expect_button(controller_check, ^"%KeyboardFallbackButton", "Continue to Ready")
+	_expect_button(controller_check, ^"%BackButton", "Back")
 	_expect(controller_check.has_method("get_tutorial_scene_path"), "Controller Check exposes the Tutorial route")
 	if controller_check.has_method("get_tutorial_scene_path"):
 		_expect_equal(controller_check.call("get_tutorial_scene_path"), TUTORIAL_SCENE_PATH, "Keyboard fallback continues to Tutorial")
@@ -109,8 +109,8 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	root.add_child(ready)
 	await process_frame
 	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
-	_expect_button(ready, ^"Panel/Margin/Content/StartSessionButton", "Start L01 Session")
-	_expect_button(ready, ^"Panel/Margin/Content/BackButton", "Back to Tutorial")
+	_expect_button(ready, ^"%StartSessionButton", "Start L01 Session")
+	_expect_button(ready, ^"%BackButton", "Edit session")
 	_expect(ready.has_method("get_runner_scene_path"), "Ready screen exposes the L01 route")
 	if ready.has_method("get_runner_scene_path"):
 		_expect_equal(ready.call("get_runner_scene_path"), RUNNER_LEVEL_PATH, "Ready screen starts L01")

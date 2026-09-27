@@ -1,21 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ready_screen_controller.gd" id="1_ready"]
-
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="9_compact"]
-
 [ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
-
 [ext_resource type="Script" path="res://scripts/barangay_opening_art.gd" id="11_backdrop"]
 
+[sub_resource type="StyleBoxFlat" id="ChipSurface"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.85, 0.92, 0.87, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
 [node name="Ready" type="Control"]
-theme = ExtResource("9_compact")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("9_compact")
 script = ExtResource("1_ready")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -25,24 +33,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.027, 0.169, 0.22, 1)
 mouse_filter = 2
+color = Color(0.027, 0.169, 0.22, 1)
 
 [node name="BackdropArt" type="Node2D" parent="."]
-script = ExtResource("11_backdrop")
 modulate = Color(0.9, 0.95, 0.9, 1)
+script = ExtResource("11_backdrop")
 
 [node name="Panel" type="PanelContainer" parent="."]
-offset_bottom = 0
-offset_top = 0
-offset_right = 0
-offset_left = 0
 layout_mode = 1
-anchors_preset = 15
-anchor_left = 0.2625
-anchor_top = 0.2222222222222222
-anchor_right = 0.7375
-anchor_bottom = 0.7777777777777778
+anchor_left = 0.2292
+anchor_top = 0.48
+anchor_right = 0.7708
+anchor_bottom = 0.52
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("10_card")
@@ -50,30 +53,31 @@ theme_override_styles/panel = ExtResource("10_card")
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_bottom = 10
 
 [node name="Content" type="VBoxContainer" parent="Panel/Margin"]
-alignment = 1
 layout_mode = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="Panel/Margin/Content"]
-theme_type_variation = &"OfficialHeadline"
+[node name="Header" type="VBoxContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_constants/separation = 1
+
+[node name="Title" type="Label" parent="Panel/Margin/Content/Header"]
+layout_mode = 2
+theme_type_variation = &"OfficialHeadline"
 theme_override_font_sizes/font_size = 13
-text = "Ready When You Are"
+text = "Ready when you are"
 horizontal_alignment = 1
 
-[node name="Guidance" type="Label" parent="Panel/Margin/Content"]
+[node name="Guidance" type="Label" parent="Panel/Margin/Content/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+theme_override_colors/font_color = Color(0.36, 0.42, 0.42, 1)
 theme_override_font_sizes/font_size = 8
 text = "Start when ready. Pause or end at any time."
 horizontal_alignment = 1
-autowrap_mode = 2
 
 [node name="SessionSummary" type="VBoxContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
@@ -81,28 +85,56 @@ theme_override_constants/separation = 3
 
 [node name="SessionDetails" type="Label" parent="Panel/Margin/Content/SessionSummary"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.083, 0.369, 0.388, 1)
 theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("ChipSurface")
 horizontal_alignment = 1
-autowrap_mode = 2
 
 [node name="KeyboardNote" type="Label" parent="Panel/Margin/Content/SessionSummary"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-theme_override_font_sizes/font_size = 8
-text = "Keyboard: A / D / W / S. Misses stay neutral."
+theme_override_colors/font_color = Color(0.36, 0.42, 0.42, 1)
+theme_override_font_sizes/font_size = 7
 horizontal_alignment = 1
-autowrap_mode = 2
 
-[node name="StartSessionButton" type="Button" parent="Panel/Margin/Content"]
-theme_type_variation = &"PrimaryButton"
+[node name="ControlsRow" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TestControlsButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Test controls"
+
+[node name="PracticeButton" type="Button" parent="Panel/Margin/Content/ControlsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "Practise movements"
+
+[node name="Footer" type="HBoxContainer" parent="Panel/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BackButton" type="Button" parent="Panel/Margin/Content/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 16)
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Edit session"
+
+[node name="StartSessionButton" type="Button" parent="Panel/Margin/Content/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 8
 text = "Start L01 Session"
-
-[node name="BackButton" type="Button" parent="Panel/Margin/Content"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Back to Tutorial"

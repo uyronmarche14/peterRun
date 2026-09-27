@@ -124,8 +124,8 @@ $runtimeRoot = Join-Path $ProjectRoot 'code\art\characters\peter_adult_image_v04
 $framesRoot = Join-Path $PSScriptRoot 'generated\peter_adult_image_v04\normalized_frames'
 New-Item -ItemType Directory -Force -Path $runtimeRoot, $framesRoot | Out-Null
 
-$displayScale = 0.32
-$jumpLiftPixels = @(0, -4, -12, -18, -7, 0)
+$displayScale = 0.36
+$jumpLiftPixels = @(0, -8, -22, -36, -14, 0)
 $slideVerticalScale = @(1.0, 0.96, 0.90, 0.88, 0.95, 1.0)
 
 $clips = [ordered]@{

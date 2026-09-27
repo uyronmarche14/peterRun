@@ -18,7 +18,7 @@ The generated images retain Peter's mature Filipino adult identity, swept dark h
 
 The preparation script detects each complete transparent character figure as a connected component, removes accidental cross-cell fragments, normalizes it to a 256x256 frame, and maintains the existing `(128, 216)` ground pivot. It creates one padded atlas per clip plus a separate soft ground shadow.
 
-The integrated presentation uses a restrained `0.32` display scale. Jump frames add a controlled visual lift of up to 18 source pixels at the apex, while the middle slide frames compress vertically around the fixed foot anchor to make the duck clearly lower. Gameplay timing and action acceptance windows remain unchanged.
+The integrated presentation uses a clearly readable `0.36` display scale. Jump frames add a controlled visual lift of up to 36 source pixels at the apex, while the middle slide frames compress vertically around the fixed foot anchor to make the duck clearly lower. Gameplay timing and action acceptance windows remain unchanged.
 
 ## Animation set
 

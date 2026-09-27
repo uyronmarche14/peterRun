@@ -14,13 +14,13 @@
                   216
               ],
     "visual_adjustments":  {
-                               "display_scale":  0.32,
+                               "display_scale":  0.36,
                                "jump_lift_pixels":  [
                                                         0,
-                                                        -4,
-                                                        -12,
-                                                        -18,
-                                                        -7,
+                                                        -8,
+                                                        -22,
+                                                        -36,
+                                                        -14,
                                                         0
                                                     ],
                                "slide_vertical_scale":  [

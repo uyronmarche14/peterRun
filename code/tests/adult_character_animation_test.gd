@@ -2,8 +2,8 @@ extends SceneTree
 
 const ROOT := "res://art/characters/peter_adult_image_v04"
 const MANIFEST_PATH := ROOT + "/animation_manifest.json"
-const EXPECTED_DISPLAY_SCALE := 0.32
-const EXPECTED_JUMP_LIFT := [0, -4, -12, -18, -7, 0]
+const EXPECTED_DISPLAY_SCALE := 0.36
+const EXPECTED_JUMP_LIFT := [0, -8, -22, -36, -14, 0]
 const EXPECTED_SLIDE_SCALE := [1.0, 0.96, 0.90, 0.88, 0.95, 1.0]
 const REQUIRED_CLIPS := {
 	"idle_ready": [2.0, true, 6],

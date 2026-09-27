@@ -5,6 +5,18 @@
 # Local exports and test evidence that may contain machine-specific output
 exports/
 test_evidence/
+code/releases/
+
+# Blender autosave/backup copies (keep the named .blend sources)
+*.blend1
+**/Blender_Recovery_*.blend
+
+# Python bytecode from Blender build scripts
+__pycache__/
+
+# Local agent tooling state and worktrees
+.claude/
+**/.omc/
 
 # Local environment and editor files
 .env

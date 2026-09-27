@@ -1,6 +1,7 @@
 class_name RunnerLevelController
 extends Node2D
 
+const ControlHints = preload("res://scripts/control_hints.gd")
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const PromptDirectorModel = preload("res://scripts/prompt_director.gd")
@@ -83,6 +84,8 @@ func _ready() -> void:
 	return_button.pressed.connect(open_summary)
 	$EndConfirmation/Panel/Actions/CancelButton.pressed.connect(cancel_end)
 	$EndConfirmation/Panel/Actions/ConfirmButton.pressed.connect(confirm_end)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	refresh_control_hint()
 	_update_progress_hud()
 	level_definition = LevelSelection.resolve(session_config)
 	if level_definition == null:
@@ -304,6 +307,14 @@ func _apply_level_presentation() -> void:
 	_secondary_move_prop.name = "SecondaryMoveProp"
 	_secondary_move_prop.visible = false
 	$LevelWorld/PromptWorldAnchor/PromptProps.add_child(_secondary_move_prop)
+
+
+func refresh_control_hint(gamepad: bool = ControlHints.uses_gamepad()) -> void:
+	$HUD/HUDRoot/KeyboardHint.text = ControlHints.footer_text(gamepad)
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	refresh_control_hint()
 
 
 func get_visible_prompt() -> Node2D:

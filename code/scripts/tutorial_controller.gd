@@ -6,6 +6,7 @@ const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const Store = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const Hints = preload("res://scripts/control_hints.gd")
 const PRACTICE_ACTIONS: Array[StringName] = [&"move_left", &"move_right", &"jump", &"slide"]
 
 const ACTIONS: Array[Dictionary] = [
@@ -64,6 +65,7 @@ func _ready() -> void:
 	repeat_button.pressed.connect(repeat_action)
 	demo_button.pressed.connect(demonstrate_action)
 	demo_timer.timeout.connect(_on_demo_finished)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	practice_area.resized.connect(_centre_practice)
 	_centre_practice()
 	show_action_index(0)
@@ -152,16 +154,29 @@ func show_action_index(index: int) -> void:
 	_refresh_status()
 
 
-func _practice_instruction() -> String:
-	var left_affected: bool = input_adapter.affected_side == Config.AffectedSide.LEFT
-	match current_action_index:
-		0:
-			return "Press %s to move to the left marker." % ("D" if left_affected else "A")
-		1:
-			return "Press %s to move to the right marker." % ("A" if left_affected else "D")
-		2:
-			return "Press W to jump over the puddle."
-	return "Press S to slide under the laundry line."
+func _practice_instruction(gamepad: bool = Hints.uses_gamepad()) -> String:
+	var action: StringName = PRACTICE_ACTIONS[current_action_index]
+	var input_name := Hints.input_name(_source_for(action), gamepad)
+	match action:
+		&"move_left":
+			return "Press %s to move to the left marker." % input_name
+		&"move_right":
+			return "Press %s to move to the right marker." % input_name
+		&"jump":
+			return "Press %s to jump over the puddle." % input_name
+	return "Press %s to slide under the laundry line." % input_name
+
+
+# Ask the adapter so the hint always names the input that produces this lesson.
+func _source_for(action: StringName) -> StringName:
+	for source in PRACTICE_ACTIONS:
+		if input_adapter.call("_map_affected_side", source) == action:
+			return source
+	return action
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	instruction_label.text = _practice_instruction()
 
 
 func _refresh_status() -> void:

@@ -13,6 +13,8 @@ const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const SessionReviewStore = preload("res://scripts/session_review_store.gd")
 
 const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
+const DISCONNECT_PAUSE_TITLE := "Controller disconnected"
+const DISCONNECT_PAUSE_MESSAGE := "Reconnect it, then choose Resume."
 
 signal named_action_received(action_name: StringName)
 
@@ -41,6 +43,8 @@ var is_gameplay_paused := false
 var is_session_ended := false
 var _progress_tween: Tween
 var _pending_end_reason: StringName = &""
+var _pause_title_text := ""
+var _pause_message_text := ""
 
 @onready var player: PlayerController = $Player
 @onready var prompt_director: Node = $PromptDirector
@@ -85,6 +89,8 @@ func _ready() -> void:
 	$EndConfirmation/Panel/Actions/CancelButton.pressed.connect(cancel_end)
 	$EndConfirmation/Panel/Actions/ConfirmButton.pressed.connect(confirm_end)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	_pause_title_text = $PauseOverlay/Panel/Title.text
+	_pause_message_text = $PauseOverlay/Panel/Message.text
 	refresh_control_hint()
 	_update_progress_hud()
 	level_definition = LevelSelection.resolve(session_config)
@@ -101,16 +107,21 @@ func _ready() -> void:
 	_schedule_next_prompt()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+# _input runs before GUI focus navigation, so a focused HUD or Pause button
+# cannot turn the D-pad (also bound to ui_left/ui_right) into menu movement.
+# Check every action: one stick axis serves both lanes, so a push right is
+# also a release of move_left and must not end the loop early.
+func _input(event: InputEvent) -> void:
+	var handled := false
 	for action_name in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action_name):
 			receive_input(action_name, true, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
-		if event.is_action_released(action_name):
+			handled = true
+		elif event.is_action_released(action_name):
 			receive_input(action_name, false, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
+			handled = true
+	if handled:
+		get_viewport().set_input_as_handled()
 
 
 func receive_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:
@@ -313,8 +324,14 @@ func refresh_control_hint(gamepad: bool = ControlHints.uses_gamepad()) -> void:
 	$HUD/HUDRoot/KeyboardHint.text = ControlHints.footer_text(gamepad)
 
 
-func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
 	refresh_control_hint()
+	if connected or is_session_ended:
+		return
+	# Reconnecting never resumes by itself; the therapist chooses Resume.
+	pause_gameplay()
+	$PauseOverlay/Panel/Title.text = DISCONNECT_PAUSE_TITLE
+	$PauseOverlay/Panel/Message.text = DISCONNECT_PAUSE_MESSAGE
 
 
 func get_visible_prompt() -> Node2D:
@@ -483,6 +500,8 @@ func resume_gameplay() -> void:
 	is_gameplay_paused = false
 	_set_gameplay_updates_paused(false)
 	pause_overlay.visible = false
+	$PauseOverlay/Panel/Title.text = _pause_title_text
+	$PauseOverlay/Panel/Message.text = _pause_message_text
 
 
 func end_level_neutrally() -> void:

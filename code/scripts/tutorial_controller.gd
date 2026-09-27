@@ -76,17 +76,19 @@ func _centre_practice() -> void:
 
 
 # _input runs before GUI focus navigation, so a focused button cannot turn the
-# D-pad (also bound to ui_left/ui_right) into menu movement.
+# D-pad (also bound to ui_left/ui_right) into menu movement. Every action is
+# checked because one stick axis is both a press of one lane and a release of the other.
 func _input(event: InputEvent) -> void:
+	var handled := false
 	for action in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action):
 			receive_practice_input(action, true, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
-		if event.is_action_released(action):
+			handled = true
+		elif event.is_action_released(action):
 			receive_practice_input(action, false, Time.get_ticks_msec() / 1000.0)
-			get_viewport().set_input_as_handled()
-			return
+			handled = true
+	if handled:
+		get_viewport().set_input_as_handled()
 
 
 func receive_practice_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:
@@ -175,8 +177,10 @@ func _source_for(action: StringName) -> StringName:
 	return action
 
 
-func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
 	instruction_label.text = _practice_instruction()
+	if not connected and not is_tutorial_paused:
+		toggle_tutorial_pause()
 
 
 func _refresh_status() -> void:

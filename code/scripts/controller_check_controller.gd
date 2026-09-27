@@ -13,6 +13,11 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 func _ready() -> void:
 	keyboard_fallback_button.pressed.connect(continue_to_tutorial)
 	back_button.pressed.connect(return_to_patient_setup)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	_refresh_control_status()
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
 	_refresh_control_status()
 
 

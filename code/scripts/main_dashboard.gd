@@ -6,6 +6,7 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
 const GameSettings = preload("res://scripts/game_settings.gd")
+const ControlHints = preload("res://scripts/control_hints.gd")
 const MUSIC_PATH := "res://art/audio/hakbang_sa_umaga.wav"
 
 var _leaving := false
@@ -48,12 +49,23 @@ func _ready() -> void:
 	controller_check_button.pressed.connect(_open_controller_check_from_settings)
 	$QuitOverlay/Panel/Margin/Content/CancelButton.pressed.connect(close_overlays)
 	$QuitOverlay/Panel/Margin/Content/ConfirmButton.pressed.connect(confirm_quit)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	_refresh_safety_note()
 	_start_music()
 	_configure_route_pace()
 	_configure_comfort_preferences()
 	$Dashboard.modulate.a = 0.0
 	create_tween().tween_property($Dashboard, "modulate:a", 1.0, 0.45)
 
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	_refresh_safety_note()
+
+
+func _refresh_safety_note() -> void:
+	var source := "Controller connected" if ControlHints.uses_gamepad() else "Keyboard or MOVE controller"
+	$Dashboard/Margin/Content/SafetyNote.text = "Supervised session · " + source
 
 
 func _process(delta: float) -> void:
@@ -95,7 +107,7 @@ func open_patient_setup() -> void:
 		return
 	var result := get_tree().change_scene_to_file(PATIENT_SETUP_SCENE_PATH)
 	if result != OK:
-		session_status.text = "Unable to open Patient Setup. Please restart the app."
+		_show_status("Unable to open Patient Setup. Please restart the app.")
 	else:
 		_leaving = true
 
@@ -105,13 +117,19 @@ func open_tutorial() -> void:
 		return
 	var result := get_tree().change_scene_to_file(TUTORIAL_SCENE_PATH)
 	if result != OK:
-		session_status.text = "Unable to open Tutorial. Please restart the app."
+		_show_status("Unable to open Tutorial. Please restart the app.")
 	else:
 		_leaving = true
 
 
-func show_coming_soon(message: String) -> void:
+# The status line only takes space when there is something to report.
+func _show_status(message: String) -> void:
 	session_status.text = message
+	session_status.visible = not message.is_empty()
+
+
+func show_coming_soon(message: String) -> void:
+	_show_status(message)
 
 
 func open_settings() -> void:
@@ -139,7 +157,7 @@ func _open_controller_check_from_settings() -> void:
 		return
 	var result := get_tree().change_scene_to_file(CONTROLLER_CHECK_SCENE_PATH)
 	if result != OK:
-		session_status.text = "Unable to open Controller Check. Please restart the app."
+		_show_status("Unable to open Controller Check. Please restart the app.")
 		return
 	_leaving = true
 

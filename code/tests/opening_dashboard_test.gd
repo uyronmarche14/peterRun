@@ -2,7 +2,7 @@ extends SceneTree
 
 var failures: PackedStringArray = []
 const MUSIC := "res://art/audio/hakbang_sa_umaga.wav"
-const HERO_ART := "res://art/backgrounds/dashboard_barangay_morning_hero_v01.png"
+const HERO_ART := "res://art/backgrounds/dashboard_barangay_morning_hero_v03.png"
 
 
 func _init() -> void:
@@ -11,22 +11,37 @@ func _init() -> void:
 
 func _run() -> void:
 	_expect(FileAccess.file_exists(MUSIC), "Original menu instrumental exists")
-	_expect(FileAccess.file_exists(HERO_ART), "Opening uses a Blender-authored Barangay Morning hero image")
+	_expect(FileAccess.file_exists(HERO_ART), "Opening uses the approved image-based Barangay Morning dashboard art")
 	var menu: Node = load("res://scenes/main.tscn").instantiate()
 	root.add_child(menu)
 	current_scene = menu
 	await process_frame
 	_expect(menu.has_method("toggle_music"), "Opening offers music control")
 	_expect(menu.has_node("DashboardHero"), "Opening has the dedicated Barangay Morning hero illustration")
-	_expect(menu.has_node("OpeningLife"), "Opening has reduced-motion-aware calm life animation")
+	var hero := menu.get_node_or_null(^"DashboardHero") as TextureRect
+	_expect(hero != null and hero.texture != null, "Opening dashboard hero texture loads")
+	if hero != null and hero.texture != null:
+		_expect(hero.texture.get_width() == 960 and hero.texture.get_height() == 540, "Dashboard hero uses the approved 960 x 540 source canvas")
+	_expect(not menu.has_node("OpeningLife"), "Opening dashboard no longer depends on procedural scenery drawing")
 	_expect(menu.has_node("Dashboard/Margin/Content/RouteTicket"), "Dashboard contains a route-ticket treatment")
-	_expect(menu.has_node("Dashboard/Margin/Content/RouteStrip"), "Dashboard contains a visual journey strip")
+	_expect(not menu.has_node("Dashboard/Margin/Content/RouteStrip"), "Card drops the landmark strip that disagreed with the in-game journey")
 	_expect_label(menu, ^"Dashboard/Margin/Content/Title", "PETER RUN", "Opening title remains explicit")
-	_expect_label(menu, ^"Dashboard/Margin/Content/Subtitle", "One step at a time.", "Opening uses the calm subtitle")
+	_expect_font(menu, ^"Dashboard/Margin/Content/Title", "LilitaOne", "Title uses the sign-painter display font")
+	_expect_label(menu, ^"Dashboard/Margin/Content/Subtitle", "Bawat hakbang ng buhay.", "Card carries the Filipino tagline under the title")
+	_expect_font(menu, ^"Dashboard/Margin/Content/Subtitle", "Fredoka", "Tagline uses the rounded display font")
+	var tagline := menu.get_node_or_null(^"Dashboard/Margin/Content/Subtitle") as Label
+	_expect(tagline != null and tagline.get_theme_font_size("font_size") >= 12, "Tagline is at least 12 px on the native canvas")
+	_expect(not menu.has_node("RouteTagline"), "Tagline no longer floats over the busy sky")
+	_expect_label(menu, ^"Dashboard/Margin/Content/WelcomeBadge/Label", "MABUHAY! · WELCOME", "Greeting is a badge on the card")
+	_expect(not menu.has_node("Welcome"), "Corner greeting label is replaced by the badge")
+	var credit := menu.get_node_or_null(^"MusicCredit") as Label
+	_expect(credit != null and credit.text == "♫  Hakbang sa Umaga", "Music credit is short and names the track")
+	_expect(credit != null and credit.position.y < 40.0, "Music credit sits with the Music button, not over foliage")
+	_expect(menu.has_node("ReadabilityShade"), "A soft shade keeps the card readable over the painted art")
+	var safety := menu.get_node_or_null(^"Dashboard/Margin/Content/SafetyNote") as Label
+	_expect(safety != null and safety.text.begins_with("Supervised session") and not safety.text.contains("Keyboard mode available"), "Safety note is input-aware")
 	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteName", "BARANGAY MORNING", "Route ticket names Barangay Morning")
 	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteDetail", "L01 · GUIDED MOVEMENT ROUTE", "Route ticket explains the guided route")
-	var route_strip := menu.get_node_or_null(^"Dashboard/Margin/Content/RouteStrip") as Label
-	_expect(route_strip != null and route_strip.text.contains("Sari-sari Store") and route_strip.text.contains("Barangay Hall"), "Journey strip gives non-scoring landmark context")
 	_expect(menu.has_node("SettingsOverlay"), "Settings opens an actual settings panel")
 	_expect(menu.has_node("QuitOverlay"), "Quit has confirmation")
 	for overlay_name in ["SettingsOverlay", "QuitOverlay"]:
@@ -85,3 +100,10 @@ func _expect(condition: bool, message: String) -> void:
 func _expect_label(root_node: Node, path: NodePath, expected: String, message: String) -> void:
 	var label := root_node.get_node_or_null(path) as Label
 	_expect(label != null and label.text == expected, message)
+
+
+func _expect_font(root_node: Node, path: NodePath, file_hint: String, message: String) -> void:
+	var control := root_node.get_node_or_null(path) as Control
+	var font: Font = control.get_theme_font("font") if control != null else null
+	var base: Font = font.base_font if font is FontVariation else font
+	_expect(base != null and base.resource_path.contains(file_hint), message)

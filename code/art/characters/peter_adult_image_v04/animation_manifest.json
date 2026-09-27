@@ -13,6 +13,25 @@
                   128,
                   216
               ],
+    "visual_adjustments":  {
+                               "display_scale":  0.32,
+                               "jump_lift_pixels":  [
+                                                        0,
+                                                        -4,
+                                                        -12,
+                                                        -18,
+                                                        -7,
+                                                        0
+                                                    ],
+                               "slide_vertical_scale":  [
+                                                            1,
+                                                            0.96,
+                                                            0.9,
+                                                            0.88,
+                                                            0.95,
+                                                            1
+                                                        ]
+                           },
     "playback_contract":  "Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.",
     "jump_displacement":  "baked_into_frames",
     "shadow":  "ground_shadow.png",

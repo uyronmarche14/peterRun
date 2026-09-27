@@ -124,6 +124,10 @@ $runtimeRoot = Join-Path $ProjectRoot 'code\art\characters\peter_adult_image_v04
 $framesRoot = Join-Path $PSScriptRoot 'generated\peter_adult_image_v04\normalized_frames'
 New-Item -ItemType Directory -Force -Path $runtimeRoot, $framesRoot | Out-Null
 
+$displayScale = 0.32
+$jumpLiftPixels = @(0, -4, -12, -18, -7, 0)
+$slideVerticalScale = @(1.0, 0.96, 0.90, 0.88, 0.95, 1.0)
+
 $clips = [ordered]@{
     idle_ready = @{ Source = 'idle_ready_source.png'; Frames = 6; Duration = 2.0; Loop = $true }
     walk_forward = @{ Source = 'walk_forward_source.png'; Frames = 6; Duration = 1.2; Loop = $true }
@@ -185,6 +189,42 @@ function Render-Component(
     return $frame
 }
 
+function Apply-ActionAdjustment(
+    [System.Drawing.Bitmap]$frame,
+    [string]$clipName,
+    [int]$frameIndex
+) {
+    if ($clipName -ne 'jump_low' -and $clipName -ne 'slide_duck') {
+        return $frame
+    }
+
+    $adjusted = New-TransparentBitmap 256 256
+    $graphics = [System.Drawing.Graphics]::FromImage($adjusted)
+    try {
+        $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
+        $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+        $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+        $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+        if ($clipName -eq 'jump_low') {
+            $graphics.DrawImageUnscaled($frame, 0, [int]$jumpLiftPixels[$frameIndex])
+        }
+        else {
+            $scaleY = [double]$slideVerticalScale[$frameIndex]
+            $height = [int][Math]::Round(256 * $scaleY)
+            # Scale around the established y=216 foot anchor so the slide
+            # becomes visibly lower without moving its road contact point.
+            $y = [int][Math]::Round(216 * (1.0 - $scaleY))
+            $destination = [System.Drawing.Rectangle]::new(0, $y, 256, $height)
+            $sourceRect = [System.Drawing.Rectangle]::new(0, 0, 256, 256)
+            $graphics.DrawImage($frame, $destination, $sourceRect, [System.Drawing.GraphicsUnit]::Pixel)
+        }
+    }
+    finally {
+        $graphics.Dispose()
+    }
+    return $adjusted
+}
+
 $animations = [ordered]@{}
 foreach ($clipName in $clips.Keys) {
     $spec = $clips[$clipName]
@@ -213,6 +253,11 @@ foreach ($clipName in $clips.Keys) {
             for ($index = 0; $index -lt $count; $index++) {
                 $component = $components[$index]
                 $frame = Render-Component $component $source.Height 256
+                $adjustedFrame = Apply-ActionAdjustment $frame $clipName $index
+                if (-not [object]::ReferenceEquals($adjustedFrame, $frame)) {
+                    $frame.Dispose()
+                    $frame = $adjustedFrame
+                }
                 try {
                     Save-Png $frame (Join-Path $frameDirectory ('{0:D2}.png' -f $index))
                     $atlasGraphics.DrawImageUnscaled($frame, 2 + ($index * 260), 2)
@@ -279,6 +324,11 @@ $manifest = [ordered]@{
     generation_method = 'OpenAI built-in image generation with identity-preserving reference prompts'
     canvas = @(256, 256)
     pivot = @(128, 216)
+    visual_adjustments = [ordered]@{
+        display_scale = $displayScale
+        jump_lift_pixels = $jumpLiftPixels
+        slide_vertical_scale = $slideVerticalScale
+    }
     playback_contract = 'Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.'
     jump_displacement = 'baked_into_frames'
     shadow = 'ground_shadow.png'

@@ -41,8 +41,8 @@ func _run() -> void:
 	_expect(manifest.get("generation_method", "").contains("identity-preserving reference prompts"), "Manifest records the approved image-generation method")
 	var adjustments: Dictionary = manifest.get("visual_adjustments", {})
 	_expect(is_equal_approx(float(adjustments.get("display_scale", 0.0)), EXPECTED_DISPLAY_SCALE), "Adult Peter is slightly larger without changing the ground anchor")
-	_expect(adjustments.get("jump_lift_pixels", []) == EXPECTED_JUMP_LIFT, "Jump artwork uses the higher approved visual arc")
-	_expect(adjustments.get("slide_vertical_scale", []) == EXPECTED_SLIDE_SCALE, "Slide artwork uses the deeper approved crouch")
+	_expect(_numeric_array_matches(adjustments.get("jump_lift_pixels", []), EXPECTED_JUMP_LIFT), "Jump artwork uses the higher approved visual arc")
+	_expect(_numeric_array_matches(adjustments.get("slide_vertical_scale", []), EXPECTED_SLIDE_SCALE), "Slide artwork uses the deeper approved crouch")
 	var canvas: Array = manifest.get("canvas", [])
 	var pivot: Array = manifest.get("pivot", [])
 	_expect(canvas.size() == 2 and int(canvas[0]) == 256 and int(canvas[1]) == 256 and pivot.size() == 2 and int(pivot[0]) == 128 and int(pivot[1]) == 216, "Every clip keeps the fixed runtime canvas and ground anchor")
@@ -87,6 +87,15 @@ func _run() -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _numeric_array_matches(actual: Array, expected: Array) -> bool:
+	if actual.size() != expected.size():
+		return false
+	for index in actual.size():
+		if not is_equal_approx(float(actual[index]), float(expected[index])):
+			return false
+	return true
 
 
 func _finish() -> void:

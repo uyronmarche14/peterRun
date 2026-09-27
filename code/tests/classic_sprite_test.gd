@@ -13,7 +13,7 @@ func _run() -> void:
 	_expect(sprite.has_method("play_clip"), "Player uses the classic frame animation presentation")
 	if sprite.has_method("play_clip"):
 		_expect(sprite.get("animation") == &"idle_ready", "Standalone player starts ready, not walking")
-		_expect(sprite.scale == Vector2(0.3, 0.3), "Half-resolution atlas preserves original screen scale")
+		_expect(sprite.scale == Vector2(0.32, 0.32), "Adult Peter uses the approved slightly larger screen scale")
 		_expect(sprite.position + sprite.offset * sprite.scale + Vector2(128, 216) * sprite.scale == Vector2(0, 15), "Authored feet pivot maps to existing ground")
 		_expect(not sprite.centered, "Canvas pivot uses explicit top-left placement")
 		sprite.call("advance", 1.0)

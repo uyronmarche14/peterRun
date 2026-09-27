@@ -174,7 +174,7 @@ flowchart LR
 | Backward step | `S` | `slide` | Player performs readable backward-step/duck animation and resolves a slide prompt |
 | Immediate stop | Mouse Pause button | `pause_session` | Gameplay, timers and prompt flow freeze immediately |
 
-**Affected-side mapping:** this is configured in `InputAdapter`, before an `ActionEvent` reaches gameplay. If the therapist changes the setting, the controller's lateral directions may be inverted there; the art, prompt data and `PlayerController` remain unchanged.
+**Affected-side record:** this is stored with the supervised-session configuration. `InputAdapter` preserves literal controller directions: Left always produces `move_left` and Right always produces `move_right`; art, prompt data and `PlayerController` remain unchanged.
 
 ---
 

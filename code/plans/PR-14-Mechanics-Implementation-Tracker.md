@@ -45,8 +45,8 @@ This is not a competitive endless-runner feature. It must preserve the supervise
 | Patterns | L01 has 40 validated formations plus deterministic reachable selection; its runner now consumes that library. | Keep the legacy sets only for routes that have not migrated. | PR-14A/B/C complete |
 | Movement gates | Every authored obstacle is pooled, rendered, and projected from formation data. | Add visual playtest evidence in PR-14E. | PR-14C complete |
 | Jump/slide | Lane-specific props are part of formations; an input is recorded only when the response window reaches contact. | Add final visual/motion polish in later work. | PR-14C complete |
-| Safe clear | An already-safe open lane increments internal route progress and receives positive non-repetition feedback. The HUD and review use calm journey landmarks, not a numeric counter. | Confirm with L01 visual QA in PR-14E. | PR-14C/D complete |
-| Feedback | Safe clear wording is positive, but its visual/toast treatment is currently neutral. | Make positive route feedback visually consistent without adding a repetition. | Not started |
+| Safe clear | An already-safe open lane passes safely without a repetition, miss, route point, or journey advance. | Confirm with L01 visual QA in PR-14E. | PR-14C/D complete |
+| Feedback | Idle safe passage uses factual `Path is clear.` wording instead of movement-success feedback. | Confirm the wording is readable and non-rewarding in PR-14E. | Implemented locally |
 | Routes | L02/L03 have palette and short pattern data. | Defer new content production until L01 is approved. | Deferred |
 
 ## 5. Target formation data
@@ -75,7 +75,7 @@ ending_lane: 0                 # resulting safe/action lane after resolution
 4. A movement gate has at least one `open_lanes` entry. Its required movement must lead to an open lane from a permitted entry lane.
 5. A jump/slide formation has an `action_lane`; action success requires Peter to be in that lane at the contact line.
 6. Moving away from a jump/slide prop avoids a punishment but is a neutral miss; it cannot become a route-clear reward because it skips the prescribed action.
-7. `allow_idle_safe_clear` is valid only for movement gates and only when Peter starts/ends in a declared open lane.
+7. `allow_idle_safe_clear` is valid only for movement gates and only when Peter starts/ends in a declared open lane. It prevents collision but awards no repetition, point, or journey progress.
 8. The resolver must choose a next formation reachable from the player’s actual ending lane.
 9. The data model must not encode speed, countdown pressure, score multipliers, lives, or penalties.
 
@@ -86,7 +86,7 @@ ending_lane: 0                 # resulting safe/action lane after resolution
 | PR-14A | `PatternDefinition` data shape, validation, migration of current eight L01 patterns | Implemented locally | Existing tests are green | Invalid lanes, impossible gates, duplicate blocks, missing action lane, and no-response data are rejected by deterministic tests. |
 | PR-14B | Curated L01 library: 24–40 reachable patterns across beginner, normal, recovery, and mixed categories | Implemented locally | PR-14A complete | No immediate repeat; every transition is reachable from the prior ending lane; all four actions remain represented. |
 | PR-14C | Generic formation renderer and contact-line resolver | Implemented locally | PR-14A complete | One-, two-, and three-obstacle formations approach in perspective; all pause/resume together; stale props reset between formations. |
-| PR-14D | Calm feedback and route-progression treatment | Implemented locally | PR-14C complete | Action repetitions and neutral misses remain correct; safe movement route feedback is positive but not a visible score or completion trigger. |
+| PR-14D | Calm feedback and route-progression treatment | Implemented locally | PR-14C complete | Journey landmarks advance only from completed planned movements; idle safe passage changes no counter. |
 | PR-14E | L01 gameplay/visual QA and authoring handoff | Not started | PR-14B–D complete | 480×270 and 1920×1080 visual playtests; no ambiguous cue; documented format for a future route. |
 | PR-15 | Apply approved L01 formation system to L02/L03 | Blocked by L01 acceptance | PR-14E approved | Each route supplies its own formations, art, landmarks, and readability review. |
 
@@ -117,10 +117,10 @@ Before marking a work unit complete, add or update the smallest deterministic te
 - Pause freezes every prop, the contact timer, and player state.
 - Correct jump/slide at the action lane records exactly one matching repetition.
 - Correct lane move into an open lane records exactly one matching movement repetition.
-- Already occupying an open lane produces route progression only; it adds no repetition and no neutral miss.
+- Already occupying an open lane passes safely; it adds no repetition, neutral miss, route point, or journey progress.
 - Wrong action, wrong lane, or no response records a neutral miss only.
 - Route feedback uses no numeric score, streak, multiplier, or punitive language.
-- Session review distinguishes repetitions and neutral misses; route progress is optional descriptive context, never a score ranking.
+- Session review derives optional journey context from completed planned repetitions, never from elapsed obstacles or idle passage.
 
 ## 8. Manual playtest checklist
 
@@ -146,7 +146,7 @@ These are implementation choices, not clinical changes. Record the decision in t
 | Pattern storage | `formation_library` on the Godot `LevelDefinition` resource, validated by `PatternDefinition` | Accepted | 2026-09-13 / Development |
 | Selection policy | Deterministic no-immediate-repeat, reproducible across a session | Pending | — |
 | Route progress UI | Small route strip plus 3–5 Barangay landmarks; no points display | Pending | — |
-| Safe-lane feedback | Brief marker glow and supportive text; no repetition increment | Pending | — |
+| Safe-lane feedback | Factual `Path is clear.` message; no movement-success language or counter change | Accepted | User direction |
 | Warning input policy | Permit lane preparation during warning; resolve only at contact line | Pending | — |
 
 ## 10. Definition of done for this mechanics phase

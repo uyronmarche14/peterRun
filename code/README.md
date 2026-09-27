@@ -5,15 +5,15 @@ This is the Godot 4 project root for the PETER RUN Windows desktop prototype.
 ## Current setup
 
 - Original 2D forward-lane runner with a 2.5D parallax illusion, Compatibility renderer, and `480 × 270` base canvas.
-- Input Map: keyboard `A` Move Left, `D` Move Right, `W` Jump, `S` Slide, `P` Pause; standard gamepad D-pad Left/Right, A Jump, B Slide, Start Pause. A MOVE controller is supported when its firmware sends the same debounced HID keyboard actions.
+- Input Map: keyboard `A` Move Left, `D` Move Right, `W` Jump, `S` Slide, `P` Pause; standard gamepad D-pad Left/Right, A Jump, B Slide, Start Pause. Left and Right remain literal in every affected-side configuration. A MOVE controller is supported when its firmware sends the same debounced HID keyboard actions.
 - ComfyUI reference folders exist under `art/_references/`; they are not runtime game assets.
-- `scenes/main.tscn` opens the menu, followed by Patient Setup, Controller Check, Tutorial, Ready, and L01.
+- `scenes/main.tscn` opens the menu, followed by Patient Setup, Ready, and L01; Controller Check and Tutorial are optional from Setup and Ready.
 - PR-10B adds continuous perspective travel, lane-aware props, neutral exit fades, running/landing feedback, and animated repetition progress. The current character and environment remain prototype geometry.
 
 ## Verify after opening Godot
 
 1. Open this `code/` folder in Godot 4.
-2. Press **F5**; choose **Start Session**, configure the session, continue through Controller Check and Tutorial, then choose **Start L01 Session**. F6 runs only the selected scene.
+2. Press **F5**; choose **Start Session**, configure the session, review it on Ready, then choose **Start L01 Session**. Controller Check and Tutorial are optional. F6 runs only the selected scene.
 3. Open **Project → Project Settings → Input Map** and confirm the five named actions.
 4. If `godot` is available in a terminal, run:
 
@@ -58,7 +58,7 @@ Measured card dimensions at 1920×1080 (480×270 base canvas unchanged):
 
 The HUD band is 120 output pixels high, down from 152. A separate quiet footer keeps keyboard/miss labels readable against the brighter route. Regular button targets are 64–80 pixels high at the 1080p output; rating targets are 72 pixels high. Smaller windows preserve the aspect ratio and proportionally scale the interface, so these are not guaranteed physical-pixel minima at every window size.
 
-Patient Setup now uses horizontal **− / +** repetition buttons instead of tiny vertical arrows. The underlying SpinBox/Range and `value_changed` contract remain intact, with the existing 10–15 bounds. Direct text entry is replaced by mouse-operated stepping. The tutorial's action instruction remains larger than its utility buttons; all practice, demonstration, pause and skip routes remain available.
+Patient Setup uses horizontal **− / +** repetition buttons instead of tiny vertical arrows. The underlying SpinBox/Range and `value_changed` contract remain intact, with configurable 1–15 repetitions per action (4–60 total); the default remains 10 per action. Direct text entry is replaced by mouse-operated stepping. The tutorial's action instruction remains larger than its utility buttons; all practice, demonstration, pause and skip routes remain available.
 
 ```text
 godot --headless --path . -s res://tests/ui_theme_pass_test.gd

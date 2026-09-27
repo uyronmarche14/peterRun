@@ -33,7 +33,7 @@ PETER RUN is a fixed-pace, three-lane rehabilitation runner. It is implemented i
 ### Product principles
 
 1. **Calm over fast.** Difficulty scales through planned repetition count, never character speed.
-2. **Encouragement over punishment.** Missed prompts have no game-over consequence.
+2. **Clear consequences without punishment.** Physical obstacle contact ends the current run, while non-contact misses remain neutral; there are no lives, score loss, or shaming messages.
 3. **Therapist in control.** Safety actions and clinical decisions are not automated away.
 4. **Content scales.** Levels are definitions, not one-off code paths.
 5. **Input is replaceable.** The game only knows named actions; it does not depend on a keyboard or a particular sensor implementation.
@@ -94,10 +94,10 @@ The exertion rating may be displayed with the historical “1–10” product re
 | FR-01 | Configure named input actions | `move_left`, `move_right`, `jump`, and `slide` exist in `InputMap`; WASD triggers them. |
 | FR-02 | Provide an input adapter | Runner receives only named actions, so a HID gamepad can replace WASD without runner code edits. |
 | FR-03 | Debounce input | Pressing/holding a mapped input fires one event until release and a cooldown expires. |
-| FR-04 | Support side mapping | Settings stores affected side; left/right action mapping reverses for the left-leg configuration. |
+| FR-04 | Record affected side | Settings stores affected side for session review; left/right controls remain literal in every configuration. |
 | FR-05 | Show prompt warnings | Every exercise prompt is visible sufficiently before its response window; time values are configuration constants. |
 | FR-06 | Resolve actions without punishment | Correct action in window increments its target count; incorrect/missed action gives neutral or encouraging feedback and never ends play. |
-| FR-07 | End on planned targets | A level completes when each required action target is reached. It must not complete based on score, elapsed time, or obstacle collision. |
+| FR-07 | End on targets or collision | A level completes when each required action target is reached. Physical obstacle contact ends the current run and retains completed repetitions for review; neither outcome depends on score or elapsed time. |
 | FR-08 | Pause instantly | Pause stops runner movement, timers, and prompt resolution on the same frame; it exposes Resume, End Level, and End Session. |
 | FR-09 | Display progress | HUD shows per-action or aggregate repetitions remaining and a clear pause control. |
 | FR-10 | Capture exertion rating | Summary permits one trackpad/mouse-selected integer 1–10 and displays the selected value in the session summary. |
@@ -118,6 +118,8 @@ The wearable's firmware is responsible for translating measured angles into disc
 | `move_left` | `A` | Hip adduction | Hip abduction |
 | `jump` | `W` | Forward step | Forward step |
 | `slide` | `S` | Backward step | Backward step |
+
+The game preserves literal directions: `A` / Left always means `move_left`, and `D` / Right always means `move_right`. A therapist may record the affected side in session setup, but the game does not invert lateral controls.
 
 ### Required controller behavior before integration
 
@@ -148,7 +150,7 @@ Scheduled → Warning → Active response window → Resolved (success / neutral
 - Only one active response prompt in the MVP.
 - The upcoming action is announced with a large icon, action label, and consistent color/shape pairing.
 - A successful prompt increments exactly one matching action counter.
-- A prompt that passes without a matching action is a neutral miss; no streaks or negative score.
+- A prompt without a matching action is a neutral miss only when Peter reaches no obstacle. If Peter remains in an occupied lane at contact, the run ends. There are no streaks, negative score, lives, or health.
 - Use a deterministic generated sequence for each level during development to make testing repeatable. Optional randomisation can be added later while preserving target balance.
 
 ---

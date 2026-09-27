@@ -74,11 +74,11 @@ During play, the character moves forward at a fixed, gentle pace. Clearly telegr
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| BR-01 | The game shall support right- and left-affected-leg configurations, including correct lateral mapping. | Must |
+| BR-01 | The game shall record right- and left-affected-leg configurations for supervised-session review. Physical Left and Right controls shall remain literal in-game directions. | Must |
 | BR-02 | The game shall provide four actions: left, right, jump, and slide, sourced through one input layer. | Must |
 | BR-03 | Each movement/action shall be treated as one discrete event; held input must not generate repeated reps. | Must |
 | BR-04 | A session shall use configurable planned targets, with 10–15 repetitions per movement as the initial default range. | Must |
-| BR-05 | The game shall not have a lose screen, lives, score penalty, or forced early termination for missed prompts. | Must |
+| BR-05 | A physical obstacle contact shall end the current run and preserve completed repetitions for review. The game shall not use lives, score penalties, health, chases, or shaming language. | Must |
 | BR-06 | A therapist-accessible pause/stop control shall be available throughout gameplay and take effect immediately. | Must |
 | BR-07 | The game shall show a level summary and an exertion-rating screen when the planned set is complete. | Must |
 | BR-08 | The game shall make progression a therapist-confirmed action; an exertion rating informs the discussion but does not automatically prescribe more exercise. | Must |

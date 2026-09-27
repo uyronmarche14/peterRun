@@ -19,7 +19,8 @@ var _opening_elapsed := 0.0
 @onready var settings_button: Button = $Dashboard/Margin/Content/SecondaryActions/SettingsButton
 @onready var quit_button: Button = $Dashboard/Margin/Content/SecondaryActions/QuitButton
 @onready var menu_music: AudioStreamPlayer = $MenuMusic
-@onready var music_button: Button = $MusicButton
+@onready var music_button: Button = %MusicButton
+@onready var music_control: Control = $MusicControl
 @onready var character_mount: Node2D = $CharacterMount
 @onready var settings_overlay: Control = $SettingsOverlay
 @onready var quit_overlay: Control = $QuitOverlay
@@ -179,7 +180,7 @@ func _start_music() -> void:
 		menu_music.stream = load(MUSIC_PATH) as AudioStreamWAV
 	if menu_music.stream == null:
 		music_button.disabled = true
-		music_button.text = "♫  Music unavailable"
+		music_button.tooltip_text = "Music unavailable"
 		volume_slider.editable = false
 		return
 	var track := menu_music.stream as AudioStreamWAV
@@ -264,7 +265,9 @@ func toggle_music() -> void:
 
 
 func _update_music_label() -> void:
-	music_button.text = "♫  Music: On" if AudioSettings.enabled else "♫  Music: Off"
+	music_button.tooltip_text = "Music on · click to mute" if AudioSettings.enabled else "Music off · click to play"
+	# Dim the whole control when muted; the tooltip carries the state in words.
+	music_control.modulate.a = 1.0 if AudioSettings.enabled else 0.55
 
 
 func _exit_tree() -> void:

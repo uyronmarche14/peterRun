@@ -39,14 +39,26 @@ func _run() -> void:
 		await process_frame
 		var quote_rect := (menu.get_node("HeroQuote") as Control).get_global_rect()
 		_expect(not quote_rect.intersects((menu.get_node("Dashboard") as Control).get_global_rect()), "Inspiration line stays clear of the card")
-		_expect(not quote_rect.intersects((menu.get_node("MusicCredit") as Control).get_global_rect()), "Inspiration line stays clear of the music controls")
+		_expect(not quote_rect.intersects((menu.get_node("%MusicCredit") as Control).get_global_rect()), "Inspiration line stays clear of the music controls")
 		_expect(quote_rect.end.x <= 480.0 and quote_rect.position.y >= 0.0, "Inspiration line stays on screen")
 	_expect(not menu.has_node("RouteTagline"), "The old hard-to-read sky label is replaced")
 	_expect_label(menu, ^"Dashboard/Margin/Content/WelcomeBadge/Label", "MABUHAY! · WELCOME", "Greeting is a badge on the card")
 	_expect(not menu.has_node("Welcome"), "Corner greeting label is replaced by the badge")
-	var credit := menu.get_node_or_null(^"MusicCredit") as Label
-	_expect(credit != null and credit.text == "♫  Hakbang sa Umaga", "Music credit is short and names the track")
-	_expect(credit != null and credit.position.y < 40.0, "Music credit sits with the Music button, not over foliage")
+	var credit := menu.get_node_or_null(^"%MusicCredit") as Label
+	var music_button := menu.get_node_or_null(^"%MusicButton") as Button
+	_expect(credit != null and credit.text == "Hakbang sa Umaga", "Music control shows only the song title")
+	_expect(music_button != null and music_button.text == "♫", "Music button is just the music icon")
+	if credit != null and music_button != null:
+		await process_frame
+		var button_rect := music_button.get_global_rect()
+		var credit_rect := credit.get_global_rect()
+		_expect(absf(button_rect.get_center().y - credit_rect.get_center().y) <= 1.0, "Icon and song title share one row")
+		_expect(credit_rect.position.x - button_rect.end.x >= 0.0 and credit_rect.position.x - button_rect.end.x <= 6.0, "Song title sits right next to the icon")
+		_expect(button_rect.position.y < 30.0, "Music control stays at the top of the screen")
+		menu.call("toggle_music")
+		_expect(music_button.tooltip_text.contains("off"), "Muted state is explained, not colour-only")
+		menu.call("toggle_music")
+		_expect(music_button.tooltip_text.contains("on"), "Playing state is explained")
 	_expect(menu.has_node("ReadabilityShade"), "A soft shade keeps the card readable over the painted art")
 	var safety := menu.get_node_or_null(^"Dashboard/Margin/Content/SafetyNote") as Label
 	_expect(safety != null and safety.text.begins_with("Supervised session") and not safety.text.contains("Keyboard mode available"), "Safety note is input-aware")

@@ -2,7 +2,7 @@ extends Sprite2D
 ## Presentation only. Gameplay owns action/lane durations and pause.
 ## Each image contains its own lift/pose; never add runtime squash or lift.
 
-const ROOT := "res://art/characters/peter_original_v01"
+const ROOT := "res://art/characters/peter_adult_image_v04"
 static var manifest: Dictionary = _read_manifest()
 # Compatibility inspection interface; values are derived from the production
 # manifest, not a second hard-coded frame/timing table.
@@ -10,9 +10,9 @@ static var CLIPS: Dictionary = _clip_summary()
 
 static func _read_manifest() -> Dictionary:
 	var path := ROOT + "/animation_manifest.json"
-	assert(FileAccess.file_exists(path), "Original Peter export manifest missing")
+	assert(FileAccess.file_exists(path), "Adult Peter image animation manifest missing")
 	var value: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
-	assert(value is Dictionary and value.has("animations"), "Invalid original Peter manifest")
+	assert(value is Dictionary and value.has("animations"), "Invalid adult Peter image animation manifest")
 	return value
 
 static func _clip_summary() -> Dictionary:
@@ -35,7 +35,7 @@ static func frame_path(clip: StringName, _index: int) -> String:
 	return ROOT + "/" + String(manifest.animations[String(clip)].atlas)
 
 func play_clip(clip: StringName, fit_seconds: float = 0.0) -> void:
-	assert(CLIPS.has(clip), "Unknown original Peter clip")
+	assert(CLIPS.has(clip), "Unknown adult Peter clip")
 	animation = clip
 	elapsed = 0.0
 	finished = false

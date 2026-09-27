@@ -7,9 +7,9 @@ func _init() -> void:
 		quit(1)
 		return
 	var filter: String = config.get_value("preset.0", "include_filter", "")
-	if not filter.contains("art/characters/peter_original_v01/animation_manifest.json"):
+	if not filter.contains("art/characters/peter_adult_image_v04/animation_manifest.json"):
 		printerr("FAIL: Runtime animation manifest must be explicitly included in exports")
 		quit(1)
 		return
-	print("PETER original export resource contract: PASS")
+	print("PETER adult image export resource contract: PASS")
 	quit(0)

@@ -6,13 +6,13 @@ func _init() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
-	var manifest_path := "res://art/characters/peter_original_v01/animation_manifest.json"
+	var manifest_path := "res://art/characters/peter_adult_image_v04/animation_manifest.json"
 	if not FileAccess.file_exists(manifest_path):
-		printerr("FAIL: Original rigged Peter manifest is absent")
+		printerr("FAIL: Adult Peter image animation manifest is absent")
 		quit(1)
 		return
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(manifest_path))
-	check(manifest.asset_origin == "original procedural mesh and skeletal animation", "Original provenance")
+	check(manifest.asset_origin == "image-generated action sprites derived from the approved original Peter concept", "Approved adult image provenance")
 	var player: Node2D = load("res://scenes/player.tscn").instantiate()
 	root.add_child(player)
 	player.set_process(false)
@@ -72,7 +72,7 @@ func _run() -> void:
 	check(player.get("_pending_feedback") == &"" and player.is_gameplay_paused, "Terminal state clears cosmetic queue")
 	player.free()
 	for failure in failures: printerr("FAIL: " + failure)
-	print("PETER ORIGINAL character integration: " + ("PASS" if failures.is_empty() else "FAIL"))
+	print("PETER adult image character integration: " + ("PASS" if failures.is_empty() else "FAIL"))
 	quit(0 if failures.is_empty() else 1)
 
 func check(condition: bool, message: String) -> void:

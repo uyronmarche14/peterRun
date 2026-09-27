@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/classic_runner_sprite.gd" id="2_classic"]
-[ext_resource type="Texture2D" path="res://art/characters/peter_original_v01/ground_shadow.png" id="3_shadow"]
+[ext_resource type="Texture2D" path="res://art/characters/peter_adult_image_v04/ground_shadow.png" id="3_shadow"]
 
 [node name="Player" type="Node2D"]
 z_index = 1

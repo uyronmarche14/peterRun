@@ -14,13 +14,15 @@
                   216
               ],
     "visual_adjustments":  {
-                               "display_scale":  0.36,
+                               "display_scale":  0.4,
                                "jump_lift_pixels":  [
                                                         0,
-                                                        -8,
-                                                        -22,
+                                                        -12,
+                                                        -28,
+                                                        -46,
+                                                        -56,
                                                         -36,
-                                                        -14,
+                                                        0,
                                                         0
                                                     ],
                                "slide_vertical_scale":  [
@@ -33,7 +35,8 @@
                                                         ]
                            },
     "playback_contract":  "Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.",
-    "jump_displacement":  "baked_into_frames",
+    "jump_displacement":  "eight-pose baked 56 px source arc plus an 8 px Godot visual accent; gameplay collision and route timing remain unchanged",
+    "jump_source_directory":  "Peter_Run_Visual_Production/generated/peter_adult_image_v05/source_strips",
     "shadow":  "ground_shadow.png",
     "feedback_effects":  {
                              "landing_ring":  "effects/landing_ring.png",
@@ -290,27 +293,31 @@
                                                       ]
                                       },
                        "jump_low":  {
-                                        "frames":  6,
-                                        "fps":  9.67741935483871,
-                                        "duration_seconds":  0.62,
+                                        "frames":  8,
+                                        "fps":  8.695652173913043,
+                                        "duration_seconds":  0.92,
                                         "loop":  false,
                                         "timestamps":  [
                                                            0,
-                                                           0.10333333333333333,
-                                                           0.20666666666666667,
-                                                           0.31,
-                                                           0.41333333333333333,
-                                                           0.51666666666666672
+                                                           0.13,
+                                                           0.26,
+                                                           0.39,
+                                                           0.52,
+                                                           0.65,
+                                                           0.78,
+                                                           0.86
                                                        ],
                                         "frame_durations":  [
-                                                                0.10333333333333333,
-                                                                0.10333333333333333,
-                                                                0.10333333333333333,
-                                                                0.10333333333333333,
-                                                                0.10333333333333333,
-                                                                0.10333333333333333
+                                                                0.13,
+                                                                0.13,
+                                                                0.13,
+                                                                0.13,
+                                                                0.13,
+                                                                0.13,
+                                                                0.08,
+                                                                0.06
                                                             ],
-                                        "atlas":  "jump_low.png",
+                                        "atlas":  "jump_high_v05.png",
                                         "regions":  [
                                                         [
                                                             2,
@@ -344,6 +351,18 @@
                                                         ],
                                                         [
                                                             1302,
+                                                            2,
+                                                            256,
+                                                            256
+                                                        ],
+                                                        [
+                                                            1562,
+                                                            2,
+                                                            256,
+                                                            256
+                                                        ],
+                                                        [
+                                                            1822,
                                                             2,
                                                             256,
                                                             256

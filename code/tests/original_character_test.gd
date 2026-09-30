@@ -55,7 +55,7 @@ func _run() -> void:
 	player.handle_action(&"move_right")
 	check(player.get("_pending_feedback") == &"", "Accepted action clears stale cosmetic feedback")
 	check(sprite.animation == &"jump_low", "Lateral movement preserves airborne clip")
-	check(player.get_node("Visual").transform == Transform2D.IDENTITY, "Lift only in artwork")
+	check(player.get_node("Visual").scale == Vector2.ONE and is_zero_approx(player.get_node("Visual").rotation), "Higher jump enhancement preserves the authored character proportions")
 	player.reset_for_practice()
 	player.handle_action(&"move_left")
 	player.handle_action(&"move_right")

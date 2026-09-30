@@ -5,6 +5,7 @@ const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const RouteJourney = preload("res://scripts/route_journey.gd")
+const ROUTE_STAMP_ATLAS = preload("res://art/backgrounds/l01_barangay_v06_layers/l01_v06_route_stamp_atlas.png")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
 
@@ -74,7 +75,12 @@ func _ready() -> void:
 		content.get_node("Repetitions/" + ACTION_NODES[index]).text = "%s: %d / %d" % [
 			ACTION_LABELS[index], _result.get_completed(action), _config.get_target(action)]
 	content.get_node("Misses").text = "Neutral misses: %d" % _result.neutral_misses
-	content.get_node("Journey").text = RouteJourney.get_summary_text(RouteJourney.get_progress(completed_repetitions, target_repetitions))
+	var route_progress := RouteJourney.get_progress(completed_repetitions, target_repetitions)
+	content.get_node("Journey").text = RouteJourney.get_summary_text(route_progress)
+	var route_stamp := AtlasTexture.new()
+	route_stamp.atlas = ROUTE_STAMP_ATLAS
+	route_stamp.region = Rect2(route_progress * 128, 0, 128, 128)
+	content.get_node("Journey/JourneyStamp").texture = route_stamp
 	_refresh_rating()
 
 

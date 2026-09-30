@@ -20,17 +20,17 @@ func _run() -> void:
 	var player: Node = level.get_node("Player")
 	level.call("_show_prompt", &"jump", "MOVE NOW", Color(0.35, 0.78, 0.66))
 	player.call("handle_action", &"jump")
-	await create_timer(0.26).timeout
+	await create_timer(0.52).timeout
 	player.call("set_gameplay_paused", true)
 	await _capture("movement_high_jump.png")
 	player.call("set_gameplay_paused", false)
-	await create_timer(0.39).timeout
+	await create_timer(0.27).timeout
 	player.call("set_gameplay_paused", true)
 	await _capture("movement_landing.png")
 	player.call("reset_for_practice")
 	level.call("_show_prompt", &"slide", "MOVE NOW", Color(0.35, 0.78, 0.66))
 	player.call("handle_action", &"slide")
-	await create_timer(0.16).timeout
+	await create_timer(0.32).timeout
 	player.call("set_gameplay_paused", true)
 	await _capture("movement_slide.png")
 	player.call("reset_for_practice")

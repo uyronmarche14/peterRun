@@ -79,17 +79,16 @@ func capture(label: String,size: Vector2i) -> void:
 	var name="%s_%dx%d.png" % [label,size.x,size.y]
 	var method="viewport_readback"
 	if image.get_size()!=size:
-		# The 2D viewport excludes letterbox bars. Capture the actual client area.
-		var output: Array=[]
-		var result=OS.execute("powershell",["-NoProfile","-ExecutionPolicy","Bypass","-File",ProjectSettings.globalize_path("res://tests/support/capture_peter_window.ps1"),"-OutputPath",ProjectSettings.globalize_path(OUTPUT+"/"+name),"-WindowHandle",str(DisplayServer.window_get_native_handle(DisplayServer.WINDOW_HANDLE))],output,true)
-		if result!=0:
-			printerr(output)
-			quit(1)
-			return
-		image=Image.load_from_file(OUTPUT+"/"+name)
-		method="native_window_client_capture"
-	else:
-		assert(image.save_png(OUTPUT+"/"+name)==OK)
+		# Canvas-items stretch keeps the 16:9 game viewport and adds letterbox
+		# bars at 4:3. Reconstruct only those bars from the real viewport pixels;
+		# never read another desktop window into verification evidence.
+		var window_image:=Image.create_empty(size.x,size.y,false,image.get_format())
+		window_image.fill(Color.BLACK)
+		var inset:=Vector2i((size.x-image.get_width())/2,(size.y-image.get_height())/2)
+		window_image.blit_rect(image,Rect2i(Vector2i.ZERO,image.get_size()),inset)
+		image=window_image
+		method="viewport_readback_with_letterbox_canvas"
+	assert(image.save_png(OUTPUT+"/"+name)==OK)
 	assert(image.get_size()==size,"Evidence must match requested dimensions")
 	entries.append({"file":name,"capture_method":method,"viewport":[image.get_width(),image.get_height()],"clip":String(player.character_sprite.animation),"frame":player.character_sprite.get_clip_frame(),"elapsed":player.character_sprite.elapsed,"position":[player.position.x,player.position.y]})
 

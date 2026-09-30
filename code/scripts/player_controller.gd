@@ -3,15 +3,20 @@ extends Node2D
 
 const PlayerLaneStateModel = preload("res://scripts/player_lane_state.gd")
 const Settings = preload("res://scripts/game_settings.gd")
+const RoadProjectionModel = preload("res://scripts/road_projection.gd")
 
-const LANE_X := [128.0, 240.0, 352.0]
+const LANE_X := RoadProjectionModel.PLAYER_LANE_X
 const LANE_TWEEN_SECONDS := 0.22
-const JUMP_RISE_SECONDS := 0.24
-const JUMP_HOLD_SECONDS := 0.06
-const JUMP_RETURN_SECONDS := 0.32
+const JUMP_RISE_SECONDS := 0.32
+const JUMP_HOLD_SECONDS := 0.22
+const JUMP_RETURN_SECONDS := 0.24
+const JUMP_RECOVERY_SECONDS := 0.14
 const LANDING_SECONDS := 0.22
-const ACTION_RISE_SECONDS := 0.20
+const ACTION_RISE_SECONDS := 0.22
+const ACTION_HOLD_SECONDS := 0.16
 const ACTION_RETURN_SECONDS := 0.28
+const JUMP_EXTRA_LIFT := 18.0
+const SLIDE_EXTRA_DROP := 4.0
 var _lane_state := PlayerLaneStateModel.new()
 var _lane_tween: Tween
 var _action_tween: Tween
@@ -23,6 +28,7 @@ var _pending_feedback: StringName = &""
 var _landing_remaining := 0.0
 var _lane_remaining := 0.0
 var _lane_direction := 1.0
+var _jump_contact_emitted := false
 
 @onready var visual: Node2D = $Visual
 @onready var shadow: Node2D = $Shadow
@@ -83,6 +89,7 @@ func reset_for_practice() -> void:
 	character_sprite.play_clip(&"idle_ready")
 	_landing_remaining = 0.0
 	_lane_remaining = 0.0
+	_jump_contact_emitted = false
 	position.x = LANE_X[lane_index]
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
@@ -108,9 +115,10 @@ func _animate_lane_change() -> void:
 func _process(delta: float) -> void:
 	if is_gameplay_paused:
 		return
-	_update_ground_feedback(delta)
 	if not (Settings.reduced_motion and character_sprite.animation in [&"idle_ready", &"walk_forward", &"rest"]):
 		character_sprite.advance(delta)
+	_update_action_pose()
+	_update_ground_feedback(delta)
 	if character_sprite.finished and action_state == PlayerLaneStateModel.ActionState.IDLE:
 		_play_base_animation()
 
@@ -173,9 +181,30 @@ func _update_ground_feedback(delta: float) -> void:
 		var fraction := clampf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001), 0.0, 1.0)
 		var ease_alpha := sin(fraction * PI)
 		slide_dust.position = Vector2(-5.0 - 8.0 * fraction, 14.0 - 2.0 * ease_alpha)
-		slide_dust.modulate.a = ease_alpha * 0.72 * Settings.effects_intensity
+		slide_dust.scale = Vector2.ONE * lerpf(0.92, 1.12, ease_alpha)
+		slide_dust.modulate.a = ease_alpha * 0.86 * Settings.effects_intensity
 		slide_dust_art.position.x = -14.0 - 4.0 * fraction
-		slide_streak.modulate.a = ease_alpha * 0.62 * Settings.effects_intensity
+		slide_streak.modulate.a = ease_alpha * 0.75 * Settings.effects_intensity
+
+
+func _update_action_pose() -> void:
+	if action_state == PlayerLaneStateModel.ActionState.JUMP and character_sprite.animation == &"jump_low":
+		var contact_time := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS
+		var elapsed := minf(character_sprite.elapsed, contact_time)
+		var lift_fraction := 0.0
+		if elapsed < JUMP_RISE_SECONDS:
+			lift_fraction = sin(elapsed / JUMP_RISE_SECONDS * PI * 0.5)
+		elif elapsed < JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS:
+			lift_fraction = 1.0
+		else:
+			var return_fraction := (elapsed - JUMP_RISE_SECONDS - JUMP_HOLD_SECONDS) / JUMP_RETURN_SECONDS
+			lift_fraction = 1.0 - smoothstep(0.0, 1.0, return_fraction)
+		visual.position = Vector2(0.0, -JUMP_EXTRA_LIFT * lift_fraction)
+		if character_sprite.elapsed >= contact_time and not _jump_contact_emitted:
+			_start_landing_feedback()
+	elif action_state == PlayerLaneStateModel.ActionState.SLIDE and character_sprite.animation == &"slide_duck":
+		var fraction := clampf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001), 0.0, 1.0)
+		visual.position = Vector2(0.0, SLIDE_EXTRA_DROP * sin(fraction * PI))
 
 
 func _play_neutral_action_animation(action_name: StringName) -> void:
@@ -188,13 +217,14 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 	# The authored frames contain the lift/duck. Only this timer owns action
 	# recovery, retaining the original collision/input semantics.
 	if action_name == &"jump":
-		var seconds := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS
+		_jump_contact_emitted = false
+		var seconds := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS + JUMP_RECOVERY_SECONDS
 		character_sprite.play_clip(&"jump_low", seconds)
 		_action_tween.tween_interval(seconds)
 		if not Settings.reduced_motion:
 			_play_jump_shadow_animation()
 	else:
-		var seconds := ACTION_RISE_SECONDS + ACTION_RETURN_SECONDS
+		var seconds := ACTION_RISE_SECONDS + ACTION_HOLD_SECONDS + ACTION_RETURN_SECONDS
 		character_sprite.play_clip(&"slide_duck", seconds)
 		slide_streak.visible = not Settings.reduced_motion
 		slide_dust.visible = not Settings.reduced_motion
@@ -203,13 +233,8 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 
 
 func _finish_action_animation() -> void:
-	if action_state == PlayerLaneStateModel.ActionState.JUMP:
-		_landing_remaining = LANDING_SECONDS
-		landing_ring.visible = not Settings.reduced_motion
-		landing_ring.scale = Vector2.ONE * 0.65
-		landing_ring.modulate.a = 0.72 * Settings.effects_intensity
-		landing_dust.visible = not Settings.reduced_motion
-		landing_dust.modulate.a = 0.78 * Settings.effects_intensity
+	if action_state == PlayerLaneStateModel.ActionState.JUMP and not _jump_contact_emitted:
+		_start_landing_feedback()
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
 	visual.rotation = 0.0
@@ -218,6 +243,16 @@ func _finish_action_animation() -> void:
 	slide_dust.visible = false
 	_lane_state.finish_action()
 	_play_base_animation()
+
+
+func _start_landing_feedback() -> void:
+	_jump_contact_emitted = true
+	_landing_remaining = LANDING_SECONDS
+	landing_ring.visible = not Settings.reduced_motion
+	landing_ring.scale = Vector2.ONE * 0.65
+	landing_ring.modulate.a = 0.72 * Settings.effects_intensity
+	landing_dust.visible = not Settings.reduced_motion
+	landing_dust.modulate.a = 0.78 * Settings.effects_intensity
 
 
 func _play_jump_shadow_animation() -> void:
@@ -245,6 +280,7 @@ func _reset_feedback_visuals() -> void:
 	slide_streak.modulate = Color.WHITE
 	slide_dust.visible = false
 	slide_dust.position = Vector2(-5, 14)
+	slide_dust.scale = Vector2.ONE
 	slide_dust.modulate = Color.WHITE
 	slide_dust_art.position = Vector2(-14, 0)
 	landing_ring.visible = false

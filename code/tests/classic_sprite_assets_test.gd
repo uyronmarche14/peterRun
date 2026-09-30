@@ -1,7 +1,7 @@
 extends SceneTree
 
 const SpriteModel = preload("res://scripts/classic_runner_sprite.gd")
-const EXPECTED_COUNTS := {&"idle_ready": 48, &"walk_forward": 29, &"move_left": 6, &"move_right": 6, &"jump_low": 15, &"slide_duck": 12, &"success_settle": 12, &"neutral_clear": 6, &"paused": 1, &"rest": 48}
+const EXPECTED_COUNTS := {&"idle_ready": 6, &"walk_forward": 6, &"move_left": 6, &"move_right": 6, &"jump_low": 8, &"slide_duck": 6, &"success_settle": 4, &"neutral_clear": 4, &"paused": 1, &"rest": 6}
 var failures: PackedStringArray = []
 
 func _init() -> void:
@@ -42,7 +42,7 @@ func _run() -> void:
 					different = true
 			_expect(different, "Genuine distinct animation frames: " + String(clip))
 	_expect(missing == 0, "%d production frames absent/unimported; run parent asset build then Godot --editor --import" % missing)
-	_expect(checked == 183, "All 183 production frames must be exercised (checked %d)" % checked)
+	_expect(checked == 53, "All 53 current production frames must be exercised (checked %d)" % checked)
 	player.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)

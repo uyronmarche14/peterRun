@@ -30,7 +30,7 @@ func _run() -> void:
 	_expect(sprite.get("animation") == &"jump_low", "Resolving feedback never snaps an active airborne pose to ground")
 	var action: Tween = player.get("_action_tween")
 	action.pause()
-	action.custom_step(0.63)
+	action.custom_step(0.93)
 	_expect(sprite.get("animation") == &"success_settle", "Queued feedback plays only after action recovery")
 	_expect(player.has_method("set_resting_preview"), "Rest/paused poses are available only as explicit resting previews")
 	if player.has_method("set_resting_preview"):

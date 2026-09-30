@@ -117,7 +117,7 @@ func _test_runtime_feedback() -> void:
 	player.handle_action(&"jump")
 	var action_tween: Tween = player.get("_action_tween")
 	action_tween.pause()
-	action_tween.custom_step(0.63)
+	action_tween.custom_step(0.93)
 	player._process(0.06)
 	_expect(landing_ring != null and landing_ring.visible, "Jump recovery emits the landing ring")
 	_expect(landing_dust != null and landing_dust.visible and landing_dust.modulate.a > 0.0, "Jump recovery emits a restrained landing puff")

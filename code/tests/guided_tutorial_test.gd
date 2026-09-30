@@ -48,8 +48,9 @@ func _run() -> void:
 		var jump_tween: Tween = tutorial.practice_player.get("_action_tween")
 		jump_tween.pause()
 		jump_tween.custom_step(0.15)
+		tutorial.practice_player.call("_process", 0.15)
 		var visual: Node2D = tutorial.practice_player.get_node("Visual")
-		_expect(visual.transform == Transform2D.IDENTITY and tutorial.practice_player.character_sprite.animation == &"jump_low", "Jump lesson selects authored lift without duplicate transform")
+		_expect(visual.position.y < -4.0 and visual.scale == Vector2.ONE and tutorial.practice_player.character_sprite.animation == &"jump_low", "Jump lesson uses the higher readable arc without distortion")
 		tutorial.call("toggle_tutorial_pause")
 		var pose := visual.transform
 		await create_timer(0.2).timeout
@@ -62,7 +63,8 @@ func _run() -> void:
 		var slide_tween: Tween = tutorial.practice_player.get("_action_tween")
 		slide_tween.pause()
 		slide_tween.custom_step(0.15)
-		_expect(tutorial.practice_player.character_sprite.animation == &"slide_duck" and tutorial.practice_player.get_node("Visual").scale == Vector2.ONE, "Slide lesson uses authored low pose without squash")
+		tutorial.practice_player.call("_process", 0.15)
+		_expect(tutorial.practice_player.character_sprite.animation == &"slide_duck" and tutorial.practice_player.get_node("Visual").position.y > 0.0 and tutorial.practice_player.get_node("Visual").scale == Vector2.ONE, "Slide lesson uses the deeper low pose without squash")
 		_expect(tutorial.step_completed and next.text == "Continue", "Final action unlocks Ready")
 		_expect(Store.get_session_config().get_target(&"jump") == 10, "Practice leaves session targets unchanged")
 	tutorial.free()

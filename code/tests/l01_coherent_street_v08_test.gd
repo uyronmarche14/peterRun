@@ -66,6 +66,7 @@ func _test_street_motion() -> void:
 		_expect(bounds.size() == 4 and grounds.size() == 4 and sides.size() == 4, "all street sections report bounds, ground and side")
 		if bounds.size() != 4 or grounds.size() != 4 or sides.size() != 4:
 			continue
+		var readable_sections := 0
 		for index in 4:
 			var sprite := modules[index] as Sprite2D
 			if not sprite.visible:
@@ -74,14 +75,24 @@ func _test_street_motion() -> void:
 			var ground := grounds[index] as Vector2
 			var side := int(sides[index])
 			var curb := _painted_curb_x(side, ground.y)
-			_expect(rect.size.y <= 82.0, "approaching building remains subordinate to the Hall")
+			if rect.size.y >= 80.0 and sprite.modulate.a >= 0.35:
+				readable_sections += 1
+			_expect(rect.size.y <= 155.0, "near building is not an oversized cropped block")
 			_expect(ground.y >= 116.0 and ground.y <= 270.0, "building contact stays on the roadside ground path")
 			_expect(rect.end.x <= curb - 2.0 if side < 0 else rect.position.x >= curb + 2.0, "entire building remains outside the painted curb")
+			if distance == 0.0 and sprite.modulate.a >= 0.35:
+				_expect(rect.position.x >= -2.0 and rect.end.x <= 482.0, "starting street avoids cropped architectural blocks")
+		if distance == 0.0:
+			_expect(readable_sections >= 1, "the starting street has a readable architectural section, not dollhouses")
+			_expect((modules[0] as Sprite2D).modulate.a <= 0.1 and (modules[2] as Sprite2D).modulate.a <= 0.1, "tiny incoming homes do not crowd the Hall plaza")
+	for paused_distance in [0.0, 4.0, 8.0, 12.0, 17.0]:
+		travel.call("set_travel_distance", paused_distance)
+		var paused_snapshot := _snapshot(modules)
+		travel.call("set_motion_paused", true)
+		travel.call("set_travel_distance", paused_distance + 2.0)
+		_expect(_snapshot(modules) == paused_snapshot, "Pause freezes all street sections at travel distance %.1f" % paused_distance)
+		travel.call("set_motion_paused", false)
 	var before_pause := _snapshot(modules)
-	travel.call("set_motion_paused", true)
-	travel.call("set_travel_distance", 19.0)
-	_expect(_snapshot(modules) == before_pause, "Pause freezes every building transform and opacity")
-	travel.call("set_motion_paused", false)
 	travel.call("set_reduced_motion", true)
 	travel.call("set_travel_distance", 20.0)
 	_expect(_snapshot(modules) == before_pause, "Reduced Motion holds the street view")

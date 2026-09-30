@@ -81,8 +81,8 @@ func _test_runner_scene_named_action_bridge() -> void:
 		level.call("receive_input", &"jump", true, 3.0)
 		_expect_equal(player.get("action_state"), 1, "Named jump starts the neutral jump animation")
 		level.call("receive_input", &"jump", false, 3.1)
-		# 0.24s rise + 0.06s apex + 0.32s descent, with a frame margin.
-		await create_timer(0.7).timeout
+		# 0.32s rise + 0.22s apex + 0.24s descent + 0.14s recovery.
+		await create_timer(1.0).timeout
 		_expect_equal(player.get("action_state"), 0, "Neutral jump animation returns the scene player to idle")
 
 	level.queue_free()
@@ -102,10 +102,10 @@ func _test_clear_slide_pose() -> void:
 		await create_timer(0.16).timeout
 		var visual := player.get_node_or_null(^"Visual") as Node2D
 		_expect(player.character_sprite.animation == &"slide_duck", "Slide selects the original authored duck animation")
-		_expect(visual != null and visual.transform == Transform2D.IDENTITY, "Authored slide remains grounded without duplicate squash or lean")
+		_expect(visual != null and visual.position.y > 0.0 and visual.scale == Vector2.ONE, "Slide lowers Peter while preserving authored proportions")
 		_expect(player.character_sprite.get_clip_frame() > 0, "Slide advances through genuine animation frames")
 		_expect(slide_streak != null and slide_streak.visible, "Slide streak is visible during the glide")
-		await create_timer(0.4).timeout
+		await create_timer(0.56).timeout
 		_expect_equal(player.get("action_state"), 0, "Slide animation returns to idle")
 		_expect(visual != null and is_zero_approx(visual.rotation), "Slide pose resets its rotation")
 		_expect(slide_streak != null and not slide_streak.visible, "Slide streak hides after the glide")

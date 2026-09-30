@@ -2,6 +2,7 @@ extends SceneTree
 
 const RUNNER_LEVEL_PATH := "res://scenes/levels/runner_level.tscn"
 const Review = preload("res://scripts/session_review_store.gd")
+const RoadProjectionModel = preload("res://scripts/road_projection.gd")
 
 var failures: PackedStringArray = []
 
@@ -55,7 +56,17 @@ func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 	var anchor: Node2D = level.get_node("LevelWorld/PromptWorldAnchor")
 	_expect(is_equal_approx(anchor.position.y, 218.0), "The formation reaches the player contact line")
 	for prop in props:
-		_expect(is_equal_approx(prop.global_scale.x, anchor.global_scale.x), "Every formation obstacle shares the approach depth scale")
+		var footprint: Vector2 = prop.get_meta(&"projection_footprint", Vector2.ZERO)
+		var expected_fit := RoadProjectionModel.prop_fit_scale(footprint, 1.0)
+		_expect(is_equal_approx(prop.global_scale.x, anchor.global_scale.x * expected_fit), "Every formation obstacle shares the lane-safe approach scale")
+	var sorted_props := props.duplicate()
+	sorted_props.sort_custom(func(a: Node2D, b: Node2D) -> bool: return a.global_position.x < b.global_position.x)
+	for index in range(1, sorted_props.size()):
+		var left := sorted_props[index - 1] as Node2D
+		var right := sorted_props[index] as Node2D
+		var left_width := float((left.get_meta(&"projection_footprint", Vector2.ZERO) as Vector2).x) * left.global_scale.x
+		var right_width := float((right.get_meta(&"projection_footprint", Vector2.ZERO) as Vector2).x) * right.global_scale.x
+		_expect(right.global_position.x - left.global_position.x > (left_width + right_width) * 0.5, "Adjacent obstacle silhouettes remain visibly separated inside their lanes")
 
 	var director: Node = level.get_node("PromptDirector")
 	_configure_open_left_gate(level)

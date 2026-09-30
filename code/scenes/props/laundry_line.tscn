@@ -1,44 +1,40 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_laundry_line_v01.png" id="1_laundry_art"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_laundry_line_v03.png" id="1_laundry_art"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_laundry_line_highlight_v01.png" id="2_highlight"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_laundry_line_shadow_v01.png" id="3_shadow"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_laundry_cloth_sway_v01.png" id="4_cloth"]
 
 [node name="LaundryLinePrompt" type="Node2D"]
+metadata/projection_footprint = Vector2(98.8, 64.8)
+
+[node name="ContactShadow" type="Sprite2D" parent="."]
+position = Vector2(0, -34.4)
+z_index = -2
+modulate = Color(1, 1, 1, 0.3)
+texture_filter = 1
+texture = ExtResource("3_shadow")
+scale = Vector2(0.4, 0.4)
+
+[node name="ActiveHighlight" type="Sprite2D" parent="."]
+position = Vector2(0, -31.2)
+z_index = -1
+modulate = Color(1, 1, 1, 0.34)
+texture_filter = 1
+texture = ExtResource("2_highlight")
+scale = Vector2(0.4, 0.4)
 
 [node name="ArtSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -31.2)
 texture_filter = 1
 texture = ExtResource("1_laundry_art")
 scale = Vector2(0.4, 0.4)
 
-[node name="Line" type="Line2D" parent="."]
+[node name="ClothSwayOverlay" type="Sprite2D" parent="."]
+position = Vector2(0, -31.2)
+z_index = 1
 visible = false
-points = PackedVector2Array(-28, -8, 28, -8)
-width = 2.0
-default_color = Color(0.96, 0.76, 0.37, 1)
-
-[node name="LeftPost" type="Line2D" parent="."]
-visible = false
-points = PackedVector2Array(-28, -9, -28, 17)
-width = 2.0
-default_color = Color(0.79, 0.5, 0.24, 1)
-
-[node name="RightPost" type="Line2D" parent="."]
-visible = false
-points = PackedVector2Array(28, -9, 28, 17)
-width = 2.0
-default_color = Color(0.79, 0.5, 0.24, 1)
-
-[node name="Cloth" type="Polygon2D" parent="."]
-visible = false
-polygon = PackedVector2Array(-12, -8, 12, -8, 8, 7, -8, 7)
-color = Color(0.95, 0.4, 0.39, 1)
-
-[node name="LaundryLabel" type="Label" parent="."]
-visible = false
-offset_left = -35.0
-offset_top = 20.0
-offset_right = 35.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(1, 0.85, 0.53, 1)
-theme_override_font_sizes/font_size = 9
-text = "LAUNDRY"
-horizontal_alignment = 1
+modulate = Color(1, 1, 1, 0.16)
+texture_filter = 1
+texture = ExtResource("4_cloth")
+scale = Vector2(0.4, 0.4)

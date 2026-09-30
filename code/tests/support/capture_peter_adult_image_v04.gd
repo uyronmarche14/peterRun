@@ -56,7 +56,7 @@ func _run() -> void:
 			if state == &"landing_fx":
 				var action_tween: Tween = player.get("_action_tween")
 				action_tween.pause()
-				action_tween.custom_step(0.63)
+				action_tween.custom_step(0.93)
 				player._process(0.04)
 			else:
 				step(0.11 if state in [&"move_left", &"move_right"] else (0.24 if state == &"slide" else 0.30))

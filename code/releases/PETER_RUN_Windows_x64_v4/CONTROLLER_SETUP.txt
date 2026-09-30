@@ -1,0 +1,28 @@
+PETER RUN V4 - Controller Setup
+
+The game receives controller input as standard keyboard/HID actions. It does not read raw motion or sensor data.
+
+Required named gameplay actions
+- move_left
+- move_right
+- jump
+- slide
+- pause_session
+
+Expected keyboard equivalents
+- A or Left Arrow: move_left
+- D or Right Arrow: move_right
+- W or Up Arrow: jump
+- S or Down Arrow: slide
+- P or standard gamepad Start: pause_session
+
+Before a supervised session
+1. Connect and power the controller.
+2. Open PETER RUN V4.
+3. Choose Test Controls from Setup or Ready.
+4. Trigger every movement once and confirm each action tile changes to Detected.
+5. Select Continue to Ready only after all required actions are detected.
+
+Directions stay literal for every session: physical Left moves Peter left on screen, and physical Right moves Peter right. The affected-side selection does not reverse the controls.
+
+Hardware validation is not included in this package. Complete the controller preflight on the actual device before supervised use.

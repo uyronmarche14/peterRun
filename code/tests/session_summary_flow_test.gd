@@ -81,6 +81,10 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	_expect(summary.has_node("Panel/Margin/Content/Journey"), "Summary includes calm journey context")
 	if summary.has_node("Panel/Margin/Content/Journey"):
 		_expect(summary.get_node("Panel/Margin/Content/Journey").text == "Journey landmark: Barangay Plaza", "Completed repetitions reach the final journey landmark without a score")
+		_expect(summary.has_node("Panel/Margin/Content/Journey/JourneyStamp"), "Summary journey row includes a calm route stamp")
+		if summary.has_node("Panel/Margin/Content/Journey/JourneyStamp"):
+			var stamp := summary.get_node("Panel/Margin/Content/Journey/JourneyStamp") as TextureRect
+			_expect(stamp.texture is AtlasTexture and int((stamp.texture as AtlasTexture).region.position.x) == 384, "Completed route displays the Barangay Plaza stamp frame")
 	_expect(summary.get_node("Panel/Margin/Content/Actions/RetryButton").disabled, "Retry waits for a recorded rating")
 	for invalid in [0, 11, 3.5, "5"]:
 		_expect(not summary.call("select_rating", invalid), "Invalid rating is rejected")

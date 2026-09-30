@@ -1,44 +1,30 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v01.png" id="1_puddle_art"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v03.png" id="1_puddle_art"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_highlight_v01.png" id="2_highlight"]
+[ext_resource type="Texture2D" path="res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_ripple_v01.png" id="3_ripple"]
 
 [node name="PuddlePrompt" type="Node2D"]
+metadata/projection_footprint = Vector2(89.25, 17.625)
+
+[node name="ActiveHighlight" type="Sprite2D" parent="."]
+position = Vector2(0, -9.75)
+z_index = -1
+modulate = Color(1, 1, 1, 0.34)
+texture_filter = 1
+texture = ExtResource("2_highlight")
+scale = Vector2(0.375, 0.375)
 
 [node name="ArtSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -9.75)
 texture_filter = 1
 texture = ExtResource("1_puddle_art")
 scale = Vector2(0.375, 0.375)
 
-[node name="PuddleRim" type="Line2D" parent="."]
-points = PackedVector2Array(-38, 10, -30, 2, -13, -5, 8, -4, 28, 2, 39, 11, 28, 16, 6, 19, -17, 17, -38, 10)
-width = 1.5
-default_color = Color(0.16, 0.43, 0.57, 0.9)
-antialiased = true
-
-[node name="PuddleReflection" type="Line2D" parent="."]
-points = PackedVector2Array(-19, 4, -7, 0, 7, 2, 18, 7)
-width = 1.4
-default_color = Color(0.9, 0.97, 0.93, 0.92)
-antialiased = true
-
-[node name="PuddleShape" type="Polygon2D" parent="."]
-visible = false
-polygon = PackedVector2Array(-27, 10, -20, 3, -5, -2, 10, 0, 26, 8, 19, 14, 4, 17, -14, 15)
-color = Color(0.22, 0.61, 0.83, 1)
-
-[node name="PuddleHighlight" type="Line2D" parent="."]
-visible = false
-points = PackedVector2Array(-14, 7, -3, 3, 9, 5)
-width = 2.0
-default_color = Color(0.78, 0.94, 1, 0.9)
-
-[node name="PuddleLabel" type="Label" parent="."]
-visible = false
-offset_left = -26.0
-offset_top = 20.0
-offset_right = 26.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 9
-text = "PUDDLE"
-horizontal_alignment = 1
+[node name="RippleOverlay" type="Sprite2D" parent="."]
+position = Vector2(0, -9.75)
+z_index = 1
+modulate = Color(1, 1, 1, 0.46)
+texture_filter = 1
+texture = ExtResource("3_ripple")
+scale = Vector2(0.375, 0.375)

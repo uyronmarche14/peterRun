@@ -30,7 +30,7 @@ func _run() -> void:
 	if motion.has_method("resolve_prompt_approach"):
 		motion.call("begin_prompt_approach", 0, 2.5, 2.0)
 		motion.call("_process", 4.5)
-		_expect(absf(anchor.position.x - 128.0) < 0.1, "Left item reaches the left player lane")
+		_expect(absf(anchor.position.x - 108.0) < 0.1, "Left item reaches the aligned left player lane")
 		var before_exit := anchor.position
 		motion.call("resolve_prompt_approach", false, 0.75)
 		_expect(anchor.position == before_exit, "Resolution does not teleport the item")
@@ -46,7 +46,7 @@ func _run() -> void:
 		_expect(is_zero_approx(anchor.modulate.a), "Item clears before the next prompt")
 		motion.call("begin_prompt_approach", 2, 2.5, 2.0)
 		motion.call("_process", 4.5)
-		_expect(absf(anchor.position.x - 352.0) < 0.1 and anchor.modulate.a == 1.0, "Next item resets in the right lane")
+		_expect(absf(anchor.position.x - 372.0) < 0.1 and anchor.modulate.a == 1.0, "Next item resets in the aligned right lane")
 		motion.call("begin_prompt_approach", 1, 2.5, 2.0)
 		for frame in 90:
 			motion.call("_process", 1.0 / 30.0)

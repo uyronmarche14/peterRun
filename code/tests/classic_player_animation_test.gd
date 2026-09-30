@@ -25,7 +25,7 @@ func _run() -> void:
 		lane.pause()
 		lane.custom_step(0.11)
 		player.call("_process", 0.11)
-		_expect(player.position.x < 240 and player.position.x > 128 and sprite.call("get_clip_frame") == 3, "Lane movement and approved side-step poses progress together")
+		_expect(player.position.x < 240 and player.position.x > 108 and sprite.call("get_clip_frame") == 3, "Lane movement and approved side-step poses progress together on the aligned road")
 		lane.custom_step(0.11)
 		player.call("_process", 0.11)
 		_expect(player.get("lane_index") == 0 and sprite.get("animation") == &"walk_forward", "Side-step ends at existing lane without changing state")
@@ -35,14 +35,18 @@ func _run() -> void:
 			player.call("reset_for_practice")
 			player.call("handle_action", action)
 			var expected := &"jump_low" if action == &"jump" else &"slide_duck"
-			var seconds := 0.62 if action == &"jump" else 0.48
+			var seconds := 0.92 if action == &"jump" else 0.66
 			_expect(sprite.get("animation") == expected, "Named action selects " + String(expected))
 			var tween: Tween = player.get("_action_tween")
 			tween.pause()
 			tween.custom_step(seconds * 0.5)
 			player.call("_process", seconds * 0.5)
 			_expect(sprite.call("get_clip_frame") == 3, "Action advances using exact authored timestamps")
-			_expect(visual.transform == Transform2D.IDENTITY, "Authored jump/duck never receives duplicate lift, lean or squash")
+			_expect(visual.scale == Vector2.ONE and is_zero_approx(visual.rotation), "Jump/slide enhancement preserves Peter's authored proportions")
+			if action == &"jump":
+				_expect(visual.position.y <= -8.0, "Jump receives the requested higher visual apex")
+			else:
+				_expect(visual.position.y >= 3.0, "Slide receives the requested deeper grounded pose")
 			if action == &"jump":
 				var shadow_tween: Tween = player.get("_shadow_tween")
 				shadow_tween.pause()
@@ -58,9 +62,9 @@ func _run() -> void:
 			_expect(player.get("action_state") != 0, "Pause freezes gameplay action timer too")
 			player.call("set_gameplay_paused", false)
 			tween.custom_step(seconds * 0.5 - 0.001)
-			_expect(player.get("action_state") != 0, "Action remains active until original deadline")
+			_expect(player.get("action_state") != 0, "Action remains active until its extended visual deadline")
 			tween.custom_step(0.002)
-			_expect(player.get("action_state") == 0, "Action recovers at original deadline")
+			_expect(player.get("action_state") == 0, "Action recovers at its extended visual deadline")
 		player.call("reset_for_practice")
 		Settings.set_reduced_motion(true)
 		player.call("set_walking", true)

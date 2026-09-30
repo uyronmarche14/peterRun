@@ -41,14 +41,15 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 		var lane_tween: Tween = player.get("_lane_tween")
 		lane_tween.pause()
 		lane_tween.custom_step(0.12)
-		_expect(player.position.x > 128.0 and player.position.x < 165.0, "Lane input responds early and eases toward the target without overshoot (x=%f)" % player.position.x)
+		_expect(player.position.x > 108.0 and player.position.x < 150.0, "Lane input responds early and eases toward the aligned target without overshoot (x=%f)" % player.position.x)
 		lane_tween.custom_step(0.16)
 		player.call("handle_action", &"jump")
 		var action_tween: Tween = player.get("_action_tween")
 		action_tween.pause()
 		action_tween.custom_step(0.20)
+		player.call("_process", 0.20)
 		var visual := player.get_node_or_null(^"Visual") as Node2D
-		_expect(visual != null and visual.transform == Transform2D.IDENTITY and player.character_sprite.animation == &"jump_low", "Jump uses the smooth authored lift without runtime pose deformation")
+		_expect(visual != null and visual.position.y < -6.0 and visual.scale == Vector2.ONE and player.character_sprite.animation == &"jump_low", "Jump adds a smooth higher arc without distorting the authored pose")
 
 	# Sample the new full lifecycle deterministically; props reach the player
 	# at the end of the response window, not at the end of the warning.
@@ -62,15 +63,13 @@ func _test_clean_prompt_presentation_and_eased_motion() -> void:
 	motion.call("_process", 2.5)
 	var warning_y := prompt_anchor.position.y
 	var warning_scale := prompt_anchor.scale.x
-	_expect(warning_y > 92.0 and warning_y < 218.0, "Warning prop remains on the road ahead")
+	_expect(warning_y > 112.0 and warning_y < 218.0, "Warning prop remains on the painted road ahead")
 	_expect(warning_scale > initial_scale, "Depth increases during warning")
 	motion.call("_process", 2.0)
 	_expect(prompt_anchor.position.y > warning_y, "Approach continues throughout response")
 	_expect(is_equal_approx(prompt_anchor.position.y, 218.0), "Item reaches player contact depth at response close")
 	_expect(prompt_anchor.scale.x > warning_scale, "Perspective grows continuously toward player")
-	var prompt_ground_shadow: Polygon2D = level.get_node("LevelWorld/PromptWorldAnchor/PromptProps/PromptGroundShadow")
-	_expect(prompt_ground_shadow.visible, "Approaching prop stays grounded")
-	_expect(is_equal_approx(prompt_ground_shadow.global_scale.x, prompt_anchor.scale.x), "Shadow shares the same depth scale as its prop")
+	_expect(not level.has_node(^"LevelWorld/PromptWorldAnchor/PromptProps/PromptGroundShadow"), "Prompt grounding uses prop-specific transparent shadow sprites instead of a procedural polygon")
 
 	level.queue_free()
 	await process_frame

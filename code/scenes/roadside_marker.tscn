@@ -3,13 +3,13 @@
 [node name="RoadsideMarker" type="Node2D"]
 
 [node name="Shadow" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-9, 0, -4, -3, 9, 0, 4, 3)
-color = Color(0.02, 0.07, 0.08, 0.45)
+polygon = PackedVector2Array(-6, 0, -3, -2, 6, 0, 3, 2)
+color = Color(0.02, 0.07, 0.08, 0.34)
 
 [node name="Post" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-3, 0, -3, -20, 0, -23, 4, -20, 4, 0)
-color = Color(0.33, 0.47, 0.4, 1)
+polygon = PackedVector2Array(-2, 0, -2, -9, 0, -11, 3, -9, 3, 0)
+color = Color(0.84, 0.82, 0.66, 1)
 
 [node name="Band" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-3, -16, 4, -16, 4, -19, -3, -19)
-color = Color(0.75, 0.63, 0.38, 0.8)
+polygon = PackedVector2Array(-2, -6, 3, -6, 3, -9, -2, -9)
+color = Color(0.94, 0.56, 0.2, 0.92)

@@ -110,6 +110,8 @@ func _ready() -> void:
 	session_result.route_seed = route_seed
 	_formation_resolver.set_seed(route_seed)
 	_apply_level_presentation()
+	if l01_layered_route.has_method("configure_route"):
+		l01_layered_route.call("configure_route", route_seed, 0)
 	player.set_walking(true)
 	_schedule_next_prompt()
 
@@ -301,6 +303,13 @@ func _apply_level_presentation() -> void:
 	var uses_l01_layers: bool = StringName(level_definition.level_id) == &"l01_barangay"
 	$LevelWorld/BackgroundArt.visible = not uses_l01_layers
 	l01_layered_route.call("set_active", uses_l01_layers)
+	$LevelWorld/RoadsideMotion.visible = false
+	$LevelWorld/RoadAndLanes/RoadPresentation.visible = uses_l01_layers
+	var seam_color := Color(0.83, 0.74, 0.58, 0.44) if uses_l01_layers else Color(0.08, 0.18, 0.19, 0.62)
+	for dash_value in $LevelWorld/RoadAndLanes/RoadMotionDashes.get_children():
+		var dash := dash_value as Line2D
+		if dash != null:
+			dash.default_color = seam_color
 	var instances: Dictionary = {}
 	for action in SessionConfigModel.ACTIONS:
 		var packed: PackedScene = level_definition.get_prop_scene(action)
@@ -478,7 +487,10 @@ func _update_progress_hud(animate_success: bool = false) -> void:
 		target_repetitions += session_config.get_target(action_name)
 	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
 	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
-	journey_label.text = RouteJourney.get_hud_text(RouteJourney.get_progress(completed_repetitions, target_repetitions))
+	var route_progress := RouteJourney.get_progress(completed_repetitions, target_repetitions)
+	journey_label.text = RouteJourney.get_hud_text(route_progress)
+	if l01_layered_route.has_method("set_route_progress"):
+		l01_layered_route.call("set_route_progress", route_progress, animate_success)
 	progress_bar.max_value = maxf(1.0, target_repetitions)
 	if _progress_tween != null:
 		_progress_tween.kill()

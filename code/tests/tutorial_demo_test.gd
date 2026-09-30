@@ -71,7 +71,9 @@ func _test_demonstration(tutorial: Node) -> void:
 			tween.custom_step(0.20)
 			player.call("_process", 0.20)
 			_expect(player.character_sprite.animation == (&"jump_low" if index == 2 else &"slide_duck") and player.character_sprite.get_clip_frame() > 0, "Jump/slide demonstration advances real authored action frames")
-			_expect(player.get_node("Visual").transform == Transform2D.IDENTITY, "Demo never adds duplicate lift or squash to authored poses")
+			var visual := player.get_node("Visual") as Node2D
+			_expect(visual.scale == Vector2.ONE and is_zero_approx(visual.rotation), "Demo preserves authored proportions")
+			_expect(visual.position.y < -6.0 if index == 2 else visual.position.y > 2.0, "Demo shows the stronger jump/slide motion")
 		tutorial.get_node("DemoTimer").stop()
 		tutorial.call("_on_demo_finished")
 	_expect(Setup.get_session_config().get_target(&"jump") == 10, "Demonstrations never change session targets")

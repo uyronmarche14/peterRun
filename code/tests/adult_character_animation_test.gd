@@ -2,15 +2,15 @@ extends SceneTree
 
 const ROOT := "res://art/characters/peter_adult_image_v04"
 const MANIFEST_PATH := ROOT + "/animation_manifest.json"
-const EXPECTED_DISPLAY_SCALE := 0.36
-const EXPECTED_JUMP_LIFT := [0, -8, -22, -36, -14, 0]
+const EXPECTED_DISPLAY_SCALE := 0.40
+const EXPECTED_JUMP_LIFT := [0, -12, -28, -46, -56, -36, 0, 0]
 const EXPECTED_SLIDE_SCALE := [1.0, 0.96, 0.90, 0.88, 0.95, 1.0]
 const REQUIRED_CLIPS := {
 	"idle_ready": [2.0, true, 6],
 	"walk_forward": [1.2, true, 6],
 	"move_left": [0.22, false, 6],
 	"move_right": [0.22, false, 6],
-	"jump_low": [0.62, false, 6],
+	"jump_low": [0.92, false, 8],
 	"slide_duck": [0.48, false, 6],
 	"rest": [2.0, true, 6],
 	"success_settle": [0.5, false, 4],
@@ -70,6 +70,7 @@ func _run() -> void:
 		root.add_child(player)
 		var sprite: Sprite2D = player.get_node(^"Visual/CharacterSprite")
 		_expect(sprite.scale == Vector2.ONE * EXPECTED_DISPLAY_SCALE, "Player scene displays the slightly larger adult Peter")
+		_expect(sprite.call("frame_path", &"jump_low", 0).ends_with("jump_high_v05.png"), "Player resolves the new higher eight-pose jump atlas")
 		_expect(sprite.call("frame_path", &"walk_forward", 0).begins_with(ROOT + "/"), "Player sprite resolves the approved adult-image atlas root")
 		player.set_walking(true)
 		player._process(0.18)

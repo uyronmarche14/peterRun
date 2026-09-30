@@ -1,0 +1,216 @@
+{
+  "name": "PETER RUN user-authorized adapted adult character",
+  "source_file": "Peter_Run_Visual_Production/PeterRun_Authorized_3D_Adaptation_v01.blend",
+  "asset_origin": "User-authorized adaptation of 3D ASSETS/Cool guy low poly.blend",
+  "canvas": [
+    512,
+    512
+  ],
+  "pivot": [
+    256,
+    432
+  ],
+  "shadow": "ground_shadow.png",
+  "render": {
+    "camera": "rear three-quarter orthographic",
+    "transparent": true,
+    "lighting": "warm soft studio"
+  },
+  "animations": {
+    "idle_ready": {
+      "frames": 8,
+      "fps": 8,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.75,
+      "loop": true,
+      "folder": "idle_ready",
+      "files": [
+        "idle_ready/idle_ready_00.png",
+        "idle_ready/idle_ready_01.png",
+        "idle_ready/idle_ready_02.png",
+        "idle_ready/idle_ready_03.png",
+        "idle_ready/idle_ready_04.png",
+        "idle_ready/idle_ready_05.png",
+        "idle_ready/idle_ready_06.png",
+        "idle_ready/idle_ready_07.png"
+      ],
+      "timeline_start": 1,
+      "timeline_end": 8
+    },
+    "walk_forward": {
+      "frames": 10,
+      "fps": 10,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.0,
+      "loop": true,
+      "folder": "walk_forward",
+      "files": [
+        "walk_forward/walk_forward_00.png",
+        "walk_forward/walk_forward_01.png",
+        "walk_forward/walk_forward_02.png",
+        "walk_forward/walk_forward_03.png",
+        "walk_forward/walk_forward_04.png",
+        "walk_forward/walk_forward_05.png",
+        "walk_forward/walk_forward_06.png",
+        "walk_forward/walk_forward_07.png",
+        "walk_forward/walk_forward_08.png",
+        "walk_forward/walk_forward_09.png"
+      ],
+      "timeline_start": 13,
+      "timeline_end": 22
+    },
+    "move_left": {
+      "frames": 8,
+      "fps": 10,
+      "duration_seconds": 0.8,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "move_left",
+      "files": [
+        "move_left/move_left_00.png",
+        "move_left/move_left_01.png",
+        "move_left/move_left_02.png",
+        "move_left/move_left_03.png",
+        "move_left/move_left_04.png",
+        "move_left/move_left_05.png",
+        "move_left/move_left_06.png",
+        "move_left/move_left_07.png"
+      ],
+      "timeline_start": 27,
+      "timeline_end": 34
+    },
+    "move_right": {
+      "frames": 8,
+      "fps": 10,
+      "duration_seconds": 0.8,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "move_right",
+      "files": [
+        "move_right/move_right_00.png",
+        "move_right/move_right_01.png",
+        "move_right/move_right_02.png",
+        "move_right/move_right_03.png",
+        "move_right/move_right_04.png",
+        "move_right/move_right_05.png",
+        "move_right/move_right_06.png",
+        "move_right/move_right_07.png"
+      ],
+      "timeline_start": 39,
+      "timeline_end": 46
+    },
+    "jump_low": {
+      "frames": 10,
+      "fps": 12,
+      "duration_seconds": 0.8333333333333334,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "jump_low",
+      "files": [
+        "jump_low/jump_low_00.png",
+        "jump_low/jump_low_01.png",
+        "jump_low/jump_low_02.png",
+        "jump_low/jump_low_03.png",
+        "jump_low/jump_low_04.png",
+        "jump_low/jump_low_05.png",
+        "jump_low/jump_low_06.png",
+        "jump_low/jump_low_07.png",
+        "jump_low/jump_low_08.png",
+        "jump_low/jump_low_09.png"
+      ],
+      "timeline_start": 51,
+      "timeline_end": 60
+    },
+    "slide_duck": {
+      "frames": 10,
+      "fps": 10,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "slide_duck",
+      "files": [
+        "slide_duck/slide_duck_00.png",
+        "slide_duck/slide_duck_01.png",
+        "slide_duck/slide_duck_02.png",
+        "slide_duck/slide_duck_03.png",
+        "slide_duck/slide_duck_04.png",
+        "slide_duck/slide_duck_05.png",
+        "slide_duck/slide_duck_06.png",
+        "slide_duck/slide_duck_07.png",
+        "slide_duck/slide_duck_08.png",
+        "slide_duck/slide_duck_09.png"
+      ],
+      "timeline_start": 65,
+      "timeline_end": 74
+    },
+    "success_settle": {
+      "frames": 8,
+      "fps": 8,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "success_settle",
+      "files": [
+        "success_settle/success_settle_00.png",
+        "success_settle/success_settle_01.png",
+        "success_settle/success_settle_02.png",
+        "success_settle/success_settle_03.png",
+        "success_settle/success_settle_04.png",
+        "success_settle/success_settle_05.png",
+        "success_settle/success_settle_06.png",
+        "success_settle/success_settle_07.png"
+      ],
+      "timeline_start": 79,
+      "timeline_end": 86
+    },
+    "neutral_clear": {
+      "frames": 6,
+      "fps": 8,
+      "duration_seconds": 0.75,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "neutral_clear",
+      "files": [
+        "neutral_clear/neutral_clear_00.png",
+        "neutral_clear/neutral_clear_01.png",
+        "neutral_clear/neutral_clear_02.png",
+        "neutral_clear/neutral_clear_03.png",
+        "neutral_clear/neutral_clear_04.png",
+        "neutral_clear/neutral_clear_05.png"
+      ],
+      "timeline_start": 91,
+      "timeline_end": 96
+    },
+    "paused": {
+      "frames": 1,
+      "fps": 1,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.0,
+      "loop": false,
+      "folder": "paused",
+      "files": [
+        "paused/paused_00.png"
+      ],
+      "timeline_start": 101,
+      "timeline_end": 101
+    },
+    "rest": {
+      "frames": 6,
+      "fps": 6,
+      "duration_seconds": 1.0,
+      "frame_duration_multiplier": 1.0,
+      "loop": true,
+      "folder": "rest",
+      "files": [
+        "rest/rest_00.png",
+        "rest/rest_01.png",
+        "rest/rest_02.png",
+        "rest/rest_03.png",
+        "rest/rest_04.png",
+        "rest/rest_05.png"
+      ],
+      "timeline_start": 106,
+      "timeline_end": 111
+    }
+  }
+}

@@ -28,6 +28,8 @@ func _run() -> void:
 	(level.get_node(^"LevelWorld/RoadAndLanes/RoadPresentation") as Node2D).visible = true
 	var route := level.get_node(^"LevelWorld/L01BarangayLayers") as Node2D
 	route.set_process(false)
+	var banana_left := route.get_node(^"BananaLeavesLeft") as Sprite2D
+	var banana_right := route.get_node(^"BananaLeavesRight") as Sprite2D
 	var anchor := level.get_node(^"LevelWorld/PromptWorldAnchor") as Node2D
 	var container := anchor.get_node(^"PromptProps") as Node2D
 	for scene_path in CASES:
@@ -40,6 +42,9 @@ func _run() -> void:
 				motion.set("_prompt_elapsed", fraction * 4.5)
 				motion.call("_apply_prompt_projection")
 				_expect_curb_clearance(prop, lane, fraction, anchor.position.y)
+				var banana := banana_left if lane == 0 else banana_right
+				_expect(not _visible_bounds(prop).intersects(_sprite_visible_bounds(banana)),
+					"%s lane %d stays separate from swaying leaves at %.2f" % [prop.name, lane, fraction])
 				if scene_path == CASES[0]:
 					_expect(_visible_bounds(prop).size.y <= CRATE_MAX_VISIBLE_HEIGHT,
 						"Crate stack stays below adult height at %.2f" % fraction)
@@ -58,6 +63,10 @@ func _run() -> void:
 		motion.call("_apply_prompt_projection")
 		_expect_curb_clearance(formation[0], 0, fraction, anchor.position.y)
 		_expect_curb_clearance(formation[2], 2, fraction, anchor.position.y)
+		_expect(not _visible_bounds(formation[0]).intersects(_sprite_visible_bounds(banana_left)),
+			"Mixed formation stays separate from left leaves at %.2f" % fraction)
+		_expect(not _visible_bounds(formation[2]).intersects(_sprite_visible_bounds(banana_right)),
+			"Mixed formation stays separate from right leaves at %.2f" % fraction)
 		var left_bounds := _visible_bounds(formation[0])
 		var middle_bounds := _visible_bounds(formation[1])
 		var right_bounds := _visible_bounds(formation[2])
@@ -98,6 +107,17 @@ func _visible_bounds(prop: Node2D) -> Rect2:
 		bounds = bounds.merge(sprite_bounds) if has_bounds else sprite_bounds
 		has_bounds = true
 	return bounds
+
+
+func _sprite_visible_bounds(sprite: Sprite2D) -> Rect2:
+	var image := sprite.texture.get_image()
+	var frame_size := Vector2i(image.get_width() / sprite.hframes, image.get_height() / sprite.vframes)
+	var frame_image := image.get_region(Rect2i(sprite.frame_coords * frame_size, frame_size))
+	var used := frame_image.get_used_rect()
+	var local := sprite.get_rect().position + Vector2(used.position)
+	var a := sprite.to_global(local)
+	var b := sprite.to_global(local + Vector2(used.size))
+	return Rect2(a, b - a)
 
 
 func _expect(condition: bool, message: String) -> void:

@@ -28,6 +28,7 @@ var _road_dashes: Array[Line2D] = []
 @onready var road_motion_dashes: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadMotionDashes") as Node2D
 @onready var road_presentation: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadPresentation") as Node2D
 @onready var roadside_travel: Node2D = get_node("../LevelWorld/RoadsideMotion") as Node2D
+@onready var l01_route: Node2D = get_node("../LevelWorld/L01BarangayLayers") as Node2D
 @onready var prompt_anchor: Marker2D = get_node("../LevelWorld/PromptWorldAnchor") as Marker2D
 
 
@@ -39,6 +40,7 @@ func _ready() -> void:
 	# their authored editor placeholders can never flash as opaque bars.
 	_update_road()
 	roadside_travel.call("set_travel_distance", motion_distance)
+	l01_route.call("set_roadside_distance", motion_distance)
 
 
 func _process(delta: float) -> void:
@@ -49,6 +51,8 @@ func _process(delta: float) -> void:
 	roadside_travel.call("set_reduced_motion", GameSettings.reduced_motion)
 	if not GameSettings.reduced_motion:
 		roadside_travel.call("set_travel_distance", motion_distance)
+	if l01_route.visible:
+		l01_route.call("set_roadside_distance", motion_distance)
 	if not _prompt_is_visible:
 		return
 	_prompt_elapsed += delta

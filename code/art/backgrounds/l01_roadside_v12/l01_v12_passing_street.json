@@ -1,0 +1,126 @@
+{
+	"canvas_px": [
+		480,
+		270
+	],
+	"sprite_canvas_px": [
+		512,
+		512
+	],
+	"ground_origin_px": [
+		256,
+		485
+	],
+	"stages": {
+		"home": [
+			{
+				"side": "left",
+				"phase": 0.08,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_left_bungalow.png"
+			},
+			{
+				"side": "left",
+				"phase": 0.58,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_home_veranda.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.3,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_waiting_shed.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.8,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_sari_sari.png"
+			}
+		],
+		"waiting": [
+			{
+				"side": "left",
+				"phase": 0.1,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_left_mixed_home.png"
+			},
+			{
+				"side": "left",
+				"phase": 0.6,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_home_veranda.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.35,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_waiting_shed.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.85,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_waiting_shed.png"
+			}
+		],
+		"sari_sari": [
+			{
+				"side": "left",
+				"phase": 0.08,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_left_bungalow.png"
+			},
+			{
+				"side": "left",
+				"phase": 0.58,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_left_mixed_home.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.25,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_sari_sari.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.75,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_sari_sari.png"
+			}
+		],
+		"palengke": [
+			{
+				"side": "left",
+				"phase": 0.07,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_left_mixed_home.png"
+			},
+			{
+				"side": "left",
+				"phase": 0.57,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_market_stall.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.3,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_market_stall.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.8,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_sari_sari.png"
+			}
+		],
+		"plaza": [
+			{
+				"side": "left",
+				"phase": 0.08,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_plaza_kiosk.png"
+			},
+			{
+				"side": "left",
+				"phase": 0.58,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_home_veranda.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.33,
+				"texture": "res://art/backgrounds/l01_roadside_v12/l01_v12_market_stall.png"
+			},
+			{
+				"side": "right",
+				"phase": 0.83,
+				"texture": "res://art/backgrounds/l01_barangay_v08/l01_v08_right_waiting_shed.png"
+			}
+		]
+	}
+}

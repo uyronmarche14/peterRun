@@ -79,7 +79,8 @@ func _test_home_stage_composition() -> void:
 			var child := home.get_node_or_null(STAGE_CHILDREN[index]) as Sprite2D
 			_expect(child != null, "Home stage includes " + String(STAGE_CHILDREN[index]))
 			if child != null:
-				_expect(child.texture != null and child.texture.resource_path.ends_with(LAYERS[index + 1]), "Home stage uses the correct layer art")
+				var expected_name: String = "l01_v12_home_clean_road.png" if index == 4 else LAYERS[index + 1]
+				_expect(child.texture != null and child.texture.resource_path.ends_with(expected_name), "Home stage uses the correct layer art")
 				_expect(child.position == Vector2.ZERO and child.scale == Vector2.ONE and not child.centered, "Layer has no registration offset")
 				_expect(child.use_parent_material, "Stage reveal also masks the layer")
 	runner.free()

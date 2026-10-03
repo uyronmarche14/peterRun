@@ -44,6 +44,7 @@ var _breeze_ends_at := -1.0
 func _ready() -> void:
 	_capture_base_positions()
 	configure_route(1, 0)
+	_sync_passing_streets()
 	if GameSettings.reduced_motion:
 		_apply_reduced_motion_pose()
 
@@ -65,6 +66,13 @@ func set_active(active: bool) -> void:
 
 func set_motion_paused(should_pause: bool) -> void:
 	is_motion_paused = should_pause
+	for path in STAGE_PATHS:
+		var stage := get_node_or_null(path) as Sprite2D
+		if stage == null:
+			continue
+		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
+		if passing != null:
+			passing.call("set_motion_paused", should_pause)
 
 
 func configure_route(seed: int, initial_progress: int = 0) -> void:
@@ -83,6 +91,36 @@ func configure_route(seed: int, initial_progress: int = 0) -> void:
 	_next_breeze_at = _rng.randf_range(BREEZE_INTERVAL.x, BREEZE_INTERVAL.y)
 	_apply_stage_immediate(_route_progress)
 	_reset_ambient_pose()
+	_sync_passing_streets()
+	set_roadside_distance(0.0)
+
+
+func set_roadside_distance(distance: float) -> void:
+	_sync_passing_streets()
+	if is_motion_paused or GameSettings.reduced_motion:
+		return
+	for path in STAGE_PATHS:
+		var stage := get_node_or_null(path) as Sprite2D
+		if stage == null:
+			continue
+		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
+		if passing != null:
+			passing.call("set_travel_distance", distance)
+
+
+func _sync_passing_streets() -> void:
+	for path in STAGE_PATHS:
+		var stage := get_node_or_null(path) as Sprite2D
+		if stage == null:
+			continue
+		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
+		var can_move := false
+		if passing != null and not GameSettings.reduced_motion:
+			can_move = not (passing.call("get_module_sprites") as Array).is_empty()
+		if passing != null:
+			passing.visible = can_move
+		(stage.get_node(^"LeftStreet") as Sprite2D).visible = not can_move
+		(stage.get_node(^"RightStreet") as Sprite2D).visible = not can_move
 
 
 func set_route_progress(progress: int, animate: bool = true) -> void:
@@ -115,6 +153,7 @@ func get_route_progress() -> int:
 func advance_layer_motion(delta: float) -> void:
 	if is_motion_paused:
 		return
+	_sync_passing_streets()
 	if GameSettings.reduced_motion:
 		_apply_reduced_motion_pose()
 		return

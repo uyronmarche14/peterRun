@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3]
+[gd_scene load_steps=71 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -11,41 +11,42 @@
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_resident_wave_strip.png" id="14_l01_resident"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_birds_strip.png" id="15_l01_birds"]
 [ext_resource type="Script" path="res://scripts/l01_layered_route_motion.gd" id="17_l01_motion"]
+[ext_resource type="Script" path="res://scripts/l01_passing_street.gd" id="v12_passing_script"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_home_clean_road.png" id="v12_home_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_waiting_clean_road.png" id="v12_waiting_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_sari_sari_clean_road.png" id="v12_sari_sari_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_palengke_clean_road.png" id="v12_palengke_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_plaza_clean_road.png" id="v12_plaza_road"]
 [ext_resource type="Script" path="res://scripts/contact_effects.gd" id="18_contact_effects"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_sky.png" id="49_home_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_far.png" id="50_home_far"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_landmark.png" id="51_home_landmark"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_left_street.png" id="52_home_left"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_right_street.png" id="53_home_right"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_road.png" id="54_home_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_foreground.png" id="55_home_foreground"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_sky.png" id="v11_waiting_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_far.png" id="v11_waiting_far"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_landmark.png" id="v11_waiting_landmark"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_left_street.png" id="v11_waiting_left_street"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_right_street.png" id="v11_waiting_right_street"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_road.png" id="v11_waiting_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_foreground.png" id="v11_waiting_foreground"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_sky.png" id="v11_sari_sari_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_far.png" id="v11_sari_sari_far"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_landmark.png" id="v11_sari_sari_landmark"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_left_street.png" id="v11_sari_sari_left_street"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_right_street.png" id="v11_sari_sari_right_street"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_road.png" id="v11_sari_sari_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_foreground.png" id="v11_sari_sari_foreground"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_sky.png" id="v11_palengke_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_far.png" id="v11_palengke_far"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_landmark.png" id="v11_palengke_landmark"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_left_street.png" id="v11_palengke_left_street"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_right_street.png" id="v11_palengke_right_street"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_road.png" id="v11_palengke_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_foreground.png" id="v11_palengke_foreground"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_sky.png" id="v11_plaza_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_far.png" id="v11_plaza_far"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_landmark.png" id="v11_plaza_landmark"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_left_street.png" id="v11_plaza_left_street"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_right_street.png" id="v11_plaza_right_street"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_road.png" id="v11_plaza_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_foreground.png" id="v11_plaza_foreground"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_banana_left_strip.png" id="23_banana_left"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_banana_right_strip.png" id="24_banana_right"]
@@ -241,8 +242,13 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
 texture_filter = 1
-texture = ExtResource("54_home_road")
+texture = ExtResource("v12_home_road")
 centered = false
+use_parent_material = true
+
+[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
+script = ExtResource("v12_passing_script")
+stage_slug = "home"
 use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
@@ -284,8 +290,13 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
 texture_filter = 1
-texture = ExtResource("v11_waiting_road")
+texture = ExtResource("v12_waiting_road")
 centered = false
+use_parent_material = true
+
+[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
+script = ExtResource("v12_passing_script")
+stage_slug = "waiting"
 use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
@@ -327,8 +338,13 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
 texture_filter = 1
-texture = ExtResource("v11_sari_sari_road")
+texture = ExtResource("v12_sari_sari_road")
 centered = false
+use_parent_material = true
+
+[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
+script = ExtResource("v12_passing_script")
+stage_slug = "sari_sari"
 use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
@@ -370,8 +386,13 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
 texture_filter = 1
-texture = ExtResource("v11_palengke_road")
+texture = ExtResource("v12_palengke_road")
 centered = false
+use_parent_material = true
+
+[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
+script = ExtResource("v12_passing_script")
+stage_slug = "palengke"
 use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
@@ -413,8 +434,13 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
 texture_filter = 1
-texture = ExtResource("v11_plaza_road")
+texture = ExtResource("v12_plaza_road")
 centered = false
+use_parent_material = true
+
+[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
+script = ExtResource("v12_passing_script")
+stage_slug = "plaza"
 use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]

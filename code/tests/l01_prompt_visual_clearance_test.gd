@@ -22,6 +22,9 @@ func _run() -> void:
 	await process_frame
 	var motion := level.get_node(^"WorldMotion")
 	motion.set_process(false)
+	# The level controller normally enables this only for L01. This isolated
+	# scene test disables that controller, so enable the same visual contract.
+	(level.get_node(^"LevelWorld/RoadAndLanes/RoadPresentation") as Node2D).visible = true
 	var route := level.get_node(^"LevelWorld/L01BarangayLayers") as Node2D
 	route.set_process(false)
 	var anchor := level.get_node(^"LevelWorld/PromptWorldAnchor") as Node2D

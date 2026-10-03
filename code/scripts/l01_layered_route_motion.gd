@@ -2,6 +2,7 @@ class_name L01LayeredRouteMotion
 extends Node2D
 
 const GameSettings = preload("res://scripts/game_settings.gd")
+const SCENERY_REVEAL_SHADER = preload("res://art/backgrounds/l01_barangay_v09_journey/l01_v09_scenery_reveal.gdshader")
 
 ## Calm, deterministic ambient motion for the L01 illustrated scene.
 ## Road and horizon remain locked. Roadside buildings are driven by the shared
@@ -99,6 +100,12 @@ func set_route_progress(progress: int, animate: bool = true) -> void:
 	_transition_from = previous_progress
 	_transition_to = _route_progress
 	_transition_elapsed = 0.0
+	if _transition_to > _transition_from:
+		_apply_stage_alpha(_transition_to, 1.0)
+		_set_stage_reveal(_transition_to, 0.0)
+	else:
+		_apply_stage_alpha(_transition_to, 1.0)
+		_set_stage_reveal(_transition_from, 1.0)
 
 
 func get_route_progress() -> int:
@@ -130,11 +137,9 @@ func _update_stage_transition(delta: float) -> void:
 	_transition_elapsed += maxf(0.0, delta)
 	var weight := clampf(_transition_elapsed / STAGE_TRANSITION_SECONDS, 0.0, 1.0)
 	if _transition_to > _transition_from:
-		_apply_stage_alpha(_transition_from, 1.0)
-		_apply_stage_alpha(_transition_to, weight)
+		_set_stage_reveal(_transition_to, weight)
 	else:
-		_apply_stage_alpha(_transition_to, 1.0)
-		_apply_stage_alpha(_transition_from, 1.0 - weight)
+		_set_stage_reveal(_transition_from, 1.0 - weight)
 	if weight >= 1.0:
 		_apply_stage_immediate(_route_progress)
 
@@ -299,6 +304,9 @@ func _apply_stage_immediate(progress: int) -> void:
 	_transition_elapsed = 0.0
 	for index in STAGE_PATHS.size():
 		_apply_stage_alpha(index, 1.0 if index == progress else 0.0)
+		var stage := get_node_or_null(STAGE_PATHS[index]) as Sprite2D
+		if stage != null:
+			stage.material = null
 
 
 func _apply_stage_alpha(index: int, alpha: float) -> void:
@@ -307,6 +315,20 @@ func _apply_stage_alpha(index: int, alpha: float) -> void:
 	var stage := get_node_or_null(STAGE_PATHS[index]) as Sprite2D
 	if stage != null:
 		stage.modulate.a = clampf(alpha, 0.0, 1.0)
+
+
+func _set_stage_reveal(index: int, progress: float) -> void:
+	if index < 0 or index >= STAGE_PATHS.size():
+		return
+	var stage := get_node_or_null(STAGE_PATHS[index]) as Sprite2D
+	if stage == null:
+		return
+	var reveal_material := stage.material as ShaderMaterial
+	if reveal_material == null:
+		reveal_material = ShaderMaterial.new()
+		reveal_material.shader = SCENERY_REVEAL_SHADER
+		stage.material = reveal_material
+	reveal_material.set_shader_parameter("reveal_progress", clampf(progress, 0.0, 1.0))
 
 
 func _get_focal_duration(event_name: StringName) -> float:

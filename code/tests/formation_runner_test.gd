@@ -58,7 +58,12 @@ func _test_first_formation_renders_and_resolves_at_contact(level: Node) -> void:
 	for prop in props:
 		var footprint: Vector2 = prop.get_meta(&"projection_footprint", Vector2.ZERO)
 		var expected_fit := RoadProjectionModel.prop_fit_scale(footprint, 1.0)
-		_expect(is_equal_approx(prop.global_scale.x, anchor.global_scale.x * expected_fit), "Every formation obstacle shares the lane-safe approach scale")
+		_expect(prop.global_scale.x > 0.0 and prop.global_scale.x <= anchor.global_scale.x * expected_fit + 0.001,
+			"Formation obstacle keeps the shared perspective cap while respecting L01 visual clearance")
+		var l01_height_cap := float(prop.get_meta(&"l01_screen_height_cap", 0.0))
+		if l01_height_cap > 0.0:
+			_expect(footprint.y * prop.global_scale.y <= l01_height_cap + 0.001,
+				"L01 crate stack stays below its on-screen height cap")
 	var sorted_props := props.duplicate()
 	sorted_props.sort_custom(func(a: Node2D, b: Node2D) -> bool: return a.global_position.x < b.global_position.x)
 	for index in range(1, sorted_props.size()):

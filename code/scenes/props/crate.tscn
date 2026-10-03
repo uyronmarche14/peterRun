@@ -6,6 +6,7 @@
 
 [node name="CratePrompt" type="Node2D"]
 metadata/projection_footprint = Vector2(61.5, 85)
+metadata/l01_screen_height_cap = 70.0
 
 [node name="ContactShadow" type="Sprite2D" parent="."]
 position = Vector2(0, -42.5)

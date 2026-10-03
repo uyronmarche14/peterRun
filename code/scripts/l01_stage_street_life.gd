@@ -3,6 +3,7 @@ extends Node2D
 
 ## Tiny anchored actions within a fixed journey stage. Coordinates and scales
 ## are native 480x270 pixels; the scene node cancels its parent's 0.5 art scale.
+## Residents and pots use a ground contact point, not the centre of a PNG cell.
 ## Buildings, curb, road, and stage progression never move here.
 const TEXTURES := {
 	"wave": "res://art/backgrounds/l01_barangay_v05_layers/l01_v05_resident_wave_strip.png",
@@ -12,30 +13,31 @@ const TEXTURES := {
 	"sign": "res://art/backgrounds/l01_barangay_v06_layers/l01_v06_hanging_sign.png",
 }
 const FRAME_COUNTS := {"wave": 6, "laundry": 4, "flowers": 4, "vendor": 6, "sign": 1}
+const GROUND_ANCHORED := ["wave", "vendor", "flowers"]
 const PARTS := {
 	"home": [
-		{"kind": "wave", "name": "NeighbourWave", "at": Vector2(429, 166), "size": 0.16, "offset": 0.0},
+		{"kind": "wave", "name": "NeighbourWave", "at": Vector2(429, 186), "size": 0.125, "offset": 0.0},
 		{"kind": "laundry", "name": "HomeLaundry", "at": Vector2(78, 119), "size": 0.13, "offset": 1.0},
-		{"kind": "flowers", "name": "HomeFlowers", "at": Vector2(81, 176), "size": 0.14, "offset": 0.3},
+		{"kind": "flowers", "name": "HomeFlowers", "at": Vector2(56, 187), "size": 0.11, "offset": 0.3},
 	],
 	"waiting": [
 		{"kind": "laundry", "name": "WaitingLaundry", "at": Vector2(84, 106), "size": 0.12, "offset": 2.0},
-		{"kind": "flowers", "name": "WaitingFlowers", "at": Vector2(90, 172), "size": 0.13, "offset": 1.1},
+		{"kind": "flowers", "name": "WaitingFlowers", "at": Vector2(56, 183), "size": 0.11, "offset": 1.1},
 	],
 	"sari_sari": [
 		{"kind": "laundry", "name": "BalconyLaundry", "at": Vector2(92, 95), "size": 0.13, "offset": 0.8},
 		{"kind": "sign", "name": "ShopSign", "at": Vector2(403, 102), "size": 0.075, "offset": 1.7},
-		{"kind": "flowers", "name": "ShopFlowers", "at": Vector2(77, 178), "size": 0.13, "offset": 2.4},
+		{"kind": "flowers", "name": "ShopFlowers", "at": Vector2(56, 189), "size": 0.11, "offset": 2.4},
 	],
 	"palengke": [
-		{"kind": "vendor", "name": "MarketNeighbour", "at": Vector2(90, 160), "size": 0.21, "offset": 0.5},
+		{"kind": "vendor", "name": "MarketNeighbour", "at": Vector2(54, 181), "size": 0.17, "offset": 0.5},
 		{"kind": "sign", "name": "MarketSign", "at": Vector2(414, 105), "size": 0.072, "offset": 0.6},
-		{"kind": "flowers", "name": "MarketFlowers", "at": Vector2(426, 171), "size": 0.13, "offset": 1.7},
+		{"kind": "flowers", "name": "MarketFlowers", "at": Vector2(426, 182), "size": 0.11, "offset": 1.7},
 	],
 	"plaza": [
-		{"kind": "wave", "name": "PlazaWave", "at": Vector2(423, 165), "size": 0.16, "offset": 1.0},
+		{"kind": "wave", "name": "PlazaWave", "at": Vector2(423, 185), "size": 0.125, "offset": 1.0},
 		{"kind": "sign", "name": "GardenSign", "at": Vector2(72, 109), "size": 0.07, "offset": 2.5},
-		{"kind": "flowers", "name": "GardenFlowers", "at": Vector2(85, 177), "size": 0.14, "offset": 0.7},
+		{"kind": "flowers", "name": "GardenFlowers", "at": Vector2(56, 188), "size": 0.11, "offset": 0.7},
 	],
 }
 
@@ -59,6 +61,11 @@ func _ready() -> void:
 		sprite.hframes = FRAME_COUNTS[kind]
 		sprite.position = item["at"]
 		sprite.scale = Vector2.ONE * float(item["size"])
+		if kind in GROUND_ANCHORED:
+			var frame_size := Vector2i(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
+			var first_frame := sprite.texture.get_image().get_region(Rect2i(Vector2i.ZERO, frame_size))
+			var local_ground_y := sprite.get_rect().position.y + float(first_frame.get_used_rect().end.y)
+			sprite.position.y -= local_ground_y * sprite.scale.y
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		sprite.modulate.a = 0.92
 		if kind == "sign":

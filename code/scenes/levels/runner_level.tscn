@@ -502,7 +502,7 @@ texture = ExtResource("23_banana_left")
 hframes = 4
 
 [node name="BananaLeavesRight" type="Sprite2D" parent="LevelWorld/L01BarangayLayers"]
-position = Vector2(398, 163)
+position = Vector2(459, 163)
 texture_filter = 1
 z_index = -17
 scale = Vector2(0.17, 0.17)

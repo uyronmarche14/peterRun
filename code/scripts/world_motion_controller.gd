@@ -8,6 +8,9 @@ const L01VisualGuide = preload("res://scripts/l01_visual_geometry.gd")
 # Constant travel in depth projects to increasing screen speed near the player.
 # Warning/response timing comes from the session.
 const ROAD_LOOP_SECONDS := 5.25
+const L01_PROP_CURB_CLEARANCE := 18.5
+const L01_PROP_MAX_LANE_INSET := 8.0
+const L01_PROP_SEPARATOR_CLEARANCE := 2.0
 
 var is_motion_paused := false
 var motion_distance := 0.0
@@ -24,6 +27,7 @@ var _companion_lanes: Array[int] = []
 var _formation_nodes: Array[Node2D] = []
 var _formation_lanes: Array[int] = []
 var _road_dashes: Array[Line2D] = []
+var _prop_visual_half_widths: Dictionary = {}
 
 @onready var road_motion_dashes: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadMotionDashes") as Node2D
 @onready var road_presentation: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadPresentation") as Node2D
@@ -145,13 +149,70 @@ func _apply_lane_safe_prop_scales(fraction: float) -> void:
 	var prop_container := prompt_anchor.get_node_or_null(^"PromptProps")
 	if prop_container == null:
 		return
+	var depth_scale := RoadProjectionModel.scale_at(fraction)
+	var lane_span := RoadProjectionModel.lane_span_at(fraction)
+	var prompt_y := RoadProjectionModel.screen_y_at(fraction)
 	for child_value in prop_container.get_children():
 		var child := child_value as Node2D
 		if child == null or not child.visible:
 			continue
 		var footprint_value: Variant = child.get_meta(&"projection_footprint", Vector2.ZERO)
 		var footprint := footprint_value as Vector2
-		child.scale = Vector2.ONE * RoadProjectionModel.prop_fit_scale(footprint, fraction)
+		var fit := RoadProjectionModel.prop_fit_scale(footprint, fraction)
+		var l01_height_cap := float(child.get_meta(&"l01_screen_height_cap", 0.0))
+		if road_presentation.visible and l01_height_cap > 0.0 and footprint.y > 0.0:
+			fit = minf(fit, l01_height_cap / (footprint.y * depth_scale))
+		var lane := _lane_for_prop(child)
+		var base_local_x := float(lane - _prompt_lane) * lane_span / depth_scale
+		var inset := 0.0
+		if road_presentation.visible and lane != 1:
+			var side := -1 if lane == 0 else 1
+			var centre_x := RoadProjectionModel.lane_center_at(lane, fraction)
+			var curb_x := L01VisualGuide.painted_curb_x(side, prompt_y)
+			var visual_half_width := _get_prop_visual_half_width(child, footprint)
+			var projected_half_width := visual_half_width * depth_scale * fit
+			var current_clearance := centre_x - projected_half_width - curb_x if side < 0 else curb_x - centre_x - projected_half_width
+			var needed_inset := maxf(0.0, L01_PROP_CURB_CLEARANCE - current_clearance)
+			inset = minf(needed_inset, minf(L01_PROP_MAX_LANE_INSET, lane_span * 0.1))
+			var adjusted_centre := centre_x - float(side) * inset
+			var curb_room := adjusted_centre - curb_x - L01_PROP_CURB_CLEARANCE if side < 0 else curb_x - adjusted_centre - L01_PROP_CURB_CLEARANCE
+			var separator_x := RoadProjectionModel.lane_separator_at(0 if side < 0 else 1, fraction)
+			var separator_room := separator_x - adjusted_centre - L01_PROP_SEPARATOR_CLEARANCE if side < 0 else adjusted_centre - separator_x - L01_PROP_SEPARATOR_CLEARANCE
+			fit = minf(fit, maxf(0.0, minf(curb_room, separator_room)) / (visual_half_width * depth_scale))
+		child.position.x = base_local_x + (inset if lane == 0 else -inset) / depth_scale
+		child.scale = Vector2.ONE * fit
+
+
+func _lane_for_prop(prop: Node2D) -> int:
+	var formation_index := _formation_nodes.find(prop)
+	if formation_index >= 0 and formation_index < _formation_lanes.size():
+		return _formation_lanes[formation_index]
+	var companion_index := _companion_nodes.find(prop)
+	if companion_index >= 0 and companion_index < _companion_lanes.size():
+		return _companion_lanes[companion_index]
+	return _prompt_lane
+
+
+func _get_prop_visual_half_width(prop: Node2D, fallback: Vector2) -> float:
+	var key := prop.get_instance_id()
+	if _prop_visual_half_widths.has(key):
+		return _prop_visual_half_widths[key]
+	var half_width := maxf(1.0, fallback.x * 0.5)
+	for child in prop.get_children():
+		var sprite := child as Sprite2D
+		if sprite == null or sprite.texture == null:
+			continue
+		var source_image := sprite.texture.get_image()
+		if source_image == null:
+			continue
+		var used := source_image.get_used_rect()
+		if used.size == Vector2i.ZERO:
+			continue
+		var left := sprite.position.x + (sprite.get_rect().position.x + float(used.position.x)) * sprite.scale.x
+		var right := left + float(used.size.x) * sprite.scale.x
+		half_width = maxf(half_width, maxf(absf(left), absf(right)))
+	_prop_visual_half_widths[key] = half_width
+	return half_width
 
 
 func lane_center_for(lane: int, fraction: float) -> float:

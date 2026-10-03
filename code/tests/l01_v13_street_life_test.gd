@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Settings = preload("res://scripts/game_settings.gd")
+const Guide = preload("res://scripts/l01_visual_geometry.gd")
 const STAGES := ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]
 const ROAD_NAMES := ["l01_v10_home_road.png", "l01_v11_waiting_road.png", "l01_v11_sari_sari_road.png", "l01_v11_palengke_road.png", "l01_v11_plaza_road.png"]
 
@@ -37,7 +38,17 @@ func _run() -> void:
 		if life != null:
 			_expect(life.has_method("set_ambient_phase") and life.has_method("get_animated_parts"), "Sidewalk animation is inspectable: " + STAGES[index])
 			if life.has_method("get_animated_parts"):
-				_expect(not (life.call("get_animated_parts") as Array).is_empty(), "Stage has visible small-scale ambient parts: " + STAGES[index])
+				var parts: Array = life.call("get_animated_parts")
+				_expect(not parts.is_empty(), "Stage has visible small-scale ambient parts: " + STAGES[index])
+				for sample_phase in [0.0, 6.0, 13.0]:
+					life.call("set_ambient_phase", sample_phase)
+					for part_value in parts:
+						var part := part_value as Sprite2D
+						var bounds := _alpha_bounds(part)
+						var side := -1 if part.global_position.x < 240.0 else 1
+						var curb := Guide.painted_curb_x(side, bounds.end.y)
+						_expect(bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0, "Ambient art stays on its sidewalk: %s/%s at t=%s" % [STAGES[index], part.name, sample_phase])
+				life.call("reset_pose")
 	var home := route.get_node_or_null(^"JourneyStages/StageHome/StreetLife") as Node2D
 	if home != null and home.has_method("set_ambient_phase") and home.has_method("get_animated_parts"):
 		var parts: Array = home.call("get_animated_parts")
@@ -50,11 +61,18 @@ func _run() -> void:
 		_expect(_snapshot(parts) != rest, "Small sidewalk details animate without moving buildings")
 		for index in parts.size():
 			_expect((parts[index] as Node2D).position == original_positions[index], "Ambient part keeps its street anchor")
+		_expect((route.get_node(^"JourneyStages/StageHome/LeftStreet") as Sprite2D).position == Vector2.ZERO, "Home building never translates with ambient time")
 		route.call("set_motion_paused", true)
 		var paused := _snapshot(parts)
 		route.call("advance_layer_motion", 12.0)
 		_expect(_snapshot(parts) == paused, "Pause freezes the small ambient parts")
 		route.call("set_motion_paused", false)
+	route.call("configure_route", 7, 0)
+	route.call("set_route_progress", 1, true)
+	var waiting_life := route.get_node(^"JourneyStages/StageWaitingShed/StreetLife") as Node2D
+	_expect(is_zero_approx(waiting_life.modulate.a), "New stage details do not appear before scenery reveal")
+	route.call("advance_layer_motion", 0.6)
+	_expect(waiting_life.modulate.a > 0.0 and waiting_life.modulate.a < 1.0, "Sidewalk details enter gently with the stage reveal")
 	Settings.set_reduced_motion(true)
 	route.call("advance_layer_motion", 0.1)
 	if home != null and home.has_method("get_animated_parts"):
@@ -72,6 +90,17 @@ func _snapshot(parts: Array) -> Array:
 		var part := part_value as Sprite2D
 		result.append([part.frame, part.rotation, part.visible])
 	return result
+
+
+func _alpha_bounds(part: Sprite2D) -> Rect2:
+	var texture_image := part.texture.get_image()
+	var frame_size := Vector2i(texture_image.get_width() / part.hframes, texture_image.get_height() / part.vframes)
+	var frame_image := texture_image.get_region(Rect2i(part.frame_coords * frame_size, frame_size))
+	var used := frame_image.get_used_rect()
+	var origin := part.get_rect().position + Vector2(used.position)
+	var corner_a := part.to_global(origin)
+	var corner_b := part.to_global(origin + Vector2(used.size))
+	return Rect2(corner_a, corner_b - corner_a)
 
 
 func _expect(condition: bool, message: String) -> void:

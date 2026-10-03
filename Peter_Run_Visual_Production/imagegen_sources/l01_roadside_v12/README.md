@@ -1,5 +1,7 @@
 # L01 v12 passing-street source art
 
+Archived after the fixed-street clarification: these whole-building sprites and clean-road masks remain available as source work, but they are not used by the active L01 scene. The game now keeps its registered V10/V11 buildings and road fixed, with small stage-specific `StreetLife` overlays for local motion.
+
 These five transparent source images were generated as original, isolated 2.5D illustrations. They are source art, not Godot runtime textures. `code/tools/export_l01_v12_roadside_sprites.gd` places each subject on a common 512 x 512 transparent canvas with a stable bottom-contact anchor. Runtime art lives in `code/art/backgrounds/l01_roadside_v12/`.
 
 The image-generation prompt set used one subject per image:

@@ -5,8 +5,8 @@ const GameSettings = preload("res://scripts/game_settings.gd")
 const SCENERY_REVEAL_SHADER = preload("res://art/backgrounds/l01_barangay_v09_journey/l01_v09_scenery_reveal.gdshader")
 
 ## Calm, deterministic ambient motion for the L01 illustrated scene.
-## Road and horizon remain locked. Roadside buildings are driven by the shared
-## forward-motion clock in WorldMotionController.
+## Road, buildings, and horizon remain locked. Only small anchored sidewalk
+## details, clouds, and foreground foliage use the ambient clock.
 
 const CLOUD_DRIFT_AMPLITUDE := 5.0
 const CLOUD_DRIFT_SPEED := 0.10
@@ -44,7 +44,6 @@ var _breeze_ends_at := -1.0
 func _ready() -> void:
 	_capture_base_positions()
 	configure_route(1, 0)
-	_sync_passing_streets()
 	if GameSettings.reduced_motion:
 		_apply_reduced_motion_pose()
 
@@ -66,13 +65,6 @@ func set_active(active: bool) -> void:
 
 func set_motion_paused(should_pause: bool) -> void:
 	is_motion_paused = should_pause
-	for path in STAGE_PATHS:
-		var stage := get_node_or_null(path) as Sprite2D
-		if stage == null:
-			continue
-		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
-		if passing != null:
-			passing.call("set_motion_paused", should_pause)
 
 
 func configure_route(seed: int, initial_progress: int = 0) -> void:
@@ -91,36 +83,6 @@ func configure_route(seed: int, initial_progress: int = 0) -> void:
 	_next_breeze_at = _rng.randf_range(BREEZE_INTERVAL.x, BREEZE_INTERVAL.y)
 	_apply_stage_immediate(_route_progress)
 	_reset_ambient_pose()
-	_sync_passing_streets()
-	set_roadside_distance(0.0)
-
-
-func set_roadside_distance(distance: float) -> void:
-	_sync_passing_streets()
-	if is_motion_paused or GameSettings.reduced_motion:
-		return
-	for path in STAGE_PATHS:
-		var stage := get_node_or_null(path) as Sprite2D
-		if stage == null:
-			continue
-		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
-		if passing != null:
-			passing.call("set_travel_distance", distance)
-
-
-func _sync_passing_streets() -> void:
-	for path in STAGE_PATHS:
-		var stage := get_node_or_null(path) as Sprite2D
-		if stage == null:
-			continue
-		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
-		var can_move := false
-		if passing != null and not GameSettings.reduced_motion:
-			can_move = not (passing.call("get_module_sprites") as Array).is_empty()
-		if passing != null:
-			passing.visible = can_move
-		(stage.get_node(^"LeftStreet") as Sprite2D).visible = not can_move
-		(stage.get_node(^"RightStreet") as Sprite2D).visible = not can_move
 
 
 func set_route_progress(progress: int, animate: bool = true) -> void:
@@ -153,7 +115,6 @@ func get_route_progress() -> int:
 func advance_layer_motion(delta: float) -> void:
 	if is_motion_paused:
 		return
-	_sync_passing_streets()
 	if GameSettings.reduced_motion:
 		_apply_reduced_motion_pose()
 		return
@@ -164,6 +125,7 @@ func advance_layer_motion(delta: float) -> void:
 	_update_cloud_drift()
 	_update_plant_sway()
 	_update_foreground_leaves()
+	_update_stage_life()
 	_update_event_schedule()
 	_update_breeze_layers()
 	_update_focal_event()
@@ -216,6 +178,16 @@ func _update_foreground_leaves() -> void:
 		var base: Vector2 = _base_positions.get(leaves.name, leaves.position)
 		leaves.position = base + Vector2(sway * 0.65, -absf(sway) * 0.18)
 		leaves.rotation = sway * 0.008
+
+
+func _update_stage_life() -> void:
+	for path in STAGE_PATHS:
+		var stage := get_node_or_null(path) as Sprite2D
+		if stage == null:
+			continue
+		var life := stage.get_node_or_null(^"StreetLife") as Node2D
+		if life != null:
+			life.call("set_ambient_phase", motion_phase)
 
 
 func _update_event_schedule() -> void:
@@ -311,6 +283,12 @@ func _apply_reduced_motion_pose() -> void:
 
 
 func _reset_ambient_pose() -> void:
+	for path in STAGE_PATHS:
+		var stage := get_node_or_null(path) as Sprite2D
+		if stage != null:
+			var life := stage.get_node_or_null(^"StreetLife") as Node2D
+			if life != null:
+				life.call("reset_pose")
 	for path in [
 		^"Birds", ^"Laundry", ^"ResidentWave", ^"BananaLeavesLeft", ^"BananaLeavesRight",
 		^"FloweringPlants", ^"MarketAwning", ^"ResidentGardener", ^"ResidentVendor",
@@ -346,6 +324,9 @@ func _apply_stage_immediate(progress: int) -> void:
 		var stage := get_node_or_null(STAGE_PATHS[index]) as Sprite2D
 		if stage != null:
 			stage.material = null
+			var life := stage.get_node_or_null(^"StreetLife") as Node2D
+			if life != null:
+				life.modulate.a = 1.0
 
 
 func _apply_stage_alpha(index: int, alpha: float) -> void:
@@ -368,6 +349,9 @@ func _set_stage_reveal(index: int, progress: float) -> void:
 		reveal_material.shader = SCENERY_REVEAL_SHADER
 		stage.material = reveal_material
 	reveal_material.set_shader_parameter("reveal_progress", clampf(progress, 0.0, 1.0))
+	var life := stage.get_node_or_null(^"StreetLife") as Node2D
+	if life != null:
+		life.modulate.a = clampf(progress, 0.0, 1.0)
 
 
 func _get_focal_duration(event_name: StringName) -> float:

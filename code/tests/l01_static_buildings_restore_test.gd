@@ -8,6 +8,8 @@ const STATIC_BUILDINGS := [
 	^"BuildingsNearRight",
 ]
 const MISALIGNED_V06_SIDEWALK_OVERLAYS := [
+	^"Laundry",
+	^"ResidentWave",
 	^"ResidentGardener",
 	^"FloweringPlants",
 	^"ResidentVendor",
@@ -16,8 +18,8 @@ const MISALIGNED_V06_SIDEWALK_OVERLAYS := [
 ]
 const ALIGNED_AMBIENT_OVERLAYS := [
 	^"CloudsA",
-	^"Laundry",
-	^"ResidentWave",
+	^"BananaLeavesLeft",
+	^"BananaLeavesRight",
 	^"ForegroundLeavesLeft",
 	^"ForegroundLeavesRight",
 ]
@@ -59,6 +61,10 @@ func _run() -> void:
 	for path in ALIGNED_AMBIENT_OVERLAYS:
 		var overlay := layers.get_node_or_null(path) as Node2D
 		_expect(overlay != null and overlay.visible, "aligned ambient layer remains visible: " + String(path))
+	for stage_name in ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]:
+		var stage := layers.get_node("JourneyStages/" + stage_name) as Sprite2D
+		_expect((stage.get_node(^"LeftStreet") as Sprite2D).visible and (stage.get_node(^"RightStreet") as Sprite2D).visible, "fixed stage buildings remain visible: " + stage_name)
+		_expect(stage.get_node_or_null(^"StreetLife") != null, "small aligned street-life overlay replaces old floating sprite: " + stage_name)
 	if before.size() == STATIC_BUILDINGS.size():
 		layers.set_process(false)
 		world_motion.set_process(false)

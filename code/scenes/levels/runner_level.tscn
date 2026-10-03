@@ -11,12 +11,12 @@
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_resident_wave_strip.png" id="14_l01_resident"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_birds_strip.png" id="15_l01_birds"]
 [ext_resource type="Script" path="res://scripts/l01_layered_route_motion.gd" id="17_l01_motion"]
-[ext_resource type="Script" path="res://scripts/l01_passing_street.gd" id="v12_passing_script"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_home_clean_road.png" id="v12_home_road"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_waiting_clean_road.png" id="v12_waiting_road"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_sari_sari_clean_road.png" id="v12_sari_sari_road"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_palengke_clean_road.png" id="v12_palengke_road"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_roadside_v12/l01_v12_plaza_clean_road.png" id="v12_plaza_road"]
+[ext_resource type="Script" path="res://scripts/l01_stage_street_life.gd" id="v13_street_life"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_road.png" id="54_home_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_road.png" id="v11_waiting_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_road.png" id="v11_sari_sari_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_road.png" id="v11_palengke_road"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_road.png" id="v11_plaza_road"]
 [ext_resource type="Script" path="res://scripts/contact_effects.gd" id="18_contact_effects"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_sky.png" id="49_home_sky"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_far.png" id="50_home_far"]
@@ -242,14 +242,15 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
 texture_filter = 1
-texture = ExtResource("v12_home_road")
+texture = ExtResource("54_home_road")
 centered = false
 use_parent_material = true
 
-[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
-script = ExtResource("v12_passing_script")
+[node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
+z_index = 4
+scale = Vector2(2, 2)
+script = ExtResource("v13_street_life")
 stage_slug = "home"
-use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
 texture_filter = 1
@@ -290,14 +291,15 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
 texture_filter = 1
-texture = ExtResource("v12_waiting_road")
+texture = ExtResource("v11_waiting_road")
 centered = false
 use_parent_material = true
 
-[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
-script = ExtResource("v12_passing_script")
+[node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
+z_index = 4
+scale = Vector2(2, 2)
+script = ExtResource("v13_street_life")
 stage_slug = "waiting"
-use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageWaitingShed"]
 texture_filter = 1
@@ -338,14 +340,15 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
 texture_filter = 1
-texture = ExtResource("v12_sari_sari_road")
+texture = ExtResource("v11_sari_sari_road")
 centered = false
 use_parent_material = true
 
-[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
-script = ExtResource("v12_passing_script")
+[node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
+z_index = 4
+scale = Vector2(2, 2)
+script = ExtResource("v13_street_life")
 stage_slug = "sari_sari"
-use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageSariSari"]
 texture_filter = 1
@@ -386,14 +389,15 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
 texture_filter = 1
-texture = ExtResource("v12_palengke_road")
+texture = ExtResource("v11_palengke_road")
 centered = false
 use_parent_material = true
 
-[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
-script = ExtResource("v12_passing_script")
+[node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
+z_index = 4
+scale = Vector2(2, 2)
+script = ExtResource("v13_street_life")
 stage_slug = "palengke"
-use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePalengke"]
 texture_filter = 1
@@ -434,14 +438,15 @@ use_parent_material = true
 
 [node name="Road" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
 texture_filter = 1
-texture = ExtResource("v12_plaza_road")
+texture = ExtResource("v11_plaza_road")
 centered = false
 use_parent_material = true
 
-[node name="PassingStreet" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
-script = ExtResource("v12_passing_script")
+[node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
+z_index = 4
+scale = Vector2(2, 2)
+script = ExtResource("v13_street_life")
 stage_slug = "plaza"
-use_parent_material = true
 
 [node name="Foreground" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StagePlaza"]
 texture_filter = 1

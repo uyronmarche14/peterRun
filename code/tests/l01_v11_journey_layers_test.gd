@@ -62,7 +62,7 @@ func _test_stage_art_and_registration() -> void:
 				var child := stage.get_node_or_null(CHILDREN[child_index]) as Sprite2D
 				_expect(child != null, "Missing stage child: %s/%s" % [slug, CHILDREN[child_index]])
 				if child != null:
-					var expected_name: String = "l01_v12_%s_clean_road.png" % slug if child_index == 4 else "l01_v11_%s_%s.png" % [slug, LAYERS[child_index + 1]]
+					var expected_name: String = "l01_v11_%s_%s.png" % [slug, LAYERS[child_index + 1]]
 					_expect(child.texture != null and child.texture.resource_path.ends_with(expected_name), "Correct stage child texture: " + slug)
 					_expect(child.position == Vector2.ZERO and child.scale == Vector2.ONE and not child.centered and child.use_parent_material, "Child shares full-frame reveal registration: " + slug)
 	runner.free()

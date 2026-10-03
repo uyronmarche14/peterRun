@@ -1,0 +1,11 @@
+# L01 Home at Dawn — layer alignment contract
+
+- Runtime canvas: 480×270; every source layer is a full, **uncropped** 960×540 PNG shown at scale `(0.5, 0.5)` with its top-left at `(0, 0)`.
+- Stable composition: horizon and Hall remain centred; exactly three road lanes. The Hall is not displaced by parallax. The road and sidewalk layer is drawn above street edges, so moving scenery cannot rewrite the painted curb.
+- Source road: `l01_v09_home_dawn.png`. Approximate native-canvas curb positions measured from the current painted road: at `y=190`, left/right `x≈101/381`; at `y=210`, `x≈66/416`; at `y=218`, `x≈52/429`. Export tests compare actual RGB road pixels at those depths to the source, rather than trusting these approximate readings.
+- Peter's ground shadow is near native `y=241`; approaching props resolve near `y=218`. Those are different depths. The foreground mask stays at screen sides and excludes the central prompt/player area.
+- Layer order: sky → distant underpaint → stable landmark → left/right street → road/sidewalk → edge-only foreground. Existing clouds, leaves, birds, and other compatible Godot ambience remain separate from this artwork and obey Pause/reduced motion.
+- The v10 street sprites are intentionally **anchored** for this first integration. Translating whole building cutouts would move their bases off the curb and expose missing hidden faces. Future forward-travel animation needs re-authored side modules with clean backs and depth-scaled entry/exit positions; do not simply scroll these full-canvas cutouts.
+- Existing `RoadProjection` math is not identical to the painted V09 curb. This change locks the scenery to the painted guide; it does not silently change prompt movement or obstacle placement. Reconcile that projection separately before authoring moving road-edge props.
+
+Validation: `code/tests/l01_v10_home_layers_test.gd` checks layer dimensions, alpha, scene registration, and exact road pixels; `code/tests/l01_v09_scenery_test.gd` checks stage transition/pause. Review screenshots are in `test_evidence/l01_v10_home_layers/` at 960×540, 1024×768, and 1920×1080. The 1024×768 capture has intentional letterboxing to preserve the 16:9 game canvas.

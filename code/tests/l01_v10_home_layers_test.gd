@@ -37,20 +37,31 @@ func _test_art_and_road_registration() -> void:
 		_expect(FileAccess.file_exists(path), "Missing aligned Home layer: " + path)
 		if not FileAccess.file_exists(path):
 			continue
-		var art := Image.load_from_file(path)
+		var art := _runtime_image(path)
 		_expect(art != null and art.get_size() == Vector2i(960, 540), "Home layer has a 960x540 canvas: " + path)
 		if art != null and index > 0:
-			_expect(art.get_pixel(959, 539).a < 0.01 or index == 5, "Non-sky layer has transparency: " + path)
+			var transparent_points := [
+				Vector2i.ZERO, Vector2i(0, 0), Vector2i(959, 539),
+				Vector2i(0, 539), Vector2i(30, 100), Vector2i(480, 270),
+			]
+			_expect(art.get_pixelv(transparent_points[index - 1]).a < 0.01, "Non-sky layer has transparency: " + path)
 	var road_path := ROOT + "l01_v10_home_road.png"
 	if not FileAccess.file_exists(road_path):
 		return
-	var road := Image.load_from_file(road_path)
-	var reference := Image.load_from_file("res://art/backgrounds/l01_barangay_v09_journey/l01_v09_home_dawn.png")
-	for point in [Vector2i(480, 420), Vector2i(252, 420), Vector2i(480, 436), Vector2i(480, 500)]:
+	var road := _runtime_image(road_path)
+	var reference := _runtime_image("res://art/backgrounds/l01_barangay_v09_journey/l01_v09_home_dawn.png")
+	for point in [
+		Vector2i(480, 380), Vector2i(202, 380), Vector2i(763, 380),
+		Vector2i(480, 420), Vector2i(130, 420), Vector2i(832, 420),
+		Vector2i(480, 436), Vector2i(100, 436), Vector2i(860, 436),
+		Vector2i(480, 500),
+	]:
 		_expect(road.get_pixelv(point).a > 0.99, "Original road covers gameplay sample " + str(point))
 		_expect(_rgb_distance(road.get_pixelv(point), reference.get_pixelv(point)) < 0.012, "Road pixels remain registered at " + str(point))
 	for point in [Vector2i(30, 100), Vector2i(930, 100)]:
 		_expect(road.get_pixelv(point).a < 0.01, "Road does not cover houses at " + str(point))
+	var landmark := _runtime_image(ROOT + "l01_v10_home_landmark.png")
+	_expect(landmark.get_pixel(490, 180).a > 0.99 and landmark.get_pixel(10, 180).a < 0.01, "Barangay Hall occupies its own centered transparent layer")
 
 
 func _test_home_stage_composition() -> void:
@@ -76,6 +87,11 @@ func _test_home_stage_composition() -> void:
 
 func _rgb_distance(a: Color, b: Color) -> float:
 	return maxf(absf(a.r - b.r), maxf(absf(a.g - b.g), absf(a.b - b.b)))
+
+
+func _runtime_image(path: String) -> Image:
+	var texture := load(path) as Texture2D
+	return texture.get_image() if texture != null else null
 
 
 func _expect(condition: bool, message: String) -> void:

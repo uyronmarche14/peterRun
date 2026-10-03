@@ -57,7 +57,10 @@ func _test_scenery_scene_and_pause() -> void:
 		_expect(stage != null, "Five-stage scenery node exists: " + String(StageNodes[index]))
 		if stage != null:
 			_expect(stage.scale == Vector2(0.5, 0.5) and not stage.centered, "Stage aligns to the 480x270 canvas: " + String(StageNodes[index]))
-			_expect(stage.texture != null and stage.texture.resource_path.ends_with(StageFiles[index]), "Stage uses the corresponding daylight artwork")
+			if index == 0:
+				_expect(stage.texture != null and stage.texture.resource_path.ends_with("l01_v10_home_sky.png"), "Home stage uses aligned v10 layers")
+			else:
+				_expect(stage.texture != null and stage.texture.resource_path.ends_with(StageFiles[index]), "Stage uses the corresponding daylight artwork")
 	for name in [^"Laundry", ^"ResidentWave"]:
 		var legacy := motion.get_node_or_null(name) as Sprite2D
 		_expect(legacy != null and not legacy.visible, "Old location-specific sprite is hidden: " + String(name))

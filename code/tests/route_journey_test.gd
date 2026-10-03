@@ -33,6 +33,10 @@ func _run() -> void:
 			_expect(journey.get_progress(36, 40) == 4, "Plaza is visible before the session completes")
 			_expect(journey.get_progress(40, 40) == 4, "All planned movements remain at the plaza")
 			_expect(journey.get_progress(0, 0) == 0, "An empty test session remains at Home")
+		_expect(journey != null and journey.has_method("get_stamp_index"), "Route journey maps five stages onto the four existing summary stamps")
+		if journey != null and journey.has_method("get_stamp_index"):
+			_expect(journey.get_stamp_index(3) == 2, "Market approach keeps the market/shop stamp")
+			_expect(journey.get_stamp_index(4) == 3, "Plaza uses the Hall stamp")
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN route journey test: " + ("PASS" if failures.is_empty() else "FAIL"))

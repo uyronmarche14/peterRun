@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3]
+[gd_scene load_steps=40 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -12,10 +12,11 @@
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_birds_strip.png" id="15_l01_birds"]
 [ext_resource type="Script" path="res://scripts/l01_layered_route_motion.gd" id="17_l01_motion"]
 [ext_resource type="Script" path="res://scripts/contact_effects.gd" id="18_contact_effects"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_stage_home.png" id="19_stage_home"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_stage_waiting_shed.png" id="20_stage_waiting"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_stage_sari_sari.png" id="21_stage_sari"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_stage_plaza.png" id="22_stage_plaza"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v09_journey/l01_v09_home_dawn.png" id="19_stage_home"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v09_journey/l01_v09_waiting_early_morning.png" id="20_stage_waiting"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v09_journey/l01_v09_sari_sari_late_morning.png" id="21_stage_sari"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v09_journey/l01_v09_plaza_golden_afternoon.png" id="22_stage_plaza"]
+[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v09_journey/l01_v09_palengke_early_afternoon.png" id="48_stage_palengke"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_banana_left_strip.png" id="23_banana_left"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_banana_right_strip.png" id="24_banana_right"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_flowering_plants_strip.png" id="25_flowers"]
@@ -116,6 +117,7 @@ visible = false
 script = ExtResource("17_l01_motion")
 
 [node name="Environment" type="Sprite2D" parent="LevelWorld/L01BarangayLayers"]
+visible = false
 texture_filter = 1
 z_index = -21
 scale = Vector2(0.5, 0.5)
@@ -197,6 +199,13 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("21_stage_sari")
 centered = false
 
+[node name="StagePalengke" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages"]
+modulate = Color(1, 1, 1, 0)
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("48_stage_palengke")
+centered = false
+
 [node name="StagePlaza" type="Sprite2D" parent="LevelWorld/L01BarangayLayers/JourneyStages"]
 modulate = Color(1, 1, 1, 0)
 texture_filter = 1
@@ -223,6 +232,7 @@ texture = ExtResource("15_l01_birds")
 hframes = 4
 
 [node name="Laundry" type="Sprite2D" parent="LevelWorld/L01BarangayLayers"]
+visible = false
 position = Vector2(68, 139)
 texture_filter = 1
 z_index = -18
@@ -232,6 +242,7 @@ texture = ExtResource("8_l01_laundry")
 hframes = 4
 
 [node name="ResidentWave" type="Sprite2D" parent="LevelWorld/L01BarangayLayers"]
+visible = false
 position = Vector2(424, 168)
 texture_filter = 1
 z_index = -17

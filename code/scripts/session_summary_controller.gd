@@ -79,7 +79,7 @@ func _ready() -> void:
 	content.get_node("Journey").text = RouteJourney.get_summary_text(route_progress)
 	var route_stamp := AtlasTexture.new()
 	route_stamp.atlas = ROUTE_STAMP_ATLAS
-	route_stamp.region = Rect2(route_progress * 128, 0, 128, 128)
+	route_stamp.region = Rect2(RouteJourney.get_stamp_index(route_progress) * 128, 0, 128, 128)
 	content.get_node("Journey/JourneyStamp").texture = route_stamp
 	_refresh_rating()
 

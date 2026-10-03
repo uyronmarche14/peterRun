@@ -95,7 +95,7 @@ func _test_scene_and_motion_contract() -> void:
 	motion.call("advance_layer_motion", 0.6)
 	var home := motion.get_node(STAGE_NODES[0]) as Sprite2D
 	var waiting := motion.get_node(STAGE_NODES[1]) as Sprite2D
-	_expect(home.modulate.a > 0.0 and home.modulate.a < 1.0 and waiting.modulate.a > 0.0 and waiting.modulate.a < 1.0, "Intermediate landmark change crossfades over time")
+	_expect(is_equal_approx(home.modulate.a, 1.0) and waiting.modulate.a > 0.0 and waiting.modulate.a < 1.0, "Incoming full scenery fades over an opaque outgoing stage")
 	motion.call("advance_layer_motion", 0.7)
 	_expect(is_equal_approx(home.modulate.a, 0.0) and is_equal_approx(waiting.modulate.a, 1.0), "Landmark crossfade settles on the selected stage")
 

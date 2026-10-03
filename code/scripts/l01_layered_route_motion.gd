@@ -17,6 +17,7 @@ const STAGE_PATHS: Array[NodePath] = [
 	^"JourneyStages/StageHome",
 	^"JourneyStages/StageWaitingShed",
 	^"JourneyStages/StageSariSari",
+	^"JourneyStages/StagePalengke",
 	^"JourneyStages/StagePlaza",
 ]
 const FOCAL_EVENTS: Array[StringName] = [
@@ -85,20 +86,19 @@ func configure_route(seed: int, initial_progress: int = 0) -> void:
 
 func set_route_progress(progress: int, animate: bool = true) -> void:
 	var next_progress := clampi(progress, 0, STAGE_PATHS.size() - 1)
-	if next_progress == _route_progress and _transition_to < 0:
+	if next_progress == _route_progress:
 		return
 	var previous_progress := _route_progress
 	_route_progress = next_progress
-	# The final plaza arrival must be visible in the summary/end overlay even
-	# though session completion pauses the route immediately afterward.
-	if GameSettings.reduced_motion or not animate or next_progress == STAGE_PATHS.size() - 1:
+	if GameSettings.reduced_motion or not animate:
 		_apply_stage_immediate(_route_progress)
 		return
+	# The five stages are full opaque scenes. Start from one known opaque plate
+	# before blending, so a new landmark never exposes the old background.
+	_apply_stage_immediate(previous_progress)
 	_transition_from = previous_progress
 	_transition_to = _route_progress
 	_transition_elapsed = 0.0
-	_apply_stage_alpha(_transition_from, 1.0)
-	_apply_stage_alpha(_transition_to, 0.0)
 
 
 func get_route_progress() -> int:
@@ -129,8 +129,12 @@ func _update_stage_transition(delta: float) -> void:
 		return
 	_transition_elapsed += maxf(0.0, delta)
 	var weight := clampf(_transition_elapsed / STAGE_TRANSITION_SECONDS, 0.0, 1.0)
-	_apply_stage_alpha(_transition_from, 1.0 - weight)
-	_apply_stage_alpha(_transition_to, weight)
+	if _transition_to > _transition_from:
+		_apply_stage_alpha(_transition_from, 1.0)
+		_apply_stage_alpha(_transition_to, weight)
+	else:
+		_apply_stage_alpha(_transition_to, 1.0)
+		_apply_stage_alpha(_transition_from, 1.0 - weight)
 	if weight >= 1.0:
 		_apply_stage_immediate(_route_progress)
 

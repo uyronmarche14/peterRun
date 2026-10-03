@@ -6,7 +6,8 @@ const CASES := [
 	"res://scenes/props/puddle.tscn",
 	"res://scenes/props/laundry_line.tscn",
 ]
-const CURB_CLEARANCE := 12.0
+const CURB_CLEARANCE := 18.0
+const CRATE_MAX_VISIBLE_HEIGHT := 76.0
 
 var failures: PackedStringArray = []
 
@@ -34,21 +35,50 @@ func _run() -> void:
 		container.add_child(prop)
 		for lane in [0, 2]:
 			motion.call("begin_prompt_approach", lane, 2.5, 2.0)
-			for fraction in [0.0, 0.25, 0.5, 0.75, 0.9, 1.0]:
+			for step in 21:
+				var fraction := float(step) / 20.0
 				motion.set("_prompt_elapsed", fraction * 4.5)
 				motion.call("_apply_prompt_projection")
-				var bounds := _visible_bounds(prop)
-				var side := -1 if lane == 0 else 1
-				var curb := Guide.painted_curb_x(side, anchor.position.y)
-				var gap := bounds.position.x - curb if lane == 0 else curb - bounds.end.x
-				_expect(gap >= CURB_CLEARANCE - 0.5,
-					"%s lane %d at %.2f has %.1f px curb clearance" % [scene_path.get_file(), lane, fraction, gap])
+				_expect_curb_clearance(prop, lane, fraction, anchor.position.y)
+				if scene_path == CASES[0]:
+					_expect(_visible_bounds(prop).size.y <= CRATE_MAX_VISIBLE_HEIGHT,
+						"Crate stack stays below adult height at %.2f" % fraction)
+		prop.free()
+	var formation: Array[Node2D] = []
+	for scene_path in [CASES[0], CASES[1], CASES[0]]:
+		var prop := (load(scene_path) as PackedScene).instantiate() as Node2D
+		container.add_child(prop)
+		formation.append(prop)
+	var formation_lanes: Array[int] = [0, 1, 2]
+	motion.call("set_prompt_formation", formation, formation_lanes)
+	motion.call("begin_prompt_approach", 1, 2.5, 2.0)
+	for step in 21:
+		var fraction := float(step) / 20.0
+		motion.set("_prompt_elapsed", fraction * 4.5)
+		motion.call("_apply_prompt_projection")
+		_expect_curb_clearance(formation[0], 0, fraction, anchor.position.y)
+		_expect_curb_clearance(formation[2], 2, fraction, anchor.position.y)
+		var left_bounds := _visible_bounds(formation[0])
+		var middle_bounds := _visible_bounds(formation[1])
+		var right_bounds := _visible_bounds(formation[2])
+		_expect(left_bounds.end.x <= middle_bounds.position.x, "Mixed formation left prop stays distinct at %.2f" % fraction)
+		_expect(middle_bounds.end.x <= right_bounds.position.x, "Mixed formation right prop stays distinct at %.2f" % fraction)
+	for prop in formation:
 		prop.free()
 	level.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 prop visual clearance: " + ("PASS" if failures.is_empty() else "FAIL"))
 	quit(0 if failures.is_empty() else 1)
+
+
+func _expect_curb_clearance(prop: Node2D, lane: int, fraction: float, ground_y: float) -> void:
+	var bounds := _visible_bounds(prop)
+	var side := -1 if lane == 0 else 1
+	var curb := Guide.painted_curb_x(side, ground_y)
+	var gap := bounds.position.x - curb if lane == 0 else curb - bounds.end.x
+	_expect(gap >= CURB_CLEARANCE - 0.5,
+		"%s lane %d at %.2f has %.1f px curb clearance" % [prop.name, lane, fraction, gap])
 
 
 func _visible_bounds(prop: Node2D) -> Rect2:

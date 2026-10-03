@@ -3,6 +3,7 @@ extends Node
 
 const GameSettings = preload("res://scripts/game_settings.gd")
 const RoadProjectionModel = preload("res://scripts/road_projection.gd")
+const L01VisualGuide = preload("res://scripts/l01_visual_geometry.gd")
 
 # Constant travel in depth projects to increasing screen speed near the player.
 # Warning/response timing comes from the session.
@@ -108,7 +109,7 @@ func _update_road() -> void:
 		var projection_fraction := clampf(fraction * 1.06, 0.0, 1.0)
 		var depth_scale := RoadProjectionModel.scale_at(projection_fraction)
 		var y := RoadProjectionModel.screen_y_at(projection_fraction)
-		var road_half_width := RoadProjectionModel.l01_road_half_width_at(projection_fraction) if road_presentation.visible else RoadProjectionModel.road_half_width_at(projection_fraction)
+		var road_half_width := (L01VisualGuide.painted_curb_x(1, y) - L01VisualGuide.painted_curb_x(-1, y)) * 0.5 if road_presentation.visible else RoadProjectionModel.road_half_width_at(projection_fraction)
 		var half_width := road_half_width * 0.82
 		var dash := _road_dashes[index]
 		dash.set_point_position(0, Vector2(RoadProjectionModel.SCREEN_CENTRE_X - half_width, y))

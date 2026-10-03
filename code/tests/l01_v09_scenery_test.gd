@@ -60,7 +60,8 @@ func _test_scenery_scene_and_pause() -> void:
 			if index == 0:
 				_expect(stage.texture != null and stage.texture.resource_path.ends_with("l01_v10_home_sky.png"), "Home stage uses aligned v10 layers")
 			else:
-				_expect(stage.texture != null and stage.texture.resource_path.ends_with(StageFiles[index]), "Stage uses the corresponding daylight artwork")
+				var layer_slug: String = ["waiting", "sari_sari", "palengke", "plaza"][index - 1]
+				_expect(stage.texture != null and stage.texture.resource_path.ends_with("l01_v11_%s_sky.png" % layer_slug), "Stage uses aligned independent daylight layers")
 	for name in [^"Laundry", ^"ResidentWave"]:
 		var legacy := motion.get_node_or_null(name) as Sprite2D
 		_expect(legacy != null and not legacy.visible, "Old location-specific sprite is hidden: " + String(name))

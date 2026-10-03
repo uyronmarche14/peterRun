@@ -47,6 +47,8 @@ func _test_stage_art_and_registration() -> void:
 			_expect(art != null and art.get_size() == Vector2i(960, 540), "Layer has aligned 960x540 canvas: " + path)
 			if art == null:
 				continue
+			if layer_index == 0:
+				_expect(art.get_pixel(0, 0).a > 0.99 and art.get_pixel(959, 539).a > 0.99, "Sky fully covers canvas without export background: " + slug)
 			if layer_index == 5 and reference != null:
 				for sample in [Vector2i(480, 380), Vector2i(480, 420), Vector2i(480, 436), Vector2i(480, 500)]:
 					_expect(art.get_pixelv(sample).a > 0.99, "Road covers native lane sample " + str(sample))
@@ -75,6 +77,7 @@ func _test_motion_ready_modules() -> void:
 	if not parsed is Dictionary or not parsed.has("modules"):
 		return
 	var modules: Array = parsed["modules"]
+	var guide := load("res://scripts/l01_visual_geometry.gd")
 	_expect(modules.size() == 20, "Five stages have four separate roadside modules each")
 	for slug in MODULE_STAGES:
 		var matching := 0
@@ -90,6 +93,11 @@ func _test_motion_ready_modules() -> void:
 				_expect(art != null and art.get_size() == Vector2i(960, 540), "Motion module retains registration canvas")
 				if art != null:
 					_expect(art.get_pixel(480, 420).a < 0.01, "Module does not cover the centre road")
+					_expect(art.get_used_rect().has_area(), "Module contains visible side art")
+			if guide != null and item.has("contact_px"):
+				var contact: Array = item["contact_px"]
+				var side := -1 if item.get("side") == "left" else 1
+				_expect(absf(float(contact[0]) * 0.5 - float(guide.call("painted_curb_x", side, float(contact[1]) * 0.5))) <= 3.0, "Module contact follows painted curb: " + path)
 		_expect(matching == 4, "Four modules prepared for " + slug)
 
 

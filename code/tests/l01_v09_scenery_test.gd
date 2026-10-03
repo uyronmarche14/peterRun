@@ -30,6 +30,7 @@ func _init() -> void:
 
 
 func _test_runtime_art() -> void:
+	_expect(ResourceLoader.exists("res://art/backgrounds/l01_barangay_v09_journey/l01_v09_scenery_reveal.gdshader"), "One scenery reveal shader exists")
 	for file_name in StageFiles:
 		var path: String = "res://art/backgrounds/l01_barangay_v09_journey/" + file_name
 		_expect(ResourceLoader.exists(path), "Runtime scenery exists: " + path)
@@ -67,19 +68,25 @@ func _test_scenery_scene_and_pause() -> void:
 	var first := motion.get_node_or_null(StageNodes[0]) as Sprite2D
 	var second := motion.get_node_or_null(StageNodes[1]) as Sprite2D
 	if first != null and second != null:
-		_expect(is_equal_approx(first.modulate.a, 1.0) and second.modulate.a > 0.0 and second.modulate.a < 1.0, "Full-scene transition keeps the old scene opaque under the incoming scene")
-		var alpha_before_pause := second.modulate.a
+		_expect(is_equal_approx(first.modulate.a, 1.0) and is_equal_approx(second.modulate.a, 1.0), "Both full-scene plates stay opaque during the landmark reveal")
+		_expect(second.material is ShaderMaterial, "Incoming scenery uses a masked reveal instead of ghosted alpha blending")
+		var reveal_before_pause := -1.0
+		if second.material is ShaderMaterial:
+			reveal_before_pause = float((second.material as ShaderMaterial).get_shader_parameter("reveal_progress"))
+			_expect(reveal_before_pause > 0.0 and reveal_before_pause < 1.0, "Intermediate landmark is partly revealed without transparent buildings")
 		var phase_before_pause: float = motion.get("motion_phase")
 		motion.call("set_motion_paused", true)
 		motion.call("advance_layer_motion", 5.0)
-		_expect(is_equal_approx(second.modulate.a, alpha_before_pause) and is_equal_approx(float(motion.get("motion_phase")), phase_before_pause), "Pause freezes full-scene crossfade and ambient motion")
+		if second.material is ShaderMaterial:
+			_expect(is_equal_approx(float((second.material as ShaderMaterial).get_shader_parameter("reveal_progress")), reveal_before_pause), "Pause freezes the scenery reveal mask")
+		_expect(is_equal_approx(float(motion.get("motion_phase")), phase_before_pause), "Pause freezes ambient motion")
 		motion.call("set_motion_paused", false)
 		motion.call("advance_layer_motion", 0.7)
-		_expect(is_equal_approx(first.modulate.a, 0.0) and is_equal_approx(second.modulate.a, 1.0), "Crossfade settles on the next scenery")
+		_expect(is_equal_approx(first.modulate.a, 0.0) and is_equal_approx(second.modulate.a, 1.0) and second.material == null, "Reveal settles on the new scene without a residual mask")
 	motion.call("set_route_progress", 4, true)
 	var final_stage := motion.get_node_or_null(StageNodes[4]) as Sprite2D
 	if final_stage != null:
-		_expect(is_equal_approx(final_stage.modulate.a, 0.0), "Plaza arrival begins as a calm transition, not a hard cut")
+		_expect(is_equal_approx(final_stage.modulate.a, 1.0) and final_stage.material is ShaderMaterial, "Plaza arrival begins masked, not with a hard cut")
 	Settings.set_reduced_motion(true)
 	motion.call("set_route_progress", 3, true)
 	if final_stage != null:

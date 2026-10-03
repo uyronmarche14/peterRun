@@ -31,6 +31,8 @@ func _run() -> void:
 	route.set_process(false)
 	var banana_left := route.get_node(^"BananaLeavesLeft") as Sprite2D
 	var banana_right := route.get_node(^"BananaLeavesRight") as Sprite2D
+	var banana_left_bounds := _sprite_frames_union(banana_left)
+	var banana_right_bounds := _sprite_frames_union(banana_right)
 	var ambient_bounds := _street_life_bounds(route)
 	var anchor := level.get_node(^"LevelWorld/PromptWorldAnchor") as Node2D
 	var container := anchor.get_node(^"PromptProps") as Node2D
@@ -44,8 +46,8 @@ func _run() -> void:
 				motion.set("_prompt_elapsed", fraction * 4.5)
 				motion.call("_apply_prompt_projection")
 				_expect_curb_clearance(prop, lane, fraction, anchor.position.y)
-				var banana := banana_left if lane == 0 else banana_right
-				_expect(not _visible_bounds(prop).intersects(_sprite_visible_bounds(banana)),
+				var banana_bounds := banana_left_bounds if lane == 0 else banana_right_bounds
+				_expect(not _visible_bounds(prop).intersects(banana_bounds),
 					"%s lane %d stays separate from swaying leaves at %.2f" % [prop.name, lane, fraction])
 				_expect_no_street_life_overlap(_visible_bounds(prop), lane, fraction, ambient_bounds)
 				if scene_path == CASES[0]:
@@ -66,9 +68,9 @@ func _run() -> void:
 		motion.call("_apply_prompt_projection")
 		_expect_curb_clearance(formation[0], 0, fraction, anchor.position.y)
 		_expect_curb_clearance(formation[2], 2, fraction, anchor.position.y)
-		_expect(not _visible_bounds(formation[0]).intersects(_sprite_visible_bounds(banana_left)),
+		_expect(not _visible_bounds(formation[0]).intersects(banana_left_bounds),
 			"Mixed formation stays separate from left leaves at %.2f" % fraction)
-		_expect(not _visible_bounds(formation[2]).intersects(_sprite_visible_bounds(banana_right)),
+		_expect(not _visible_bounds(formation[2]).intersects(banana_right_bounds),
 			"Mixed formation stays separate from right leaves at %.2f" % fraction)
 		_expect_no_street_life_overlap(_visible_bounds(formation[0]), 0, fraction, ambient_bounds)
 		_expect_no_street_life_overlap(_visible_bounds(formation[2]), 2, fraction, ambient_bounds)
@@ -125,13 +127,24 @@ func _sprite_visible_bounds(sprite: Sprite2D) -> Rect2:
 	return Rect2(a, b - a)
 
 
+func _sprite_frames_union(sprite: Sprite2D) -> Rect2:
+	var original_frame := sprite.frame
+	var bounds := Rect2()
+	for frame in sprite.hframes * sprite.vframes:
+		sprite.frame = frame
+		var frame_bounds := _sprite_visible_bounds(sprite)
+		bounds = bounds.merge(frame_bounds) if frame > 0 else frame_bounds
+	sprite.frame = original_frame
+	return bounds
+
+
 func _street_life_bounds(route: Node2D) -> Array[Dictionary]:
 	var items: Array[Dictionary] = []
 	for stage_name in STAGES:
 		var life := route.get_node("JourneyStages/%s/StreetLife" % stage_name) as Node2D
 		for part_value in life.call("get_animated_parts"):
 			var part := part_value as Sprite2D
-			items.append({"name": "%s/%s" % [stage_name, part.name], "side": -1 if part.global_position.x < 240.0 else 1, "bounds": _sprite_visible_bounds(part)})
+			items.append({"name": "%s/%s" % [stage_name, part.name], "side": -1 if part.global_position.x < 240.0 else 1, "bounds": _sprite_frames_union(part)})
 	return items
 
 

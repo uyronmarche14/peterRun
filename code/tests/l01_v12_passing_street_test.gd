@@ -15,6 +15,7 @@ func _init() -> void:
 func _run() -> void:
 	Settings.set_reduced_motion(false)
 	_test_asset_manifest()
+	_test_clean_road_masks()
 	await _test_scene_and_motion()
 	for failure in failures:
 		printerr("FAIL: " + failure)
@@ -50,6 +51,19 @@ func _test_asset_manifest() -> void:
 		_expect(sides.has("left") and sides.has("right"), "Both verges populated in " + slug)
 
 
+func _test_clean_road_masks() -> void:
+	for slug in ["home", "waiting", "sari_sari", "palengke", "plaza"]:
+		var path := "res://art/backgrounds/l01_roadside_v12/l01_v12_%s_clean_road.png" % slug
+		_expect(FileAccess.file_exists(path), "Clean original-pixel road exists: " + slug)
+		if not FileAccess.file_exists(path):
+			continue
+		var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+		_expect(image != null and image.get_size() == Vector2i(960, 540), "Road stays registered to 960x540")
+		if image != null:
+			_expect(image.get_pixel(480, 380).a > 0.99, "Centre asphalt remains opaque")
+			_expect(image.get_pixel(120, 380).a < 0.01 and image.get_pixel(840, 380).a < 0.01, "Old sidewalk subjects cannot ride with the road")
+
+
 func _test_scene_and_motion() -> void:
 	var packed := load("res://scenes/levels/runner_level.tscn") as PackedScene
 	_expect(packed != null, "Runner scene loads")
@@ -64,6 +78,8 @@ func _test_scene_and_motion() -> void:
 	route.set_process(false)
 	for index in STAGES.size():
 		var stage := route.get_node("JourneyStages/" + String(STAGES[index])) as Sprite2D
+		var road := stage.get_node(^"Road") as Sprite2D
+		_expect(road.texture != null and road.texture.resource_path.ends_with("l01_v12_%s_clean_road.png" % ["home", "waiting", "sari_sari", "palengke", "plaza"][index]), "Stage renders its clean registered road")
 		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
 		_expect(passing != null, "Stage has a travel layer: " + String(STAGES[index]))
 		if passing == null:

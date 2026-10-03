@@ -45,6 +45,10 @@ func _run() -> void:
 					for part_value in parts:
 						var part := part_value as Sprite2D
 						var bounds := _alpha_bounds(part)
+						if part.name.contains("Wave") or part.name.contains("Neighbour"):
+							_expect(bounds.size.y <= 32.0, "Resident fits the painted sidewalk scale: %s/%s" % [STAGES[index], part.name])
+						if part.name.contains("Flowers"):
+							_expect(bounds.size.y <= 20.0, "Flower pot fits nearby painted plants: %s/%s" % [STAGES[index], part.name])
 						var side := -1 if part.global_position.x < 240.0 else 1
 						var curb := Guide.painted_curb_x(side, bounds.end.y)
 						_expect(bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0, "Ambient art stays on its sidewalk: %s/%s at t=%s" % [STAGES[index], part.name, sample_phase])

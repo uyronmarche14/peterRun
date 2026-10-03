@@ -8,6 +8,7 @@ const CASES := [
 ]
 const CURB_CLEARANCE := 18.0
 const CRATE_MAX_VISIBLE_HEIGHT := 76.0
+const STAGES := ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]
 
 var failures: PackedStringArray = []
 
@@ -30,6 +31,7 @@ func _run() -> void:
 	route.set_process(false)
 	var banana_left := route.get_node(^"BananaLeavesLeft") as Sprite2D
 	var banana_right := route.get_node(^"BananaLeavesRight") as Sprite2D
+	var ambient_bounds := _street_life_bounds(route)
 	var anchor := level.get_node(^"LevelWorld/PromptWorldAnchor") as Node2D
 	var container := anchor.get_node(^"PromptProps") as Node2D
 	for scene_path in CASES:
@@ -45,6 +47,7 @@ func _run() -> void:
 				var banana := banana_left if lane == 0 else banana_right
 				_expect(not _visible_bounds(prop).intersects(_sprite_visible_bounds(banana)),
 					"%s lane %d stays separate from swaying leaves at %.2f" % [prop.name, lane, fraction])
+				_expect_no_street_life_overlap(_visible_bounds(prop), lane, fraction, ambient_bounds)
 				if scene_path == CASES[0]:
 					_expect(_visible_bounds(prop).size.y <= CRATE_MAX_VISIBLE_HEIGHT,
 						"Crate stack stays below adult height at %.2f" % fraction)
@@ -67,6 +70,8 @@ func _run() -> void:
 			"Mixed formation stays separate from left leaves at %.2f" % fraction)
 		_expect(not _visible_bounds(formation[2]).intersects(_sprite_visible_bounds(banana_right)),
 			"Mixed formation stays separate from right leaves at %.2f" % fraction)
+		_expect_no_street_life_overlap(_visible_bounds(formation[0]), 0, fraction, ambient_bounds)
+		_expect_no_street_life_overlap(_visible_bounds(formation[2]), 2, fraction, ambient_bounds)
 		var left_bounds := _visible_bounds(formation[0])
 		var middle_bounds := _visible_bounds(formation[1])
 		var right_bounds := _visible_bounds(formation[2])
@@ -118,6 +123,25 @@ func _sprite_visible_bounds(sprite: Sprite2D) -> Rect2:
 	var a := sprite.to_global(local)
 	var b := sprite.to_global(local + Vector2(used.size))
 	return Rect2(a, b - a)
+
+
+func _street_life_bounds(route: Node2D) -> Array[Dictionary]:
+	var items: Array[Dictionary] = []
+	for stage_name in STAGES:
+		var life := route.get_node("JourneyStages/%s/StreetLife" % stage_name) as Node2D
+		for part_value in life.call("get_animated_parts"):
+			var part := part_value as Sprite2D
+			items.append({"name": "%s/%s" % [stage_name, part.name], "side": -1 if part.global_position.x < 240.0 else 1, "bounds": _sprite_visible_bounds(part)})
+	return items
+
+
+func _expect_no_street_life_overlap(bounds: Rect2, lane: int, fraction: float, ambient_bounds: Array[Dictionary]) -> void:
+	var side := -1 if lane == 0 else 1
+	for item in ambient_bounds:
+		if item["side"] != side:
+			continue
+		_expect(not bounds.intersects(item["bounds"]),
+			"Lane %d prop stays separate from %s at %.2f" % [lane, item["name"], fraction])
 
 
 func _expect(condition: bool, message: String) -> void:

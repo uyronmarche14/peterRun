@@ -8,8 +8,8 @@ const SCENERY_REVEAL_SHADER = preload("res://art/backgrounds/l01_barangay_v09_jo
 ## Road, buildings, and horizon remain locked. Only small anchored sidewalk
 ## details, clouds, and foreground foliage use the ambient clock.
 
-const CLOUD_DRIFT_AMPLITUDE := 5.0
-const CLOUD_DRIFT_SPEED := 0.10
+const CLOUD_DRIFT_AMPLITUDE := 7.0
+const CLOUD_DRIFT_SPEED := 0.14
 const STAGE_TRANSITION_SECONDS := 1.2
 const BREEZE_INTERVAL := Vector2(10.0, 16.0)
 const BREEZE_DURATION := Vector2(4.0, 6.0)
@@ -167,8 +167,8 @@ func _update_plant_sway() -> void:
 		plant.frame = _ping_pong_frame(motion_phase + index * 0.7, 0.62)
 		var base: Vector2 = _base_positions.get(plant.name, plant.position)
 		var sway := sin(motion_phase * 0.42 + index * 1.3)
-		plant.position = base + Vector2(sway * 0.38, 0.0)
-		plant.rotation = sway * 0.006
+		plant.position = base + Vector2(sway * 1.15, 0.0)
+		plant.rotation = sway * 0.018
 
 
 func _update_foreground_leaves() -> void:
@@ -180,8 +180,8 @@ func _update_foreground_leaves() -> void:
 			continue
 		leaves.frame = frame
 		var base: Vector2 = _base_positions.get(leaves.name, leaves.position)
-		leaves.position = base + Vector2(sway * 0.65, -absf(sway) * 0.18)
-		leaves.rotation = sway * 0.008
+		leaves.position = base + Vector2(sway * 1.35, -absf(sway) * 0.28)
+		leaves.rotation = sway * 0.018
 
 
 func _update_stage_life() -> void:
@@ -291,6 +291,10 @@ func _apply_reduced_motion_pose() -> void:
 
 
 func _reset_ambient_pose() -> void:
+	var clouds := get_node_or_null(^"CloudsA") as Sprite2D
+	if clouds != null:
+		clouds.position = _base_positions.get(clouds.name, clouds.position)
+		clouds.modulate.a = 0.30
 	for path in STAGE_PATHS:
 		var stage := get_node_or_null(path) as Sprite2D
 		if stage != null:

@@ -1,0 +1,102 @@
+extends SceneTree
+
+const Settings = preload("res://scripts/game_settings.gd")
+const STAGES := ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]
+
+var failures: PackedStringArray = []
+
+
+func _init() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
+	Settings.set_reduced_motion(false)
+	var packed := load("res://scenes/levels/runner_level.tscn") as PackedScene
+	_expect(packed != null, "Runner scene loads")
+	if packed == null:
+		_finish()
+		return
+	var level := packed.instantiate()
+	root.add_child(level)
+	await process_frame
+	var route := level.get_node(^"LevelWorld/L01BarangayLayers") as Node2D
+	route.set_process(false)
+	level.get_node(^"WorldMotion").set_process(false)
+	for index in STAGES.size():
+		route.call("configure_route", 17, index)
+		var life := route.get_node("JourneyStages/%s/StreetLife" % STAGES[index]) as Node2D
+		var parts: Array = life.call("get_animated_parts")
+		_expect(parts.size() >= 3, "%s has at least three independent ambient assets" % STAGES[index])
+		life.call("set_ambient_phase", 0.0)
+		var rest := _snapshot(parts)
+		var changed: Dictionary = {}
+		for phase in [0.5, 1.25, 2.0, 3.0]:
+			life.call("set_ambient_phase", phase)
+			for part in parts:
+				var sprite := part as Sprite2D
+				if _part_pose(sprite) != rest[parts.find(part)]:
+					changed[sprite.name] = true
+		_expect(changed.size() >= 2, "%s has two readable actions during the first three seconds" % STAGES[index])
+		life.call("set_ambient_phase", 1.25)
+		for part in parts:
+			var sprite := part as Sprite2D
+			if sprite.name.contains("Wave") or sprite.name.contains("Neighbour"):
+				_expect(sprite.frame > 0, "%s resident greets shortly after stage entry" % STAGES[index])
+		life.call("set_ambient_phase", 2.0)
+		for part in parts:
+			var sprite := part as Sprite2D
+			if sprite.name.contains("Sign"):
+				_expect(absf(sprite.rotation) >= 0.03, "%s sign sway reads at normal game size" % STAGES[index])
+		life.call("set_ambient_phase", 0.0)
+		_expect(_snapshot(parts) == rest, "%s has a stable resting pose" % STAGES[index])
+
+	# Returning to a route stage must begin that stage's action schedule at entry,
+	# not inherit a random part of the previous stage's global ambient clock.
+	route.call("configure_route", 17, 0)
+	route.call("advance_layer_motion", 7.0)
+	route.call("set_route_progress", 1, false)
+	route.call("advance_layer_motion", 1.0)
+	var waiting := route.get_node(^"JourneyStages/StageWaitingShed/StreetLife") as Node2D
+	var entered := _snapshot(waiting.call("get_animated_parts"))
+	route.call("configure_route", 17, 1)
+	route.call("advance_layer_motion", 1.0)
+	_expect(_snapshot(waiting.call("get_animated_parts")) == entered, "Waiting Shed starts the same animation one second after any entry")
+	var before_pause := _snapshot(waiting.call("get_animated_parts"))
+	var phase_before: float = route.get("motion_phase")
+	route.call("set_motion_paused", true)
+	route.call("advance_layer_motion", 4.0)
+	_expect(_snapshot(waiting.call("get_animated_parts")) == before_pause and is_equal_approx(float(route.get("motion_phase")), phase_before), "Pause freezes stage action and ambient clock")
+	route.call("set_motion_paused", false)
+	Settings.set_reduced_motion(true)
+	route.call("advance_layer_motion", 0.5)
+	_expect(is_equal_approx(float(route.get("motion_phase")), phase_before), "Reduced Motion does not advance ambient time")
+	for part in waiting.call("get_animated_parts"):
+		var sprite := part as Sprite2D
+		_expect(sprite.frame == 0 and is_zero_approx(sprite.rotation), "Reduced Motion rests " + sprite.name)
+	Settings.set_reduced_motion(false)
+	level.free()
+	_finish()
+
+
+func _snapshot(parts: Array) -> Array:
+	var result := []
+	for part in parts:
+		result.append(_part_pose(part as Sprite2D))
+	return result
+
+
+func _part_pose(part: Sprite2D) -> Array:
+	return [part.frame, part.position, part.rotation, part.scale]
+
+
+func _expect(condition: bool, message: String) -> void:
+	if not condition:
+		failures.append(message)
+
+
+func _finish() -> void:
+	for failure in failures:
+		printerr("FAIL: " + failure)
+	print("PETER RUN L01 five-stage ambient motion: " + ("PASS" if failures.is_empty() else "FAIL"))
+	quit(0 if failures.is_empty() else 1)

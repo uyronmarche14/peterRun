@@ -11,9 +11,10 @@ const TEXTURES := {
 	"flowers": "res://art/backgrounds/l01_barangay_v06_layers/l01_v06_flowering_plants_strip.png",
 	"vendor": "res://art/backgrounds/l01_barangay_v06_layers/l01_v06_resident_vendor_strip.png",
 	"sign": "res://art/backgrounds/l01_barangay_v06_layers/l01_v06_hanging_sign.png",
+	"banana": "res://art/backgrounds/l01_barangay_v06_layers/l01_v06_banana_left_strip.png",
 }
-const FRAME_COUNTS := {"wave": 6, "laundry": 4, "flowers": 4, "vendor": 6, "sign": 1}
-const GROUND_ANCHORED := ["wave", "vendor", "flowers"]
+const FRAME_COUNTS := {"wave": 6, "laundry": 4, "flowers": 4, "vendor": 6, "sign": 1, "banana": 4}
+const GROUND_ANCHORED := ["wave", "vendor", "flowers", "banana"]
 const PARTS := {
 	"home": [
 		{"kind": "wave", "name": "NeighbourWave", "at": Vector2(429, 186), "size": 0.125, "offset": 0.0},
@@ -23,6 +24,7 @@ const PARTS := {
 	"waiting": [
 		{"kind": "laundry", "name": "WaitingLaundry", "at": Vector2(84, 106), "size": 0.12, "offset": 2.0},
 		{"kind": "flowers", "name": "WaitingFlowers", "at": Vector2(56, 183), "size": 0.11, "offset": 1.1},
+		{"kind": "banana", "name": "WaitingBanana", "at": Vector2(30, 177), "size": 0.11, "offset": 0.2},
 	],
 	"sari_sari": [
 		{"kind": "laundry", "name": "BalconyLaundry", "at": Vector2(92, 95), "size": 0.13, "offset": 0.8},
@@ -88,14 +90,18 @@ func set_ambient_phase(phase: float) -> void:
 		var local := phase + _offsets[index]
 		match kind:
 			"wave", "vendor":
-				var cycle := fposmod(local, 13.0)
-				sprite.frame = mini(5, int(floor((cycle - 5.0) * 2.0))) if cycle >= 5.0 and cycle < 8.0 else 0
+				# Begin the friendly gesture soon after this stage appears, then
+				# leave a calm rest interval before the next one.
+				var cycle := fposmod(local, 7.5)
+				sprite.frame = mini(5, int(floor((cycle - 0.35) * 2.2))) if cycle >= 0.35 and cycle < 2.85 else 0
 			"laundry":
-				sprite.frame = [0, 1, 2, 1][int(floor(local * 0.55)) % 4]
+				sprite.frame = [0, 1, 2, 1][int(floor(local * 0.95)) % 4]
 			"flowers":
-				sprite.frame = [0, 1, 2, 1][int(floor(local * 0.42)) % 4]
+				sprite.frame = [0, 1, 2, 1][int(floor(local * 0.65)) % 4]
+			"banana":
+				sprite.frame = [0, 1, 2, 1][int(floor(local * 0.95)) % 4]
 			"sign":
-				sprite.rotation = sin(local * 0.47) * 0.018
+				sprite.rotation = sin(local * 0.47) * 0.05
 
 
 func reset_pose() -> void:

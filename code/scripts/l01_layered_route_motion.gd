@@ -29,6 +29,7 @@ var motion_phase := 0.0
 var _base_positions: Dictionary = {}
 var _rng := RandomNumberGenerator.new()
 var _route_progress := 0
+var _stage_started_at: Dictionary = {}
 var _transition_from := -1
 var _transition_to := -1
 var _transition_elapsed := 0.0
@@ -71,6 +72,8 @@ func configure_route(seed: int, initial_progress: int = 0) -> void:
 	_rng.seed = maxi(1, seed)
 	motion_phase = 0.0
 	_route_progress = clampi(initial_progress, 0, STAGE_PATHS.size() - 1)
+	_stage_started_at.clear()
+	_stage_started_at[_route_progress] = 0.0
 	_transition_from = -1
 	_transition_to = -1
 	_transition_elapsed = 0.0
@@ -91,6 +94,7 @@ func set_route_progress(progress: int, animate: bool = true) -> void:
 		return
 	var previous_progress := _route_progress
 	_route_progress = next_progress
+	_stage_started_at[_route_progress] = motion_phase
 	if GameSettings.reduced_motion or not animate:
 		_apply_stage_immediate(_route_progress)
 		return
@@ -181,13 +185,17 @@ func _update_foreground_leaves() -> void:
 
 
 func _update_stage_life() -> void:
-	for path in STAGE_PATHS:
-		var stage := get_node_or_null(path) as Sprite2D
+	for index in STAGE_PATHS.size():
+		var stage := get_node_or_null(STAGE_PATHS[index]) as Sprite2D
 		if stage == null:
 			continue
 		var life := stage.get_node_or_null(^"StreetLife") as Node2D
 		if life != null:
-			life.call("set_ambient_phase", motion_phase)
+			if index == _route_progress or index == _transition_from:
+				var entered_at: float = _stage_started_at.get(index, motion_phase)
+				life.call("set_ambient_phase", maxf(0.0, motion_phase - entered_at))
+			else:
+				life.call("reset_pose")
 
 
 func _update_event_schedule() -> void:

@@ -62,16 +62,37 @@ func _run() -> void:
 	route.call("configure_route", 17, 1)
 	route.call("advance_layer_motion", 1.0)
 	_expect(_snapshot(waiting.call("get_animated_parts")) == entered, "Waiting Shed starts the same animation one second after any entry")
-	var before_pause := _snapshot(waiting.call("get_animated_parts"))
+	# Shared sky and edge motion should be perceptible over a short look, while
+	# the painted buildings and road stay registered to the curb.
+	route.call("configure_route", 17, 0)
+	var clouds := route.get_node(^"CloudsA") as Sprite2D
+	var banana := route.get_node(^"BananaLeavesLeft") as Sprite2D
+	var leaves := route.get_node(^"ForegroundLeavesLeft") as Sprite2D
+	var street := route.get_node(^"JourneyStages/StageHome/LeftStreet") as Sprite2D
+	var clouds_at := clouds.position
+	var banana_at := banana.position
+	var leaves_at := leaves.position
+	var street_at := street.position
+	route.call("advance_layer_motion", 3.0)
+	_expect(clouds.position.distance_to(clouds_at) >= 2.0, "Clouds drift visibly but slowly over three seconds")
+	_expect(banana.position.distance_to(banana_at) >= 1.0, "Banana leaves have readable edge sway")
+	_expect(leaves.position.distance_to(leaves_at) >= 1.2, "Foreground leaves have readable edge sway")
+	_expect(street.position == street_at, "The Home building plate never moves with ambience")
+	var home := route.get_node(^"JourneyStages/StageHome/StreetLife") as Node2D
+	var before_pause := _snapshot(home.call("get_animated_parts"))
+	var clouds_before_pause := clouds.position
+	var banana_before_pause := banana.position
+	var leaves_before_pause := leaves.position
 	var phase_before: float = route.get("motion_phase")
 	route.call("set_motion_paused", true)
 	route.call("advance_layer_motion", 4.0)
-	_expect(_snapshot(waiting.call("get_animated_parts")) == before_pause and is_equal_approx(float(route.get("motion_phase")), phase_before), "Pause freezes stage action and ambient clock")
+	_expect(_snapshot(home.call("get_animated_parts")) == before_pause and is_equal_approx(float(route.get("motion_phase")), phase_before), "Pause freezes active stage action and ambient clock")
+	_expect(clouds.position == clouds_before_pause and banana.position == banana_before_pause and leaves.position == leaves_before_pause, "Pause freezes shared sky and edge layers")
 	route.call("set_motion_paused", false)
 	Settings.set_reduced_motion(true)
 	route.call("advance_layer_motion", 0.5)
 	_expect(is_equal_approx(float(route.get("motion_phase")), phase_before), "Reduced Motion does not advance ambient time")
-	for part in waiting.call("get_animated_parts"):
+	for part in home.call("get_animated_parts"):
 		var sprite := part as Sprite2D
 		_expect(sprite.frame == 0 and is_zero_approx(sprite.rotation), "Reduced Motion rests " + sprite.name)
 	Settings.set_reduced_motion(false)

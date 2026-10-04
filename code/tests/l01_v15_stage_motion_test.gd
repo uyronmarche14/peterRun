@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Settings = preload("res://scripts/game_settings.gd")
+const Guide = preload("res://scripts/l01_visual_geometry.gd")
 const STAGES := ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]
 
 var failures: PackedStringArray = []
@@ -50,6 +51,15 @@ func _run() -> void:
 				_expect(absf(sprite.rotation) >= 0.03, "%s sign sway reads at normal game size" % STAGES[index])
 		life.call("set_ambient_phase", 0.0)
 		_expect(_snapshot(parts) == rest, "%s has a stable resting pose" % STAGES[index])
+		for tick in 61:
+			life.call("set_ambient_phase", float(tick) * 0.25)
+			for part in parts:
+				var sprite := part as Sprite2D
+				var bounds := _alpha_bounds(sprite)
+				var side := -1 if sprite.global_position.x < 240.0 else 1
+				var curb := Guide.painted_curb_x(side, bounds.end.y)
+				var clear := bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0
+				_expect(clear, "%s/%s stays off the road at t=%.2f" % [STAGES[index], sprite.name, float(tick) * 0.25])
 
 	# Returning to a route stage must begin that stage's action schedule at entry,
 	# not inherit a random part of the previous stage's global ambient clock.
@@ -109,6 +119,24 @@ func _snapshot(parts: Array) -> Array:
 
 func _part_pose(part: Sprite2D) -> Array:
 	return [part.frame, part.position, part.rotation, part.scale]
+
+
+func _alpha_bounds(part: Sprite2D) -> Rect2:
+	var texture_image := part.texture.get_image()
+	var frame_size := Vector2i(texture_image.get_width() / part.hframes, texture_image.get_height() / part.vframes)
+	var frame_image := texture_image.get_region(Rect2i(part.frame_coords * frame_size, frame_size))
+	var used := frame_image.get_used_rect()
+	var origin := part.get_rect().position + Vector2(used.position)
+	var size := Vector2(used.size)
+	var corners := [origin, origin + Vector2(size.x, 0.0), origin + size, origin + Vector2(0.0, size.y)]
+	var first := part.to_global(corners[0])
+	var minimum := first
+	var maximum := first
+	for corner in corners:
+		var point := part.to_global(corner)
+		minimum = minimum.min(point)
+		maximum = maximum.max(point)
+	return Rect2(minimum, maximum - minimum)
 
 
 func _expect(condition: bool, message: String) -> void:

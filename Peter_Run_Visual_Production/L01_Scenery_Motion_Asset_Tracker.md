@@ -9,7 +9,7 @@ Last audited: 2026-10-04. Scope: the five L01 journey scenes only. This is a pro
 - For each item, record the final file path, native-screen anchor, animation loop/event, and screenshot or test evidence before changing its status.
 - Update this tracker whenever art, placement, visibility, timing, or release packaging changes. Preserve the source art and do not silently replace approved stage plates.
 
-The current stage-specific assets are `WIRED / VISUAL QA PENDING`: they are present in [`l01_stage_street_life.gd`](../code/scripts/l01_stage_street_life.gd) and the scene, but their present movement is often too small or delayed to read during play. The `PETER_RUN_v4` package was built on 2026-09-30, before this tracker audit and the latest stage-life changes; do not mark it `RELEASED` for those changes.
+The current stage-specific assets are `WIRED / VISUAL QA PENDING`: they are present in [`l01_stage_street_life.gd`](../code/scripts/l01_stage_street_life.gd) and the scene. The 2026-10-04 motion pass starts gestures soon after entry and gives every stage at least three independent animated details; product-owner visual approval is still pending. The `PETER_RUN_v4` package was built on 2026-09-30, before these changes; do not mark them `RELEASED` in that package.
 
 ## Fixed scenery and journey contract
 
@@ -18,7 +18,7 @@ Each stage uses seven registered, full-canvas 960×540 layers at 0.5 scale on th
 | Journey scene | Progress threshold | Layer folder and basename prefix | Fixed layers | Stage-specific moving details now |
 | --- | --- | --- | --- | --- |
 | Home | 0% | `code/art/backgrounds/l01_home_v10_layers/l01_v10_home_` | `sky`, `far`, `landmark`, `left_street`, `right_street`, `road`, `foreground` | 3 |
-| Waiting Shed | 25% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_` | Same seven suffixes | 2 |
+| Waiting Shed | 25% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_` | Same seven suffixes | 3 |
 | Sari-sari Store | 50% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_` | Same seven suffixes | 3 |
 | Palengke Approach | 75% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_` | Same seven suffixes | 3 |
 | Barangay Plaza | 90% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_` | Same seven suffixes | 3 |
@@ -45,6 +45,7 @@ All coordinates below are **native 480×270 canvas coordinates**, not source-ima
 | --- | --- | --- | --- | --- |
 | `waiting_laundry` | Left side `(84,106)`; line attachment | Slow cloth-frame change | `l01_v05_laundry_strip.png` | WIRED / VISUAL QA PENDING |
 | `waiting_flowers` | Left verge `(56,183)`; pot base | Slow flowering-plant frames | `l01_v06_flowering_plants_strip.png` | WIRED / VISUAL QA PENDING |
+| `waiting_banana` | Left garden `(30,177)`; pot base | Independent banana-leaf frames | `l01_v06_banana_left_strip.png` | WIRED / VISUAL QA PENDING |
 | `waiting_resident_greeting` | TBD; shed floor contact | Occasional small hand greeting, no lane entry | New transparent character strip | PLANNED |
 | `waiting_shed_awning_edge` | TBD; shed roof attachment | Short, low-amplitude fabric movement | New transparent overlay | PLANNED |
 | `waiting_notice_corner` | TBD; notice-board pin | Subtle paper-corner lift, no text flicker | New transparent overlay | PLANNED |
@@ -88,8 +89,8 @@ Existing shared texture paths are under `code/art/backgrounds/l01_barangay_v05_l
 
 | Asset / node | Current behavior | Tracker action |
 | --- | --- | --- |
-| `CloudsA` | Shared, very slow drift over every stage; near-transparent at 0.30 alpha | VISUAL QA: decide whether drift is actually readable without covering the Hall or prompt. |
-| `BananaLeavesLeft/Right`, `ForegroundLeavesLeft/Right` | Shared frame changes and sub-pixel sway at screen edges | VISUAL QA: keep within edge masks; ensure motion can be noticed at normal game size. |
+| `CloudsA` | Shared slow drift over every stage; 7 native-pixel amplitude at 0.30 alpha | VISUAL QA: confirm drift is readable without covering the Hall or prompt. |
+| `BananaLeavesLeft/Right`, `ForegroundLeavesLeft/Right` | Shared frame changes and approximately 1–1.35 native-pixel sway at screen edges | VISUAL QA: keep within edge masks; confirm calm motion at normal game size. |
 | `Birds`, `HallWindowGlints` | Event-driven; birds/glints become visible only during scheduled events | VISUAL QA: check stage-specific placement and avoid glints over mismatched Hall windows. |
 | `MarketGlow` | Shared slow opacity variation | SCOPE QA: verify it belongs only where the market appears; do not leave a floating light in other stages. |
 | `Laundry`, `ResidentWave`, `FloweringPlants`, `MarketAwning`, `ResidentGardener`, `ResidentVendor`, `HangingSign` at the route root | Legacy shared nodes start hidden; code may change frames without making most of them visible | INACTIVE: do not count them as delivered animation. Reuse only after stage-specific placement and visibility are approved. |
@@ -122,8 +123,15 @@ The current motion owner is [`l01_layered_route_motion.gd`](../code/scripts/l01_
 - [ ] Review actual gameplay at 960×540, 1024×768, and 1920×1080, plus a short motion capture for **each** stage. Still screenshots alone cannot prove movement.
 - [ ] Rebuild and identify the package containing these changes before marking any item `RELEASED`.
 
+## Current verification evidence
+
+- Godot 4.7.2 Compatibility renderer: [`l01_v15_stage_motion_test.gd`](../code/tests/l01_v15_stage_motion_test.gd) passes for all five stages, stage-entry timing, 0–15 second sampled curb clearance, Pause, Reduced Motion, and fixed building position.
+- Nine other affected tests passed: `l01_v13_street_life_test`, `l01_prompt_visual_clearance_test`, `l01_v09_scenery_test`, `l01_barangay_layered_route_test`, `l01_static_buildings_restore_test`, `pause_motion_test`, `presentation_motion_test`, `route_journey_test`, and `project_setup_smoke`.
+- The [capture utility](../code/tests/support/capture_l01_v15_stage_motion.gd) produced 25 local stage/pose screenshots in `test_evidence/l01_v15_stage_motion/`, including all five stages at 960×540, 1024×768, and 1920×1080. Its `captures.json` reports Pause and Reduced Motion checks as true. This evidence folder is local/ignored, not a packaged release or clinical approval.
+
 ## Update log
 
 | Date | Change | Evidence / next action |
 | --- | --- | --- |
 | 2026-10-04 | Initial audit and tracker created; 14 stage-specific sprites are wired, most visually subtle; proposed additional details remain unmade. | Scene/script inspection only. No new art, code, tests, or release created by this document. |
+| 2026-10-04 | Five-stage motion integration: Waiting Shed gained a separately anchored banana sprite; gestures and cloth/sign frames now begin and read sooner; stage clocks restart on entry; shared clouds/leaves move more clearly. Current count: 15 stage-specific sprites. | Godot tests and 25 visual captures pass. Remaining planned concept assets are still unmade; product-owner visual review and new package are pending. |

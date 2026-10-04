@@ -75,7 +75,7 @@ The game may use generic runner conventions such as lanes and forward scrolling,
 Main Menu
   └─ Play
       └─ Patient Setup (affected side, target set, optional calibration status)
-          └─ Tutorial (auto-continues; trackpad/mouse skip)
+          └─ Tutorial (auto-continues; trackpad/mouse or therapist-gamepad skip)
               └─ Ready screen
                   └─ Level
                       ├─ Pause → Resume / End Level / End Session
@@ -100,7 +100,7 @@ The exertion rating may be displayed with the historical “1–10” product re
 | FR-07 | End on targets or collision | A level completes when each required action target is reached. Physical obstacle contact ends the current run and retains completed repetitions for review; neither outcome depends on score or elapsed time. |
 | FR-08 | Pause instantly | Pause stops runner movement, timers, and prompt resolution on the same frame; it exposes Resume, End Level, and End Session. |
 | FR-09 | Display progress | HUD shows per-action or aggregate repetitions remaining and a clear pause control. |
-| FR-10 | Capture exertion rating | Summary permits one trackpad/mouse-selected integer 1–10 and displays the selected value in the session summary. |
+| FR-10 | Capture exertion rating | Summary permits one trackpad/mouse- or therapist-gamepad-selected integer 1–10 and displays the selected value in the session summary. |
 | FR-11 | Load level definitions | The game can load five level resources with no level-specific runner code. |
 | FR-12 | Support an offline Windows build | Export runs on the designated Windows test computer without an installed editor/engine. |
 
@@ -207,7 +207,7 @@ This structure supports dozens of levels: add a new resource and assets, then ad
 | --- | --- |
 | Main menu | Large Play button; Settings, Tutorial, Quit beneath it |
 | Setup | Affected-side toggle, target count / preset, controller status |
-| Tutorial | Four large movement/action cards; skip control reachable by trackpad/mouse |
+| Tutorial | Four large movement/action cards; skip control reachable by trackpad/mouse or therapist gamepad |
 | HUD | Progress, large next-action cue, small timer/progress indicator, Pause |
 | Pause | Resume, End Level, End Session; no small touch targets |
 | Summary | Celebration, target completion, exertion selector, therapist next-step actions |
@@ -218,7 +218,7 @@ This structure supports dozens of levels: add a new resource and assets, then ad
 - Pair every color cue with an icon and text label.
 - Do not use flashing effects, rapidly moving camera, or timed punishment.
 - Optional audio must not be the sole source of instructions.
-- All non-gameplay menus are mouse/trackpad navigable.
+- All non-gameplay menus are mouse/trackpad navigable and therapist-gamepad navigable (A/Cross select, B/Circle back, D-pad highlight). The patient's MOVE controller never confirms or leaves a menu.
 
 ---
 

@@ -7,6 +7,7 @@ const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
 const GameSettings = preload("res://scripts/game_settings.gd")
 const ControlHints = preload("res://scripts/control_hints.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 const MUSIC_PATH := "res://art/audio/hakbang_sa_umaga.wav"
 
 var _leaving := false
@@ -57,6 +58,17 @@ func _ready() -> void:
 	_configure_comfort_preferences()
 	$Dashboard.modulate.a = 0.0
 	create_tween().tween_property($Dashboard, "modulate:a", 1.0, 0.45)
+	MenuFocus.focus(start_session_button)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not MenuFocus.is_back(event) or _leaving:
+		return
+	get_viewport().set_input_as_handled()
+	if settings_overlay.visible or quit_overlay.visible:
+		close_overlays()
+	else:
+		request_quit()
 
 
 
@@ -65,7 +77,7 @@ func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
 
 
 func _refresh_safety_note() -> void:
-	var source := "Controller connected" if ControlHints.uses_gamepad() else "Keyboard or MOVE controller"
+	var source := ControlHints.menu_hint(true) if ControlHints.uses_gamepad() else "Keyboard or MOVE controller"
 	$Dashboard/Margin/Content/SafetyNote.text = "Supervised session · " + source
 
 
@@ -136,21 +148,19 @@ func show_coming_soon(message: String) -> void:
 func open_settings() -> void:
 	if not _leaving and not quit_overlay.visible:
 		settings_overlay.show()
+		MenuFocus.focus($SettingsOverlay/Panel/Margin/Content/CloseButton)
 
 
 func request_quit() -> void:
 	if not _leaving and not settings_overlay.visible:
 		quit_overlay.show()
+		MenuFocus.focus($QuitOverlay/Panel/Margin/Content/CancelButton)
 
 
 func close_overlays() -> void:
 	settings_overlay.hide()
 	quit_overlay.hide()
-
-
-func _open_setup_from_settings() -> void:
-	close_overlays()
-	open_patient_setup()
+	MenuFocus.focus(start_session_button)
 
 
 func _open_controller_check_from_settings() -> void:

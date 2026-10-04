@@ -10,10 +10,12 @@ const KEYBOARD_NAMES := {
 }
 # Godot maps buttons by position: jump is the bottom face button, slide the
 # right one. Each family prints different labels on those positions.
+# In menus the bottom button is Select (ui_accept), the right one Back
+# (ui_cancel) and the top one Continue on practice screens.
 const FACE_BUTTONS := {
-	&"xbox": {&"jump": "A", &"slide": "B", &"pause_session": "Start"},
-	&"playstation": {&"jump": "Cross", &"slide": "Circle", &"pause_session": "Options"},
-	&"nintendo": {&"jump": "B", &"slide": "A", &"pause_session": "+"},
+	&"xbox": {&"jump": "A", &"slide": "B", &"pause_session": "Start", &"continue": "Y"},
+	&"playstation": {&"jump": "Cross", &"slide": "Circle", &"pause_session": "Options", &"continue": "Triangle"},
+	&"nintendo": {&"jump": "B", &"slide": "A", &"pause_session": "+", &"continue": "X"},
 }
 const KEYBOARD_FOOTER := "Keyboard · A D W S to move · P to pause"
 
@@ -49,6 +51,19 @@ static func input_name(source_action: StringName, gamepad: bool, joy_name: Strin
 		&"pause_session":
 			return FACE_BUTTONS[gamepad_style(joy_name)][source_action]
 	return "the %s button" % FACE_BUTTONS[gamepad_style(joy_name)].get(source_action, "")
+
+
+static func menu_hint(gamepad: bool, joy_name: String = connected_gamepad_name()) -> String:
+	if not gamepad:
+		return "Enter Select · Esc Back"
+	var buttons: Dictionary = FACE_BUTTONS[gamepad_style(joy_name)]
+	return "%s Select · %s Back" % [buttons[&"jump"], buttons[&"slide"]]
+
+
+static func continue_hint(gamepad: bool, joy_name: String = connected_gamepad_name()) -> String:
+	if not gamepad:
+		return "Click Continue"
+	return "%s Continue" % FACE_BUTTONS[gamepad_style(joy_name)][&"continue"]
 
 
 static func footer_text(gamepad: bool, joy_name: String = connected_gamepad_name()) -> String:

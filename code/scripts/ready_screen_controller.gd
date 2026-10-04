@@ -9,6 +9,7 @@ const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const ControlHints = preload("res://scripts/control_hints.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 
 @onready var session_details: Label = $Panel/Margin/Content/SessionSummary/SessionDetails
 @onready var start_session_button: Button = %StartSessionButton
@@ -26,6 +27,13 @@ func _ready() -> void:
 	back_button.pressed.connect(return_to_setup)
 	test_controls_button.pressed.connect(open_controller_check)
 	practice_button.pressed.connect(return_to_tutorial)
+	MenuFocus.focus(start_session_button)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if MenuFocus.is_back(event):
+		get_viewport().set_input_as_handled()
+		return_to_setup()
 
 
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:

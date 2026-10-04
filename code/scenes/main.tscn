@@ -327,56 +327,6 @@ theme_override_font_sizes/font_size = 8
 text = "Hakbang sa Umaga"
 vertical_alignment = 1
 
-[node name="DashboardHitTargets" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="StartSessionButton" type="Button" parent="DashboardHitTargets"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 87.0
-offset_top = 141.0
-offset_right = 212.0
-offset_bottom = 165.0
-text = "Start Session"
-
-[node name="TutorialButton" type="Button" parent="DashboardHitTargets"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 77.0
-offset_top = 168.0
-offset_right = 112.0
-offset_bottom = 187.0
-text = "Tutorial"
-
-[node name="SettingsButton" type="Button" parent="DashboardHitTargets"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 115.0
-offset_top = 168.0
-offset_right = 150.0
-offset_bottom = 187.0
-text = "Settings"
-
-[node name="QuitButton" type="Button" parent="DashboardHitTargets"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 153.0
-offset_top = 168.0
-offset_right = 189.0
-offset_bottom = 187.0
-text = "Quit"
-
-[node name="MusicButton" type="Button" parent="DashboardHitTargets"]
-modulate = Color(1, 1, 1, 0)
-offset_left = 367.0
-offset_top = 31.0
-offset_right = 415.0
-offset_bottom = 47.0
-text = "Music: On"
-
 [node name="MenuMusic" type="AudioStreamPlayer" parent="."]
 volume_db = -30.0
 
@@ -478,7 +428,6 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
 max_value = 100.0
 value = 35.0
-focus_mode = 0
 
 [node name="RoutePaceLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 visible = false
@@ -490,7 +439,6 @@ horizontal_alignment = 1
 [node name="RoutePaceOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 
 [node name="EffectsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 visible = false
@@ -502,13 +450,11 @@ horizontal_alignment = 1
 [node name="EffectsOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 
 [node name="ReducedMotionToggle" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 toggle_mode = true
 text = "Reduced motion: Off"
 
@@ -530,23 +476,12 @@ autowrap_mode = 2
 theme_override_font_sizes/font_size = 8
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 text = "Check controller"
-
-[node name="SetupButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
-visible = false
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 8
-layout_mode = 2
-custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
-text = "Session settings"
 
 [node name="CloseButton" type="Button" parent="SettingsOverlay/Panel/Margin/Content"]
 theme_override_font_sizes/font_size = 8
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 text = "Back to opening"
 
 [node name="Message" type="Label" parent="QuitOverlay/Panel/Margin/Content"]
@@ -561,12 +496,10 @@ theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 8
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 text = "Stay here"
 
 [node name="ConfirmButton" type="Button" parent="QuitOverlay/Panel/Margin/Content"]
 theme_override_font_sizes/font_size = 8
 layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
-focus_mode = 0
 text = "Quit game"

@@ -17,7 +17,7 @@ This `code/` folder is the Godot 4 project root. Before changing gameplay, read:
 - Use only named actions: `move_left`, `move_right`, `jump`, `slide`, `pause_session`.
 - The ESP32 controller must reach Godot as a debounced HID keyboard action. Godot gameplay must never parse raw sensor values.
 - Affected side is recorded for session review; Left and Right inputs must remain literal in-game directions.
-- Menus use mouse/trackpad. The gameplay movement controls are not menu navigation controls.
+- Menus use mouse/trackpad or a therapist gamepad (A/Cross select, B/Circle back, D-pad highlight, Y/Triangle continue on practice/test screens); keyboard Enter/Esc also work. The patient's MOVE controller (A/D/W/S/P keys) never confirms or leaves a menu, and gameplay movement controls are not menu navigation controls.
 - Show one active prompt at a time. A prompt needs an icon, word, and distinct world-prop silhouette.
 - A physical obstacle contact ends the current run and opens its review flow. Never add health, lives, score loss, a chase, or shaming language.
 - Pause must remain visible and freeze gameplay immediately.

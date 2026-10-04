@@ -12,6 +12,7 @@ const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const SessionReviewStore = preload("res://scripts/session_review_store.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 
 const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
 const DISCONNECT_PAUSE_TITLE := "Controller disconnected"
@@ -121,16 +122,32 @@ func _ready() -> void:
 # Check every action: one stick axis serves both lanes, so a push right is
 # also a release of move_left and must not end the loop early.
 func _input(event: InputEvent) -> void:
+	# While an overlay is open, A/B (Jump/Slide) must reach the highlighted
+	# overlay button as Continue/Back. Lane keys stay consumed so they never
+	# move the overlay highlight.
+	var overlay_open := is_gameplay_paused or is_session_ended
 	var handled := false
 	for action_name in InputAdapterModel.ACCEPTED_ACTIONS:
+		var consumed := not overlay_open or action_name in [&"move_left", &"move_right", &"pause_session"]
 		if event.is_action_pressed(action_name):
 			receive_input(action_name, true, Time.get_ticks_msec() / 1000.0)
-			handled = true
+			handled = handled or consumed
 		elif event.is_action_released(action_name):
 			receive_input(action_name, false, Time.get_ticks_msec() / 1000.0)
-			handled = true
+			handled = handled or consumed
 	if handled:
 		get_viewport().set_input_as_handled()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not MenuFocus.is_back(event):
+		return
+	if end_confirmation.visible:
+		get_viewport().set_input_as_handled()
+		cancel_end()
+	elif pause_overlay.visible:
+		get_viewport().set_input_as_handled()
+		resume_gameplay()
 
 
 func receive_input(source_action: StringName, pressed: bool, now_seconds: float) -> void:
@@ -562,6 +579,7 @@ func pause_gameplay() -> void:
 	is_gameplay_paused = true
 	_set_gameplay_updates_paused(true)
 	pause_overlay.visible = true
+	MenuFocus.focus(resume_button)
 
 
 func resume_gameplay() -> void:
@@ -571,6 +589,9 @@ func resume_gameplay() -> void:
 	is_gameplay_paused = false
 	_set_gameplay_updates_paused(false)
 	pause_overlay.visible = false
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused != null:
+		focused.release_focus()
 	$PauseOverlay/Panel/Title.text = _pause_title_text
 	$PauseOverlay/Panel/Message.text = _pause_message_text
 
@@ -599,6 +620,7 @@ func _request_end(reason: StringName, title: String) -> void:
 	pause_overlay.visible = false
 	$EndConfirmation/Panel/Title.text = title
 	end_confirmation.visible = true
+	MenuFocus.focus($EndConfirmation/Panel/Actions/CancelButton)
 
 
 func cancel_end() -> void:
@@ -607,6 +629,7 @@ func cancel_end() -> void:
 	_pending_end_reason = &""
 	end_confirmation.visible = false
 	pause_overlay.visible = true
+	MenuFocus.focus(resume_button)
 
 
 func confirm_end() -> void:
@@ -663,6 +686,7 @@ func _show_neutral_end_overlay(title: String, message: String, reason: StringNam
 	end_session_title.text = title
 	end_session_message.text = message
 	end_session_overlay.visible = true
+	MenuFocus.focus(return_button)
 	feedback_toast.dismiss()
 
 

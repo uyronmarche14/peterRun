@@ -4,6 +4,7 @@ extends Control
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const LevelCatalog = preload("res://data/levels/catalog.tres")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const MAIN_MENU_SCENE_PATH := "res://scenes/main.tscn"
@@ -29,6 +30,13 @@ func _ready() -> void:
 	back_button.pressed.connect(return_to_main_menu)
 	test_controls_button.pressed.connect(continue_to_controller_check)
 	practice_button.pressed.connect(continue_to_tutorial)
+	MenuFocus.focus(continue_button)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if MenuFocus.is_back(event):
+		get_viewport().set_input_as_handled()
+		return_to_main_menu()
 
 
 func get_controller_check_scene_path() -> String:

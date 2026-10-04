@@ -200,7 +200,6 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-focus_mode = 0
 text = "Show me"
 
 [node name="UtilityRow" type="HBoxContainer" parent="Panel/Margin/Content"]

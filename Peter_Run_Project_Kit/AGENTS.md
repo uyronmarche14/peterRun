@@ -20,7 +20,7 @@ Before any implementation task, read:
 - Godot 4 standard build with GDScript, 2D, Windows desktop target.
 - ESP32 controller behaves as a HID keyboard initially: `A`, `D`, `W`, `S` map to Godot actions. Keep controller firmware separate from game code.
 - `InputAdapter` debounces input and handles affected-side lateral mapping. Game scenes never read raw ESP32 sensor values.
-- Menus, configuration and RPE use mouse/trackpad. Movement inputs are for the gameplay/tutorial action flow only.
+- Menus, configuration and RPE use mouse/trackpad or a therapist gamepad (A/Cross select, B/Circle back). Movement inputs (including the patient's MOVE controller) are for the gameplay/tutorial action flow only and never navigate menus.
 - Pause must remain visible and immediately freeze the session.
 - One active prompt: icon + word + obstacle silhouette. Never rely on colour alone.
 - A missed action is neutral. Never implement health, death, chase, ridicule, score loss, or a game-over screen.

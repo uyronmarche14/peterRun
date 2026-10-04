@@ -5,6 +5,7 @@ const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const RouteJourney = preload("res://scripts/route_journey.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 const ROUTE_STAMP_ATLAS = preload("res://art/backgrounds/l01_barangay_v06_layers/l01_v06_route_stamp_atlas.png")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
@@ -33,7 +34,6 @@ func _ready() -> void:
 		button.theme_type_variation = &"EffortRatingButton"
 		button.custom_minimum_size = Vector2(18, 18)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.focus_mode = Control.FOCUS_NONE
 		button.toggle_mode = true
 		button.button_group = group
 		button.tooltip_text = "Record effort: %d out of 10" % rating
@@ -52,6 +52,7 @@ func _ready() -> void:
 		content.get_node("Journey").hide()
 		content.get_node("Actions/RestButton").disabled = true
 		_refresh_rating()
+		MenuFocus.focus(finish_button)
 		return
 	match Review.get_end_reason():
 		&"completed":
@@ -82,6 +83,13 @@ func _ready() -> void:
 	route_stamp.region = Rect2(RouteJourney.get_stamp_index(route_progress) * 128, 0, 128, 128)
 	content.get_node("Journey/JourneyStamp").texture = route_stamp
 	_refresh_rating()
+	MenuFocus.focus(content.get_node("Ratings/Rating1"))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if MenuFocus.is_back(event):
+		get_viewport().set_input_as_handled()
+		finish_session()
 
 
 func _get_outcome_text(end_reason: StringName) -> String:

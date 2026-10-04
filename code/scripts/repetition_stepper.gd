@@ -40,7 +40,6 @@ func _button(node_name: String, caption: String, hint: String, direction: int) -
 	button.text = caption
 	button.tooltip_text = hint
 	button.custom_minimum_size = Vector2(16, 16)
-	button.focus_mode = Control.FOCUS_NONE
 	button.pressed.connect(func(): value = clampf(value + direction * step, min_value, max_value))
 	return button
 

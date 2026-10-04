@@ -6,6 +6,7 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const ControlHints = preload("res://scripts/control_hints.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 
 const ACTION_TILE_NAMES := {
 	&"move_left": "MoveLeft",
@@ -53,6 +54,11 @@ func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
 # Every action is checked: one stick axis is a press of one lane and a
 # release of the other.
 func _input(event: InputEvent) -> void:
+	# A/B/D-pad/Start are under test here, so Y (Triangle) is the gamepad Continue.
+	if MenuFocus.is_continue_alt(event):
+		get_viewport().set_input_as_handled()
+		continue_to_ready()
+		return
 	var handled := false
 	for action_name in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action_name):
@@ -63,6 +69,12 @@ func _input(event: InputEvent) -> void:
 			handled = true
 	if handled:
 		get_viewport().set_input_as_handled()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if MenuFocus.is_back(event):
+		get_viewport().set_input_as_handled()
+		return_to_patient_setup()
 
 
 func get_tutorial_scene_path() -> String:
@@ -84,7 +96,7 @@ func get_control_support_summary(connected_controller_count: int = -1) -> String
 func _refresh_control_status() -> void:
 	var gamepad := ControlHints.uses_gamepad()
 	controller_status.text = "%d of %d detected · %s" % [detected_actions.size(), ACTION_TILE_NAMES.size(), "Controller" if gamepad else "Keyboard"]
-	status_detail.text = ControlHints.footer_text(gamepad) if gamepad else "Keyboard or MOVE controller: A D W S to move · P to pause"
+	status_detail.text = ("Press every button once · %s to Ready" % ControlHints.continue_hint(true)) if gamepad else "Keyboard or MOVE controller: A D W S to move · P to pause"
 
 
 func receive_test_action(source_action: StringName, pressed: bool, now_seconds: float) -> void:

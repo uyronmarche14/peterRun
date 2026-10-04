@@ -1113,7 +1113,6 @@ theme_override_font_sizes/font_size = 8
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-focus_mode = 0
 text = "Keep paused"
 
 [node name="ConfirmButton" type="Button" parent="EndConfirmation/Panel/Actions"]
@@ -1121,5 +1120,4 @@ theme_override_font_sizes/font_size = 8
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-focus_mode = 0
 text = "End & review"

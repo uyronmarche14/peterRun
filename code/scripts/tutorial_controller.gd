@@ -7,6 +7,7 @@ const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const Store = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const Hints = preload("res://scripts/control_hints.gd")
+const MenuFocus = preload("res://scripts/menu_focus.gd")
 const PRACTICE_ACTIONS: Array[StringName] = [&"move_left", &"move_right", &"jump", &"slide"]
 
 const ACTIONS: Array[Dictionary] = [
@@ -85,6 +86,14 @@ func _centre_practice() -> void:
 # D-pad (also bound to ui_left/ui_right) into menu movement. Every action is
 # checked because one stick axis is both a press of one lane and a release of the other.
 func _input(event: InputEvent) -> void:
+	# On the welcome card A/B are menu buttons, not practice input.
+	if not tutorial_started:
+		return
+	# During practice A/B are being practised, so Y (Triangle) is the gamepad Next.
+	if MenuFocus.is_continue_alt(event):
+		get_viewport().set_input_as_handled()
+		show_next_action()
+		return
 	var handled := false
 	for action in InputAdapterModel.ACCEPTED_ACTIONS:
 		if event.is_action_pressed(action):
@@ -161,6 +170,13 @@ func _show_welcome() -> void:
 	tutorial_status.hide()
 	$Panel/Margin/Content/NavigationRow.hide()
 	pause_tutorial_button.hide()
+	MenuFocus.focus(start_practice_button)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if MenuFocus.is_back(event):
+		get_viewport().set_input_as_handled()
+		return_to_controller_check()
 
 
 func _on_demo_finished() -> void:
@@ -231,7 +247,8 @@ func _refresh_status() -> void:
 	elif is_demonstrating:
 		tutorial_status.text = "Watch the example. Your turn comes next."
 	elif step_completed:
-		tutorial_status.text = "Nicely done! Repeat or choose %s." % next_button.text
+		var next_hint: String = ("press " + Hints.continue_hint(true)) if Hints.uses_gamepad() else "choose %s" % next_button.text
+		tutorial_status.text = "Nicely done! Repeat or %s." % next_hint
 	else:
 		tutorial_status.text = "Your turn. No timer and no penalties."
 

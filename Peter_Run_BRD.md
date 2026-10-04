@@ -93,7 +93,7 @@ During play, the character moves forward at a fixed, gentle pace. Clearly telegr
 The therapist/caregiver remains responsible for determining whether play should begin, continue, pause, resume, or stop. Product design must support—not override—that responsibility.
 
 - The patient is expected to use a walker and must never need to release it to play.
-- Provide a therapist-oriented **Pause / Stop** action available by mouse/trackpad and a dedicated keyboard/gamepad fallback during development.
+- Provide a therapist-oriented **Pause / Stop** action available by mouse/trackpad and a dedicated keyboard/gamepad control (P / Start). A therapist gamepad can also operate menus; the patient's MOVE controller cannot.
 - After **Pause**, show large actions: *Resume*, *End level*, and *End session*.
 - High exertion, pain, dizziness, shortness of breath, abnormal movement, fatigue, or balance loss must lead the supervising person to stop or rest; the game should display a calm safety prompt, never pressure the patient to continue.
 - Use plain, positive copy: “Nice step!”, “Take your time”, and “Ready when you are.” Avoid “Failed”, “Too slow”, or red error feedback for misses.

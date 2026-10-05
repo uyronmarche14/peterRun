@@ -56,13 +56,13 @@ func _make_frame(definition: Dictionary) -> Image:
 		for x in SOURCE_SIZE:
 			var point := Vector2((float(x) + 0.5) / SUPERSAMPLE, (float(y) + 0.5) / SUPERSAMPLE)
 			var color := Color.TRANSPARENT
-			if _inside_rounded_rect(point, Rect2(2.0, 3.5, 60.0, 59.0), 8.0):
+			if _inside_rounded_rect(point, Rect2(1.0, 1.5, 62.0, 61.0), 2.0):
 				color = definition["shadow"]
-			if _inside_rounded_rect(point, Rect2(1.0, 1.0, 61.0, 59.0), 7.5):
+			if _inside_rounded_rect(point, Rect2(0.0, 0.0, 62.0, 61.0), 2.0):
 				color = definition["border"]
-			if _inside_rounded_rect(point, Rect2(3.0, 3.0, 57.0, 55.0), 5.5):
+			if _inside_rounded_rect(point, Rect2(1.25, 1.25, 59.5, 58.5), 1.0):
 				color = definition["fill"]
-				if point.y < 4.2:
+				if point.y < 2.0:
 					color = definition["highlight"]
 			image.set_pixel(x, y, color)
 	image.resize(TARGET_SIZE, TARGET_SIZE, Image.INTERPOLATE_LANCZOS)

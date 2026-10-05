@@ -2,6 +2,7 @@ extends SceneTree
 
 var failures: PackedStringArray = []
 var capture := false
+var capture_dir := "res://../test_evidence"
 const COMPACT_THEME_PATH := "res://art/ui/compact_theme.tres"
 const SCREENS := {
 	"main": Vector2(205, 195), "patient_setup": Vector2(250, 205),
@@ -12,6 +13,9 @@ const SCREENS := {
 
 func _init() -> void:
 	capture = "--capture" in OS.get_cmdline_user_args()
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--capture-dir="):
+			capture_dir = argument.trim_prefix("--capture-dir=")
 	call_deferred("_run")
 
 
@@ -193,7 +197,8 @@ func _capture(label: String, dimensions: Vector2i) -> void:
 		return
 	await process_frame
 	await RenderingServer.frame_post_draw
-	var path := "res://../test_evidence/ui_theme_%s_%dx%d.png" % [label, dimensions.x, dimensions.y]
+	var path := "%s/ui_theme_%s_%dx%d.png" % [capture_dir, label, dimensions.x, dimensions.y]
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(capture_dir))
 	_expect(root.get_texture().get_image().save_png(ProjectSettings.globalize_path(path)) == OK, "Save " + path)
 
 

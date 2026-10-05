@@ -80,7 +80,8 @@ func _test_runtime_approach_and_removed_side_cones() -> void:
 	var laundry_anchor := laundry.position
 	var resident_anchor := resident.position
 	route_layers.call("advance_layer_motion", 6.2)
-	_expect(clouds.position.x != cloud_start.x and clouds.position.x >= -9.1 and clouds.position.x <= 1.1, "Clouds drift visibly inside bounded horizontal alignment limits without wrapping")
+	# The authored cloud layer starts at x=-4 and drifts at most seven pixels.
+	_expect(clouds.position.x != cloud_start.x and clouds.position.x >= -11.1 and clouds.position.x <= 3.1, "Clouds drift visibly inside bounded horizontal alignment limits without wrapping")
 	_expect(is_equal_approx(clouds.position.y, cloud_start.y) and clouds.position.y <= -34.0, "Moving cloud sheet stays locked to the upper sky instead of crossing the landmark horizon")
 	_expect(clouds.position.y + 216.0 * clouds.scale.y <= 75.0, "Lowest visible cloud pixel remains in the upper cloud band")
 	_expect(laundry.position == laundry_anchor and laundry.frame != 0, "Laundry cloth changes pose while its line endpoints remain fixed")

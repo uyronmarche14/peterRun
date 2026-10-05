@@ -1,16 +1,10 @@
-[gd_resource type="StyleBoxFlat" format=3]
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://art/ui/ui_panel_cream_v01.png" id="1_frame"]
 
 [resource]
-bg_color = Color(1, 0.957, 0.839, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.047, 0.251, 0.267, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
-shadow_color = Color(0.06, 0.17, 0.15, 0.18)
-shadow_size = 3
-shadow_offset = Vector2(0, 2)
+texture = ExtResource("1_frame")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0

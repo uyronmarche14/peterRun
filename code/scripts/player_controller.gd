@@ -253,11 +253,15 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 
 func _queue_contact_action_animation(action_name: StringName, seconds_until_contact: float) -> void:
 	# The input and logical recovery happen now. Only the sprite's clearance
-	# pose is deferred, so an early valid response still counts once at contact.
+	# pose is deferred. Its apex/duck, not the clip's final standing pose, meets
+	# the approaching prop; recovery remains visible after contact.
 	var action_seconds := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS + JUMP_RECOVERY_SECONDS if action_name == &"jump" else ACTION_RISE_SECONDS + ACTION_HOLD_SECONDS + ACTION_RETURN_SECONDS
+	var contact_lead := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS * 0.5 if action_name == &"jump" else action_seconds * 0.5
 	_contact_visual_action = action_name
-	_contact_visual_fit = minf(action_seconds, maxf(0.16, seconds_until_contact))
-	_contact_visual_delay = maxf(0.0, seconds_until_contact - _contact_visual_fit)
+	# A late response starts immediately and fits the anticipation up to
+	# contact, while still retaining a short post-contact recovery.
+	_contact_visual_fit = action_seconds if seconds_until_contact >= contact_lead else maxf(0.02, action_seconds * seconds_until_contact / contact_lead)
+	_contact_visual_delay = maxf(0.0, seconds_until_contact - contact_lead)
 	_contact_visual_active = false
 	if _action_tween != null:
 		_action_tween.kill()

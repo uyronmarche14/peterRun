@@ -128,6 +128,10 @@ func set_motion_paused(should_pause: bool) -> void:
 	roadside_travel.call("set_motion_paused", should_pause)
 
 
+func get_prompt_remaining_seconds() -> float:
+	return maxf(0.0, _approach_duration - _prompt_elapsed) if _prompt_is_visible else -1.0
+
+
 func _update_prompt_depth_details(fraction: float) -> void:
 	var prop_container := prompt_anchor.get_node_or_null(^"PromptProps")
 	if prop_container == null:

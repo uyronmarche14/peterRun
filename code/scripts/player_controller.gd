@@ -29,6 +29,10 @@ var _landing_remaining := 0.0
 var _lane_remaining := 0.0
 var _lane_direction := 1.0
 var _jump_contact_emitted := false
+var _contact_visual_action: StringName = &""
+var _contact_visual_delay := 0.0
+var _contact_visual_fit := 0.0
+var _contact_visual_active := false
 
 @onready var visual: Node2D = $Visual
 @onready var shadow: Node2D = $Shadow
@@ -59,7 +63,7 @@ func _ready() -> void:
 	_reset_feedback_visuals()
 
 
-func handle_action(action_name: StringName) -> bool:
+func handle_action(action_name: StringName, visual_contact_seconds: float = -1.0) -> bool:
 	if is_gameplay_paused:
 		return false
 
@@ -68,12 +72,16 @@ func handle_action(action_name: StringName) -> bool:
 		return false
 	# Cosmetic resolution from a previous input must not replay after this one.
 	_pending_feedback = &""
+	_cancel_contact_visual()
 
 	match action_name:
 		&"move_left", &"move_right":
 			_animate_lane_change()
 		&"jump", &"slide":
-			_play_neutral_action_animation(action_name)
+			if visual_contact_seconds > 0.0:
+				_queue_contact_action_animation(action_name, visual_contact_seconds)
+			else:
+				_play_neutral_action_animation(action_name)
 	return true
 
 
@@ -90,6 +98,7 @@ func reset_for_practice() -> void:
 	_landing_remaining = 0.0
 	_lane_remaining = 0.0
 	_jump_contact_emitted = false
+	_clear_contact_visual()
 	position.x = LANE_X[lane_index]
 	visual.position = Vector2.ZERO
 	visual.scale = Vector2.ONE
@@ -115,10 +124,19 @@ func _animate_lane_change() -> void:
 func _process(delta: float) -> void:
 	if is_gameplay_paused:
 		return
+	var sprite_delta := delta
+	if _contact_visual_action != &"" and not _contact_visual_active:
+		var previous_delay := _contact_visual_delay
+		_contact_visual_delay = maxf(0.0, _contact_visual_delay - delta)
+		if _contact_visual_delay <= 0.0:
+			_start_contact_visual()
+			sprite_delta = maxf(0.0, delta - previous_delay)
 	if not (Settings.reduced_motion and character_sprite.animation in [&"idle_ready", &"walk_forward", &"rest"]):
-		character_sprite.advance(delta)
+		character_sprite.advance(sprite_delta)
 	_update_action_pose()
 	_update_ground_feedback(delta)
+	if _contact_visual_active and character_sprite.finished:
+		_finish_contact_visual()
 	if character_sprite.finished and action_state == PlayerLaneStateModel.ActionState.IDLE:
 		_play_base_animation()
 
@@ -143,12 +161,12 @@ func show_resolved_feedback(success: bool) -> void:
 		return
 	_pending_feedback = &"success_settle" if success else &"neutral_clear"
 	# Do not cut off authored airborne/duck/side-step motion at resolution.
-	if action_state == PlayerLaneStateModel.ActionState.IDLE and _lane_remaining <= 0.0:
+	if action_state == PlayerLaneStateModel.ActionState.IDLE and _lane_remaining <= 0.0 and not _contact_visual_active:
 		_play_base_animation()
 
 
 func set_resting_preview(paused_pose: bool = false) -> void:
-	if is_gameplay_paused or action_state != PlayerLaneStateModel.ActionState.IDLE or _lane_remaining > 0.0:
+	if is_gameplay_paused or action_state != PlayerLaneStateModel.ActionState.IDLE or _lane_remaining > 0.0 or _contact_visual_action != &"":
 		return
 	_walking = false
 	_pending_feedback = &""
@@ -188,9 +206,10 @@ func _update_ground_feedback(delta: float) -> void:
 
 
 func _update_action_pose() -> void:
-	if action_state == PlayerLaneStateModel.ActionState.JUMP and character_sprite.animation == &"jump_low":
+	if (action_state == PlayerLaneStateModel.ActionState.JUMP or _contact_visual_active) and character_sprite.animation == &"jump_low":
 		var contact_time := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS
-		var elapsed := minf(character_sprite.elapsed, contact_time)
+		var authored_seconds := contact_time + JUMP_RECOVERY_SECONDS
+		var elapsed := minf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001) * authored_seconds, contact_time)
 		var lift_fraction := 0.0
 		if elapsed < JUMP_RISE_SECONDS:
 			lift_fraction = sin(elapsed / JUMP_RISE_SECONDS * PI * 0.5)
@@ -200,9 +219,9 @@ func _update_action_pose() -> void:
 			var return_fraction := (elapsed - JUMP_RISE_SECONDS - JUMP_HOLD_SECONDS) / JUMP_RETURN_SECONDS
 			lift_fraction = 1.0 - smoothstep(0.0, 1.0, return_fraction)
 		visual.position = Vector2(0.0, -JUMP_EXTRA_LIFT * lift_fraction)
-		if character_sprite.elapsed >= contact_time and not _jump_contact_emitted:
+		if elapsed >= contact_time and not _jump_contact_emitted:
 			_start_landing_feedback()
-	elif action_state == PlayerLaneStateModel.ActionState.SLIDE and character_sprite.animation == &"slide_duck":
+	elif (action_state == PlayerLaneStateModel.ActionState.SLIDE or _contact_visual_active) and character_sprite.animation == &"slide_duck":
 		var fraction := clampf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001), 0.0, 1.0)
 		visual.position = Vector2(0.0, SLIDE_EXTRA_DROP * sin(fraction * PI))
 
@@ -232,6 +251,75 @@ func _play_neutral_action_animation(action_name: StringName) -> void:
 	_action_tween.tween_callback(_finish_action_animation)
 
 
+func _queue_contact_action_animation(action_name: StringName, seconds_until_contact: float) -> void:
+	# The input and logical recovery happen now. Only the sprite's clearance
+	# pose is deferred, so an early valid response still counts once at contact.
+	var action_seconds := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS + JUMP_RECOVERY_SECONDS if action_name == &"jump" else ACTION_RISE_SECONDS + ACTION_HOLD_SECONDS + ACTION_RETURN_SECONDS
+	_contact_visual_action = action_name
+	_contact_visual_fit = minf(action_seconds, maxf(0.16, seconds_until_contact))
+	_contact_visual_delay = maxf(0.0, seconds_until_contact - _contact_visual_fit)
+	_contact_visual_active = false
+	if _action_tween != null:
+		_action_tween.kill()
+	_action_tween = create_tween()
+	_action_tween.tween_interval(action_seconds)
+	_action_tween.tween_callback(_finish_deferred_action_state)
+	if _contact_visual_delay <= 0.0:
+		_start_contact_visual()
+
+
+func _start_contact_visual() -> void:
+	if _contact_visual_action == &"" or _contact_visual_active:
+		return
+	_contact_visual_active = true
+	_jump_contact_emitted = false
+	visual.position = Vector2.ZERO
+	shadow.scale = Vector2.ONE
+	character_sprite.play_clip(&"jump_low" if _contact_visual_action == &"jump" else &"slide_duck", _contact_visual_fit)
+	if _contact_visual_action == &"jump" and not Settings.reduced_motion:
+		_play_jump_shadow_animation(_contact_visual_fit)
+	elif _contact_visual_action == &"slide" and not Settings.reduced_motion:
+		slide_streak.visible = true
+		slide_dust.visible = true
+
+
+func _finish_deferred_action_state() -> void:
+	_lane_state.finish_action()
+	if _contact_visual_action == &"" and character_sprite.finished:
+		_play_base_animation()
+
+
+func _finish_contact_visual() -> void:
+	if _contact_visual_action == &"jump" and not _jump_contact_emitted:
+		_start_landing_feedback()
+	visual.position = Vector2.ZERO
+	shadow.scale = Vector2.ONE
+	slide_streak.visible = false
+	slide_dust.visible = false
+	_clear_contact_visual()
+	if action_state == PlayerLaneStateModel.ActionState.IDLE:
+		_play_base_animation()
+
+
+func _cancel_contact_visual() -> void:
+	if _contact_visual_action == &"":
+		return
+	_clear_contact_visual()
+	visual.position = Vector2.ZERO
+	shadow.scale = Vector2.ONE
+	slide_streak.visible = false
+	slide_dust.visible = false
+	if _shadow_tween != null:
+		_shadow_tween.kill()
+
+
+func _clear_contact_visual() -> void:
+	_contact_visual_action = &""
+	_contact_visual_delay = 0.0
+	_contact_visual_fit = 0.0
+	_contact_visual_active = false
+
+
 func _finish_action_animation() -> void:
 	if action_state == PlayerLaneStateModel.ActionState.JUMP and not _jump_contact_emitted:
 		_start_landing_feedback()
@@ -255,13 +343,14 @@ func _start_landing_feedback() -> void:
 	landing_dust.modulate.a = 0.78 * Settings.effects_intensity
 
 
-func _play_jump_shadow_animation() -> void:
+func _play_jump_shadow_animation(fit_seconds: float = 0.92) -> void:
 	if _shadow_tween != null:
 		_shadow_tween.kill()
 	_shadow_tween = create_tween()
-	_shadow_tween.tween_property(shadow, ^"scale", Vector2(0.48, 0.48), JUMP_RISE_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_shadow_tween.tween_interval(JUMP_HOLD_SECONDS)
-	_shadow_tween.tween_property(shadow, ^"scale", Vector2.ONE, JUMP_RETURN_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	var timing_scale := fit_seconds / (JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS + JUMP_RECOVERY_SECONDS)
+	_shadow_tween.tween_property(shadow, ^"scale", Vector2(0.48, 0.48), JUMP_RISE_SECONDS * timing_scale).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_shadow_tween.tween_interval(JUMP_HOLD_SECONDS * timing_scale)
+	_shadow_tween.tween_property(shadow, ^"scale", Vector2.ONE, JUMP_RETURN_SECONDS * timing_scale).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
 
 func set_gameplay_paused(should_pause: bool) -> void:
@@ -306,6 +395,7 @@ func finish_session_visuals() -> void:
 	# Terminal stop keeps the final pose but releases all pending callbacks.
 	is_gameplay_paused = true
 	_pending_feedback = &""
+	_clear_contact_visual()
 	if _lane_tween != null:
 		_lane_tween.kill()
 	if _action_tween != null:

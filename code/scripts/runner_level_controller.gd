@@ -152,7 +152,10 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		return
 	named_action_received.emit(logical_action)
 	# Apply movement first so validation sees the resulting lane.
-	var movement_accepted := player.handle_action(logical_action)
+	var visual_contact_seconds := -1.0
+	if not _active_formation.is_empty() and logical_action in [&"jump", &"slide"] and logical_action == StringName(_active_formation.get("required_action", &"")):
+		visual_contact_seconds = world_motion.call("get_prompt_remaining_seconds")
+	var movement_accepted := player.handle_action(logical_action, visual_contact_seconds)
 	if not _active_formation.is_empty() and prompt_director.state in [PromptDirectorModel.State.WARNING, PromptDirectorModel.State.ACTIVE]:
 		# Keep the latest deliberate movement, but leave Peter correctable until
 		# the formation reaches the contact line. A correct warning-phase

@@ -17,29 +17,29 @@ const FRAME_COUNTS := {"wave": 6, "laundry": 4, "flowers": 4, "vendor": 6, "sign
 const GROUND_ANCHORED := ["wave", "vendor", "flowers", "banana"]
 const PARTS := {
 	"home": [
-		{"kind": "wave", "name": "NeighbourWave", "at": Vector2(429, 186), "size": 0.125, "offset": 0.0},
-		{"kind": "laundry", "name": "HomeLaundry", "at": Vector2(78, 119), "size": 0.13, "offset": 1.0},
-		{"kind": "flowers", "name": "HomeFlowers", "at": Vector2(56, 187), "size": 0.11, "offset": 0.3},
+		{"kind": "wave", "name": "NeighbourWave", "at": Vector2(429, 186), "size": 0.155, "offset": 0.0},
+		{"kind": "laundry", "name": "HomeLaundry", "at": Vector2(78, 119), "size": 0.15, "offset": 1.0},
+		{"kind": "flowers", "name": "HomeFlowers", "at": Vector2(56, 187), "size": 0.135, "offset": 0.3},
 	],
 	"waiting": [
-		{"kind": "laundry", "name": "WaitingLaundry", "at": Vector2(84, 106), "size": 0.12, "offset": 2.0},
-		{"kind": "flowers", "name": "WaitingFlowers", "at": Vector2(56, 183), "size": 0.11, "offset": 1.1},
-		{"kind": "banana", "name": "WaitingBanana", "at": Vector2(30, 177), "size": 0.11, "offset": 0.2},
+		{"kind": "laundry", "name": "WaitingLaundry", "at": Vector2(84, 106), "size": 0.15, "offset": 2.0},
+		{"kind": "flowers", "name": "WaitingFlowers", "at": Vector2(56, 183), "size": 0.135, "offset": 1.1},
+		{"kind": "banana", "name": "WaitingBanana", "at": Vector2(30, 177), "size": 0.13, "offset": 0.2},
 	],
 	"sari_sari": [
-		{"kind": "laundry", "name": "BalconyLaundry", "at": Vector2(92, 95), "size": 0.13, "offset": 0.8},
-		{"kind": "sign", "name": "ShopSign", "at": Vector2(403, 102), "size": 0.075, "offset": 1.7},
-		{"kind": "flowers", "name": "ShopFlowers", "at": Vector2(56, 189), "size": 0.11, "offset": 2.4},
+		{"kind": "laundry", "name": "BalconyLaundry", "at": Vector2(92, 95), "size": 0.15, "offset": 0.8},
+		{"kind": "sign", "name": "ShopSign", "at": Vector2(403, 102), "size": 0.1, "offset": 1.7},
+		{"kind": "flowers", "name": "ShopFlowers", "at": Vector2(56, 189), "size": 0.135, "offset": 2.4},
 	],
 	"palengke": [
-		{"kind": "vendor", "name": "MarketNeighbour", "at": Vector2(54, 181), "size": 0.17, "offset": 0.5},
-		{"kind": "sign", "name": "MarketSign", "at": Vector2(414, 105), "size": 0.072, "offset": 0.6},
-		{"kind": "flowers", "name": "MarketFlowers", "at": Vector2(426, 182), "size": 0.11, "offset": 1.7},
+		{"kind": "vendor", "name": "MarketNeighbour", "at": Vector2(54, 181), "size": 0.235, "offset": 0.5},
+		{"kind": "sign", "name": "MarketSign", "at": Vector2(414, 105), "size": 0.1, "offset": 0.6},
+		{"kind": "flowers", "name": "MarketFlowers", "at": Vector2(426, 182), "size": 0.135, "offset": 1.7},
 	],
 	"plaza": [
-		{"kind": "wave", "name": "PlazaWave", "at": Vector2(423, 185), "size": 0.125, "offset": 1.0},
-		{"kind": "sign", "name": "GardenSign", "at": Vector2(72, 109), "size": 0.07, "offset": 2.5},
-		{"kind": "flowers", "name": "GardenFlowers", "at": Vector2(56, 188), "size": 0.11, "offset": 0.7},
+		{"kind": "wave", "name": "PlazaWave", "at": Vector2(423, 185), "size": 0.155, "offset": 1.0},
+		{"kind": "sign", "name": "GardenSign", "at": Vector2(72, 109), "size": 0.1, "offset": 2.5},
+		{"kind": "flowers", "name": "GardenFlowers", "at": Vector2(56, 188), "size": 0.135, "offset": 0.7},
 	],
 }
 

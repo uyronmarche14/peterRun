@@ -12,7 +12,8 @@ func _init() -> void:
 
 func _run() -> void:
 	for input_at in [0.0, 2.49, 2.5, 3.5, 4.49]:
-		await _test_visual_start(input_at)
+		await _test_visual_contact(&"jump", input_at)
+	await _test_visual_contact(&"slide", 2.5)
 	await _test_warning_input_remains_one_rep()
 	for failure in failures:
 		printerr("FAIL: " + failure)
@@ -20,28 +21,35 @@ func _run() -> void:
 	quit(0 if failures.is_empty() else 1)
 
 
-func _test_visual_start(input_at: float) -> void:
+func _test_visual_contact(action: StringName, input_at: float) -> void:
 	var player: Node = (load(PLAYER_SCENE) as PackedScene).instantiate()
 	root.add_child(player)
 	await process_frame
 	player.set_process(false)
 	player.call("set_walking", true)
 	var eta := 4.5 - input_at
-	var accepted: Variant = player.call("handle_action", &"jump", eta)
-	_expect(accepted == true, "Jump is accepted at t=%.2f" % input_at)
+	var accepted: Variant = player.call("handle_action", action, eta)
+	_expect(accepted == true, "%s is accepted at t=%.2f" % [action, input_at])
 	if accepted != true:
 		player.free()
 		return
 	var sprite: Sprite2D = player.get_node(^"Visual/CharacterSprite")
-	_expect(player.get("action_state") == 1, "Input changes action state immediately at t=%.2f" % input_at)
-	if eta > 0.92:
-		_expect(sprite.get("animation") != &"jump_low", "Early input at t=%.2f waits visually for contact" % input_at)
-		player.call("_process", eta - 0.93)
-		_expect(sprite.get("animation") != &"jump_low", "Jump at t=%.2f does not finish too early" % input_at)
+	_expect(player.get("action_state") != 0, "Input changes action state immediately at t=%.2f" % input_at)
+	var lead := 0.43 if action == &"jump" else 0.33
+	var clip := &"jump_low" if action == &"jump" else &"slide_duck"
+	if eta > lead:
+		_expect(sprite.get("animation") != clip, "Early %s input at t=%.2f waits for its contact pose" % [action, input_at])
+		player.call("_process", eta - lead - 0.01)
+		_expect(sprite.get("animation") != clip, "%s at t=%.2f has not started too early" % [action, input_at])
 		player.call("_process", 0.02)
-		_expect(sprite.get("animation") == &"jump_low", "Jump at t=%.2f starts near contact" % input_at)
+		_expect(sprite.get("animation") == clip, "%s at t=%.2f starts before contact" % [action, input_at])
+		player.call("_process", lead - 0.01)
 	else:
-		_expect(sprite.get("animation") == &"jump_low", "Late input at t=%.2f shows Jump immediately" % input_at)
+		_expect(sprite.get("animation") == clip, "Late %s input at t=%.2f shows the action immediately" % [action, input_at])
+		player.call("_process", eta)
+	_expect(sprite.get("animation") == clip, "%s remains visible at contact t=%.2f" % [action, input_at])
+	var body_y: float = player.get_node(^"Visual").position.y
+	_expect(body_y < -12.0 if action == &"jump" else body_y > 2.0, "%s clearance pose is readable at contact t=%.2f (y=%.1f)" % [action, input_at, body_y])
 	player.call("set_gameplay_paused", true)
 	var pose := [sprite.get("animation"), sprite.get("elapsed"), player.get_node(^"Visual").position]
 	player.call("_process", 1.0)

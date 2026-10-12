@@ -1,6 +1,6 @@
 # L01 Barangay Morning — scenery motion asset tracker
 
-Last audited: 2026-10-04. Scope: the five L01 journey scenes only. This is a production tracker, not a claim that the proposed art or motion has been implemented.
+Last audited: 2026-10-13. Scope: the five L01 journey scenes only. This is a production tracker, not a claim of visual or clinical approval.
 
 ## How to use this tracker
 
@@ -10,6 +10,8 @@ Last audited: 2026-10-04. Scope: the five L01 journey scenes only. This is a pro
 - Update this tracker whenever art, placement, visibility, timing, or release packaging changes. Preserve the source art and do not silently replace approved stage plates.
 
 The current stage-specific assets are `WIRED / VISUAL QA PENDING`: they are present in [`l01_stage_street_life.gd`](../code/scripts/l01_stage_street_life.gd) and the scene. The 2026-10-04 motion pass starts gestures soon after entry and gives every stage at least three independent animated details; product-owner visual approval is still pending. The `PETER_RUN_v4` package was built on 2026-09-30, before these changes; do not mark them `RELEASED` in that package.
+
+The 2026-10-13 scale calibration enlarged each of the 15 wired details by kind, measured from visible alpha rather than nominal sprite-cell size. At native 480x270, all-frame visible heights are: waving residents 38.0-38.4 px; Palengke neighbour 41.6-42.5 px; laundry 19.5-23.3 px; flowers 22.7-23.4 px; banana 28.3 px; signs 17.5 px. All stay at least 35 native pixels clear of the painted curb in the automated sweep; ground-anchored assets drift at most 0.2 px across frames. See [`l01_stage_life_scale_test.gd`](../code/tests/l01_stage_life_scale_test.gd) and local `test_evidence/l01_v16_review/` captures at 480x270, 960x540, 1024x768, and 1920x1080. The Palengke neighbour still has a flatter illustrated finish than the market plate, so scale calibration is **not** art approval. No stage plates or buildings were changed.
 
 ## Fixed scenery and journey contract
 
@@ -135,3 +137,4 @@ The current motion owner is [`l01_layered_route_motion.gd`](../code/scripts/l01_
 | --- | --- | --- |
 | 2026-10-04 | Initial audit and tracker created; 14 stage-specific sprites are wired, most visually subtle; proposed additional details remain unmade. | Scene/script inspection only. No new art, code, tests, or release created by this document. |
 | 2026-10-04 | Five-stage motion integration: Waiting Shed gained a separately anchored banana sprite; gestures and cloth/sign frames now begin and read sooner; stage clocks restart on entry; shared clouds/leaves move more clearly. Current count: 15 stage-specific sprites. | Godot tests and 25 visual captures pass. Remaining planned concept assets are still unmade; product-owner visual review and new package are pending. |
+| 2026-10-13 | Per-kind visible-alpha scale calibration for all 15 wired details. Original strips and seven-layer stage plates retained. | `l01_stage_life_scale_test`, `l01_v13_street_life_test`, and `l01_v15_stage_motion_test` pass; 27 new local screenshots captured. Palengke finish mismatch and product-owner review remain open. No package was built. |

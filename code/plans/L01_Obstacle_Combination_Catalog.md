@@ -1,6 +1,6 @@
 # L01 Barangay Morning — obstacle combination catalog
 
-Status: design catalog, 2026-10-13. **No new formation in this document is implemented or playtested.** The current inventory below is read from [`l01_barangay.tres`](../data/levels/l01_barangay.tres); the candidate list is for a later, reviewed change. This document does not alter the route, repetition rules, timing, or art.
+Status: 2026-10-13 implementation inventory. The 19 J09-J18/S10-S18 formations below are authored in [`l01_barangay.tres`](../data/levels/l01_barangay.tres) and pass deterministic rendering, lane-clearance, and one-repetition integration tests. They have not received therapist, controller-hardware, or user acceptance testing. J19/S19 remain deferred. This catalog does not change repetition rules, timing, or art.
 
 ## Meaning of a combination
 
@@ -15,9 +15,9 @@ Read each layout as **Left / Centre / Right** at one shared approach depth:
 
 The game records **one prescribed therapy repetition per correctly resolved prompt**, not one point per visible prop. A correct `move_left`, `move_right`, `jump`, or `slide` earns at most one matching rep at contact. Merely occupying an already-open lane earns no rep. Dodging to an open lane without the requested Jump/Slide earns no Jump/Slide rep. There is no separate score or per-crate point. These are the current rules in [`runner_level_controller.gd`](../scripts/runner_level_controller.gd) and [`session_result.gd`](../scripts/session_result.gd).
 
-## What is already in the game
+## Original formations retained in the game
 
-The resource has **60 authored entries**: 15 per action. They resolve to **21 distinct action/layout combinations** because some IDs repeat the same silhouette in beginner, normal, recovery, or mixed categories. Every current ID is listed exactly once below. `O` in a Jump/Slide row describes the visible empty lane; those formations currently store `open_lanes: []`, so an empty lane is **not** a rep-awarding safe-clear target.
+The original resource had **60 authored entries**: 15 per action. They resolve to **21 distinct action/layout combinations** because some IDs repeat the same silhouette in beginner, normal, recovery, or mixed categories. These entries remain present in the now-79-entry resource. `O` in a Jump/Slide row describes the visible empty lane; those formations store `open_lanes: []`, so an empty lane is **not** a rep-awarding safe-clear target.
 
 | Key | Action | Left / Centre / Right | Entries | Current pattern IDs |
 | --- | --- | --- | ---: | --- |
@@ -43,48 +43,48 @@ The resource has **60 authored entries**: 15 per action. They resolve to **21 di
 | S08 | Slide | `C/L/L` | 1 | `l01_p20_slide_choice_center_right` |
 | S09 | Slide | `L/C/L` | 1 | `l01_p36_slide_choice_outer` |
 
-The four movement layouts above are all the distinct **one-step Left/Right** possibilities with two crates and exactly one open destination. The current selector favors beginner entries for its first four choices; all beginner Jump/Slide entries are single-prop layouts. Later selections vary by eligible entry lane, remaining targets, recent action/layout, and seeded choice. **Existing three-prop gates are therefore possible but not guaranteed** on a given short run. See [`pattern_library_resolver.gd`](../scripts/pattern_library_resolver.gd).
+The four movement layouts above are all the distinct **one-step Left/Right** possibilities with two crates and exactly one open destination. The selector keeps the first four choices beginner, then offers per-action single-, two-, and three-prop Jump/Slide layouts in a gentle cycle; it does not schedule two three-prop gates back-to-back. A short session still need not show every gate. See [`pattern_library_resolver.gd`](../scripts/pattern_library_resolver.gd).
 
-## Additional combinations to author and review
+## Added L01 Jump and Slide combinations
 
-Within one action family, use only crates, that action's matching cue, and open road. This yields **19 possible lane layouts for Jump** and **19 for Slide**. Eight Jump and nine Slide layouts already exist above. The following **21 missing layouts** complete that bounded catalog; **19 are candidates** and the two all-cue layouts are deliberately **deferred** pending readability and safety review. The labels below are catalog IDs, **not runtime `pattern_id` values**.
+Within one action family, use only crates, that action's matching cue, and open road. This yields **19 possible lane layouts for Jump** and **19 for Slide**. Eight Jump and nine Slide layouts already existed above. The following 21 layouts complete that bounded catalog: **19 are implemented**, while the two all-cue layouts remain **deferred** pending readability and safety review. Runtime IDs use the `l01_v6_j09_pco` / `l01_v6_s10_lco` pattern.
 
-For every candidate, the valid entry lane is a lane containing its matching cue (`P` for Jump, `L` for Slide). If there are two matching lanes, either can be an action lane. The authored `ending_lane` must be valid, but the runtime must continue to use Peter's actual lane after the action. A visibly open lane offers avoidance, **not** a therapy repetition.
+For each implemented layout, the valid entry lane contains its matching cue (`P` for Jump, `L` for Slide). If there are two matching lanes, either can be an action lane. The authored `ending_lane` is valid, but runtime uses Peter's actual lane after the action. A visibly open lane offers avoidance, **not** a therapy repetition.
 
 | Catalog ID | Action | Left / Centre / Right | Type | Status and role |
 | --- | --- | --- | --- | --- |
-| J09 | Jump | `P/C/O` | puddle + crate + open | Candidate; left-lane Jump, right side stays open |
-| J10 | Jump | `P/O/C` | puddle + open + crate | Candidate; left-lane Jump, centre stays open |
-| J11 | Jump | `C/P/O` | crate + puddle + open | Candidate; centre Jump, right side stays open |
-| J12 | Jump | `O/P/C` | open + puddle + crate | Candidate; centre Jump, left side stays open |
-| J13 | Jump | `C/O/P` | crate + open + puddle | Candidate; right-lane Jump, centre stays open |
-| J14 | Jump | `O/C/P` | open + crate + puddle | Candidate; right-lane Jump, left side stays open |
-| J15 | Jump | `P/P/O` | two puddles + open | Candidate; Jump in left or centre |
-| J16 | Jump | `P/O/P` | two puddles + open | Candidate; Jump in left or right |
-| J17 | Jump | `O/P/P` | open + two puddles | Candidate; Jump in centre or right |
-| J18 | Jump | `P/C/P` | two puddles + crate | Candidate; completes the left/right two-puddle gate |
+| J09 | Jump | `P/C/O` | puddle + crate + open | Implemented; left-lane Jump, right side stays open |
+| J10 | Jump | `P/O/C` | puddle + open + crate | Implemented; left-lane Jump, centre stays open |
+| J11 | Jump | `C/P/O` | crate + puddle + open | Implemented; centre Jump, right side stays open |
+| J12 | Jump | `O/P/C` | open + puddle + crate | Implemented; centre Jump, left side stays open |
+| J13 | Jump | `C/O/P` | crate + open + puddle | Implemented; right-lane Jump, centre stays open |
+| J14 | Jump | `O/C/P` | open + crate + puddle | Implemented; right-lane Jump, left side stays open |
+| J15 | Jump | `P/P/O` | two puddles + open | Implemented; Jump in left or centre |
+| J16 | Jump | `P/O/P` | two puddles + open | Implemented; Jump in left or right |
+| J17 | Jump | `O/P/P` | open + two puddles | Implemented; Jump in centre or right |
+| J18 | Jump | `P/C/P` | two puddles + crate | Implemented; completes the left/right two-puddle gate |
 | J19 | Jump | `P/P/P` | three puddles | **Deferred**; all lanes demand Jump and the silhouette may become a cross-road mass |
-| S10 | Slide | `L/C/O` | laundry + crate + open | Candidate; left-lane Slide, right side stays open |
-| S11 | Slide | `L/O/C` | laundry + open + crate | Candidate; left-lane Slide, centre stays open |
-| S12 | Slide | `C/L/O` | crate + laundry + open | Candidate; centre Slide, right side stays open |
-| S13 | Slide | `O/L/C` | open + laundry + crate | Candidate; centre Slide, left side stays open |
-| S14 | Slide | `C/O/L` | crate + open + laundry | Candidate; right-lane Slide, centre stays open |
-| S15 | Slide | `O/C/L` | open + crate + laundry | Candidate; right-lane Slide, left side stays open |
-| S16 | Slide | `L/L/O` | two laundry lines + open | Candidate; Slide in left or centre |
-| S17 | Slide | `L/O/L` | two laundry lines + open | Candidate; Slide in left or right |
-| S18 | Slide | `O/L/L` | open + two laundry lines | Candidate; Slide in centre or right |
+| S10 | Slide | `L/C/O` | laundry + crate + open | Implemented; left-lane Slide, right side stays open |
+| S11 | Slide | `L/O/C` | laundry + open + crate | Implemented; left-lane Slide, centre stays open |
+| S12 | Slide | `C/L/O` | crate + laundry + open | Implemented; centre Slide, right side stays open |
+| S13 | Slide | `O/L/C` | open + laundry + crate | Implemented; centre Slide, left side stays open |
+| S14 | Slide | `C/O/L` | crate + open + laundry | Implemented; right-lane Slide, centre stays open |
+| S15 | Slide | `O/C/L` | open + crate + laundry | Implemented; right-lane Slide, left side stays open |
+| S16 | Slide | `L/L/O` | two laundry lines + open | Implemented; Slide in left or centre |
+| S17 | Slide | `L/O/L` | two laundry lines + open | Implemented; Slide in left or right |
+| S18 | Slide | `O/L/L` | open + two laundry lines | Implemented; Slide in centre or right |
 | S19 | Slide | `L/L/L` | three laundry lines | **Deferred**; three overhead silhouettes may hide Peter or the road |
 
-This is a **layout catalog, not a request to activate all combinations at once**. The 19 candidates add spatial variety; they do not require faster motion, more simultaneous prompts, or extra repetition targets. To add art variety without changing the formation contract, crate wood/rope paint, puddle shape/ripple, and laundry cloth colors can have approved visual skins sharing the same ground origin and collision kind. Such skins are also proposals, not assets delivered here.
+The 19 added layouts provide spatial variety without faster motion, more simultaneous prompts, or extra repetition targets. They are selected one formation at a time. Crate, puddle, and laundry visual skins remain a future art proposal, not assets delivered here.
 
-## Authoring and selection rules for a later implementation
+## Active authoring and selection rules
 
 1. Keep exactly three lanes and **one active prompt**. Never mix a puddle and laundry line in the same formation: that would demand Jump and Slide at once. Do not use `C/C/C` for a movement prompt or place a crate in its required open destination.
 2. For Move Left/Right, select only a one-step-reachable `O` from Peter's current lane. If he is already on that open lane, label it safe passage and award **zero** new reps. The third lane position is intentionally open, not a missing obstacle.
 3. For Jump/Slide, select a formation only if Peter starts in a matching `P`/`L` action lane. A correct matching input in that lane awards **one** corresponding rep at contact, regardless of whether there are one, two, or three visible props. Wrong action, wrong lane, or an empty-lane dodge never awards that rep.
 4. Preserve calm onboarding: single-cue formations remain available for beginner/recovery use. Add controlled variety later; do not turn every encounter into a fully blocked gate merely to fill the screen. A three-prop gate with side crates makes a wrong sidestep a physical contact that **ends the run** under the current rule; review that consequence before increasing its frequency.
-5. Before enabling any candidate, extend validation beyond “at least one matching prop”: confirm each declared action lane has the correct cue, each open lane contains no obstacle, entry/ending lanes are reachable, IDs are unique, and there is no conflicting action cue. Keep the action count balanced without fabricating duplicate layout entries as if they were new silhouettes.
-6. Test the full selected-pattern matrix in gameplay: actual lane-to-prop rendering, perspective/curb clearance at 480×270, correct action = exactly one rep, safe passage/dodge = no rep, wrong-action outcome, repeated input, Pause/resume, and deterministic route reachability. Capture single-, two-, and three-prop layouts at 960×540, 1024×768, and 1920×1080. Do not claim a proposed combination is in the game until these pass.
+5. Library validation now confirms each declared action lane has the matching cue, each open lane contains no obstacle, entry/ending lanes are reachable, IDs are unique, and no conflicting action cue is present. Keep the action count balanced without fabricating duplicate layout entries as if they were new silhouettes.
+6. The 19 added layouts have automated in-game lane-to-prop rendering, painted-curb clearance at three approach depths, and one-repetition checks in [`l01_new_formation_integration_test.gd`](../tests/l01_new_formation_integration_test.gd). Existing tests cover safe passage, wrong-action contact, response correction, Pause, and seeded reachability. Full visual captures of every new layout at every display size, therapist review, and hardware UAT remain outstanding.
 
 ## Explicitly excluded combinations
 

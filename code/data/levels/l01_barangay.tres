@@ -138,6 +138,44 @@ formation_library = Array[Dictionary]([{
 "pattern_id": &"l01_p35_slide_gate_right", "category": &"mixed", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
 }, {
 "pattern_id": &"l01_p36_slide_choice_outer", "category": &"mixed", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lanes": [0, 2], "entry_lanes": [0, 2], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j09_pco", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j10_poc", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j11_cpo", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j12_opc", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j13_cop", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j14_ocp", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j15_ppo", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"puddle", "lane": 1}], "open_lanes": [], "required_action": &"jump", "action_lanes": [0, 1], "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j16_pop", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lanes": [0, 2], "entry_lanes": [0, 2], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j17_opp", "category": &"normal", "obstacles": [{"kind": &"puddle", "lane": 1}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lanes": [1, 2], "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_j18_pcp", "category": &"mixed", "obstacles": [{"kind": &"puddle", "lane": 0}, {"kind": &"crate", "lane": 1}, {"kind": &"puddle", "lane": 2}], "open_lanes": [], "required_action": &"jump", "action_lanes": [0, 2], "entry_lanes": [0, 2], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s10_lco", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"crate", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s11_loc", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 0, "entry_lanes": [0], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s12_clo", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s13_olc", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 1}, {"kind": &"crate", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 1, "entry_lanes": [1], "ending_lane": 1, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s14_col", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 0}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s15_ocl", "category": &"normal", "obstacles": [{"kind": &"crate", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lane": 2, "entry_lanes": [2], "ending_lane": 2, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s16_llo", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"laundry_line", "lane": 1}], "open_lanes": [], "required_action": &"slide", "action_lanes": [0, 1], "entry_lanes": [0, 1], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s17_lol", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 0}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lanes": [0, 2], "entry_lanes": [0, 2], "ending_lane": 0, "allow_idle_safe_clear": false
+}, {
+"pattern_id": &"l01_v6_s18_oll", "category": &"normal", "obstacles": [{"kind": &"laundry_line", "lane": 1}, {"kind": &"laundry_line", "lane": 2}], "open_lanes": [], "required_action": &"slide", "action_lanes": [1, 2], "entry_lanes": [1, 2], "ending_lane": 1, "allow_idle_safe_clear": false
 }])
 move_prop = ExtResource("2")
 jump_prop = ExtResource("3")

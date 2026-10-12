@@ -125,9 +125,10 @@ func _test_l01_balanced_action_library() -> void:
 		for obstacle in formation.get("obstacles", []):
 			if obstacle is Dictionary and obstacle.get("kind", &"") == &"laundry_line":
 				slide_gate_lanes.append(int(obstacle.get("lane", -1)))
-	_expect(formations.size() == 60, "L01 provides a 60-formation balanced library")
+	_expect(formations.size() == 79, "L01 provides 60 original and 19 new formations")
+	var expected_counts := {&"move_left": 15, &"move_right": 15, &"jump": 25, &"slide": 24}
 	for action_name in action_counts:
-		_expect(action_counts[action_name] == 15, "L01 gives %s an equal 15 safe formation choices" % action_name)
+		_expect(action_counts[action_name] == expected_counts[action_name], "L01 gives %s its approved layout inventory" % action_name)
 	for lane in [0, 1, 2]:
 		_expect(slide_gate_lanes.has(lane), "L01 includes a readable Slide gate in lane %d" % lane)
 

@@ -73,6 +73,22 @@ static func validate(pattern: Dictionary) -> PackedStringArray:
 	return errors
 
 
+static func validate_library(library: Array) -> PackedStringArray:
+	var errors: PackedStringArray = []
+	var ids: Dictionary = {}
+	for value in library:
+		if not value is Dictionary:
+			errors.append("Every formation must be a dictionary.")
+			continue
+		var pattern: Dictionary = value
+		var pattern_id := StringName(pattern.get("pattern_id", &""))
+		if ids.has(pattern_id):
+			errors.append("Formation IDs must be unique: " + str(pattern_id))
+		ids[pattern_id] = true
+		errors.append_array(validate(pattern))
+	return errors
+
+
 static func _validate_movement_gate(required_action: StringName, obstacles: Array, obstacle_lanes: Array[int], open_lanes: Array[int], entry_lanes: Array[int], ending_lane: int, allows_idle_safe_clear: bool, errors: PackedStringArray) -> void:
 	if open_lanes.is_empty():
 		errors.append("Movement gates need at least one open lane.")
@@ -105,6 +121,17 @@ static func _validate_lane_action(required_action: StringName, obstacles: Array,
 			errors.append("Jump and slide entry lanes must match an action lane.")
 			break
 	var expected_kind := &"puddle" if required_action == &"jump" else &"laundry_line"
+	for obstacle_value in obstacles:
+		if not obstacle_value is Dictionary:
+			continue
+		var obstacle: Dictionary = obstacle_value
+		var kind := StringName(obstacle.get("kind", &""))
+		if kind != expected_kind and kind != &"crate":
+			errors.append("Jump and slide formations cannot mix action cues.")
+			break
+		if kind == expected_kind and not action_lanes.has(int(obstacle.get("lane", -1))):
+			errors.append("Every matching cue lane must be declared as an action lane.")
+			break
 	for action_lane in action_lanes:
 		var has_action_prop := false
 		for obstacle_value in obstacles:

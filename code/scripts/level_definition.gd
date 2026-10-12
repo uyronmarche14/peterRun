@@ -72,11 +72,7 @@ func validate() -> PackedStringArray:
 		for lane in lanes:
 			if int(lane) < 0 or int(lane) > 2:
 				errors.append("Pattern lanes must be 0, 1 or 2.")
-	for formation in formation_library:
-		if not formation is Dictionary:
-			errors.append("Each formation must be a dictionary.")
-		else:
-			errors.append_array(Pattern.validate(formation))
+	errors.append_array(Pattern.validate_library(formation_library))
 	if level_id == &"l01_barangay" and formation_library.is_empty():
 		errors.append("L01 requires its authored formation library.")
 	for scene in [move_prop, jump_prop, slide_prop]:

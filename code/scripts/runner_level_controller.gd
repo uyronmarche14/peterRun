@@ -12,6 +12,7 @@ const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const SessionReviewStore = preload("res://scripts/session_review_store.gd")
+const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
 
 const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
 const DISCONNECT_PAUSE_TITLE := "Controller disconnected"
@@ -75,6 +76,10 @@ var _pause_message_text := ""
 @onready var l01_layered_route: Node2D = $LevelWorld/L01BarangayLayers
 @onready var contact_effects: Node2D = $ContactEffects
 @onready var end_confirmation: CanvasLayer = $EndConfirmation
+@onready var gameplay_ambience: AudioStreamPlayer = $GameplayAudio/Ambience
+@onready var prompt_cue: AudioStreamPlayer = $GameplayAudio/PromptCue
+@onready var action_cue: AudioStreamPlayer = $GameplayAudio/ActionCue
+@onready var success_cue: AudioStreamPlayer = $GameplayAudio/SuccessCue
 
 
 func _ready() -> void:
@@ -110,6 +115,7 @@ func _ready() -> void:
 	session_result.route_seed = route_seed
 	_formation_resolver.set_seed(route_seed)
 	_apply_level_presentation()
+	_start_gameplay_audio()
 	if l01_layered_route.has_method("configure_route"):
 		l01_layered_route.call("configure_route", route_seed, 0)
 	player.set_walking(true)
@@ -156,6 +162,8 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 	if not _active_formation.is_empty() and logical_action in [&"jump", &"slide"] and logical_action == StringName(_active_formation.get("required_action", &"")):
 		visual_contact_seconds = world_motion.call("get_prompt_remaining_seconds")
 	var movement_accepted := player.handle_action(logical_action, visual_contact_seconds)
+	if movement_accepted:
+		_play_gameplay_cue(action_cue)
 	if not _active_formation.is_empty() and prompt_director.state in [PromptDirectorModel.State.WARNING, PromptDirectorModel.State.ACTIVE]:
 		# Keep the latest deliberate movement, but leave Peter correctable until
 		# the formation reaches the contact line. A correct warning-phase
@@ -240,6 +248,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 		return
 	match state:
 		PromptDirectorModel.State.WARNING:
+			_play_gameplay_cue(prompt_cue)
 			response_timer.stop()
 			resolve_timer.stop()
 			if not _active_formation.is_empty():
@@ -277,6 +286,8 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 				_show_collision_end_overlay()
 				return
 			_record_prompt_resolution(action_name, resolution)
+			if resolution in [PromptDirectorModel.Resolution.SUCCESS, PromptDirectorModel.Resolution.SAFE_CLEAR]:
+				_play_gameplay_cue(success_cue)
 			world_motion.call("resolve_prompt_approach", resolution != PromptDirectorModel.Resolution.NEUTRAL_MISS, level_definition.resolved_seconds)
 			var resolved_text := "Take your time."
 			if resolution == PromptDirectorModel.Resolution.SUCCESS:
@@ -640,6 +651,10 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 	player.set_gameplay_paused(should_pause)
 	feedback_toast.set_feedback_paused(should_pause)
 	contact_effects.set_effects_paused(should_pause)
+	if should_pause:
+		for cue in [prompt_cue, action_cue, success_cue]:
+			cue.stop()
+	sync_audio_settings()
 	if _progress_tween != null:
 		_progress_tween.set_speed_scale(0.0 if should_pause else 1.0)
 
@@ -656,6 +671,7 @@ func _show_neutral_end_overlay(title: String, message: String, reason: StringNam
 		progress_bar.value = progress_bar.max_value
 		progress_label.modulate = Color.WHITE
 	_set_gameplay_updates_paused(true)
+	_stop_gameplay_audio()
 	warning_timer.stop()
 	response_timer.stop()
 	resolve_timer.stop()
@@ -671,3 +687,37 @@ func _show_neutral_end_overlay(title: String, message: String, reason: StringNam
 
 func _show_collision_end_overlay() -> void:
 	_show_neutral_end_overlay("Run ended", "Peter reached an obstacle. Completed repetitions are saved for review.", &"collision")
+
+
+func _start_gameplay_audio() -> void:
+	if gameplay_ambience.stream is AudioStreamWAV:
+		var loop := gameplay_ambience.stream as AudioStreamWAV
+		loop.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		loop.loop_begin = 0
+		loop.loop_end = int(round(loop.get_length() * loop.mix_rate))
+	sync_audio_settings()
+	if gameplay_ambience.stream != null:
+		gameplay_ambience.play()
+		sync_audio_settings()
+
+
+func sync_audio_settings() -> void:
+	var audible := AudioSettings.enabled and AudioSettings.volume > 0.0 and not is_gameplay_paused and not is_session_ended
+	var gain := linear_to_db(maxf(AudioSettings.volume / 100.0, 0.0001))
+	gameplay_ambience.volume_db = -80.0 if not audible else gain - 24.0
+	for cue in [prompt_cue, action_cue, success_cue]:
+		cue.volume_db = -80.0 if not audible else gain - 18.0
+		cue.stream_paused = not audible
+	gameplay_ambience.stream_paused = not audible
+
+
+func _play_gameplay_cue(cue: AudioStreamPlayer) -> void:
+	if cue.stream == null or not AudioSettings.enabled or AudioSettings.volume <= 0.0 or is_gameplay_paused or is_session_ended:
+		return
+	cue.stop()
+	cue.play()
+
+
+func _stop_gameplay_audio() -> void:
+	for player_node in [gameplay_ambience, prompt_cue, action_cue, success_cue]:
+		player_node.stop()

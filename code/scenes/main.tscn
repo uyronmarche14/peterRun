@@ -315,7 +315,7 @@ custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 9
-tooltip_text = "Music on · click to mute"
+tooltip_text = "Sound on · click to mute"
 text = "♫"
 
 [node name="MusicCredit" type="Label" parent="MusicControl/Pill/Row"]
@@ -375,7 +375,7 @@ offset_left = 367.0
 offset_top = 31.0
 offset_right = 415.0
 offset_bottom = 47.0
-text = "Music: On"
+text = "Sound: On"
 
 [node name="MenuMusic" type="AudioStreamPlayer" parent="."]
 volume_db = -30.0
@@ -469,7 +469,7 @@ horizontal_alignment = 1
 [node name="VolumeLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Menu music · 35%"
+text = "Sound · 35%"
 autowrap_mode = 2
 horizontal_alignment = 1
 

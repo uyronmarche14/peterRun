@@ -1,9 +1,13 @@
-[gd_scene load_steps=71 format=3]
+[gd_scene load_steps=75 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/prompt_director.gd" id="3_prompt_director"]
 [ext_resource type="Script" path="res://scripts/world_motion_controller.gd" id="4_world_motion"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_barangay_ambience_v01.wav" id="v6_ambience"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_prompt_ready_v01.wav" id="v6_prompt_cue"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_action_ack_v01.wav" id="v6_action_cue"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_success_v01.wav" id="v6_success_cue"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_environment.png" id="5_l01_environment"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_clouds.png" id="6_l01_clouds"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_foreground_leaves_strip.png" id="7_l01_leaves"]
@@ -707,6 +711,20 @@ script = ExtResource("3_prompt_director")
 
 [node name="WorldMotion" type="Node" parent="."]
 script = ExtResource("4_world_motion")
+
+[node name="GameplayAudio" type="Node" parent="."]
+
+[node name="Ambience" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v6_ambience")
+
+[node name="PromptCue" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v6_prompt_cue")
+
+[node name="ActionCue" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v6_action_cue")
+
+[node name="SuccessCue" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v6_success_cue")
 
 [node name="ContactEffects" type="Node2D" parent="."]
 z_index = 3

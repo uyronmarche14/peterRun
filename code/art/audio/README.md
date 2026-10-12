@@ -1,5 +1,21 @@
 # Opening music provenance
 
+## L01 gameplay sound prototype
+
+`l01_barangay_ambience_v01.wav`, `l01_prompt_ready_v01.wav`,
+`l01_action_ack_v01.wav`, and `l01_success_v01.wav` are original,
+offline-synthesized sounds made by `../../tools/build_l01_game_audio.gd`.
+They use filtered air, sparse synthetic bird-like tones, and short warm plucks;
+no recording, downloaded sample, or commercial-game sound was used. The
+12-second ambience loops quietly. There is no punitive miss/contact cue.
+
+Rebuild with `godot --headless --path . -s res://tools/build_l01_game_audio.gd`,
+then run the editor import. The one session-local Sound mute/volume applies to
+both opening music and gameplay sound; gameplay audio stops on Pause or session
+end. Text and icons remain the primary instructions. These are prototype sounds
+requiring listening on the target speakers and art/clinical review before any
+supervised release claim.
+
 ## Hakbang sa Umaga
 
 - Created for this PETER RUN prototype on 2026-09-07 using the original score and synthesis code in `../../tools/build_menu_music.gd`.

@@ -179,9 +179,7 @@ func _start_music() -> void:
 	if ResourceLoader.exists(MUSIC_PATH):
 		menu_music.stream = load(MUSIC_PATH) as AudioStreamWAV
 	if menu_music.stream == null:
-		music_button.disabled = true
-		music_button.tooltip_text = "Music unavailable"
-		volume_slider.editable = false
+		_update_music_label()
 		return
 	var track := menu_music.stream as AudioStreamWAV
 	track.loop_mode = AudioStreamWAV.LOOP_FORWARD
@@ -206,7 +204,7 @@ func set_music_volume(value: float) -> void:
 		_music_fade.kill()
 	menu_music.volume_db = -80.0 if AudioSettings.volume == 0.0 else linear_to_db(AudioSettings.volume / 100.0) - 12.0
 	volume_slider.set_value_no_signal(AudioSettings.volume)
-	$SettingsOverlay/Panel/Margin/Content/VolumeLabel.text = "Menu music · %d%%" % int(AudioSettings.volume)
+	$SettingsOverlay/Panel/Margin/Content/VolumeLabel.text = "Sound · %d%%" % int(AudioSettings.volume)
 
 
 func _configure_route_pace() -> void:
@@ -257,15 +255,14 @@ func _update_comfort_labels() -> void:
 
 
 func toggle_music() -> void:
-	if menu_music.stream == null:
-		return
 	AudioSettings.enabled = not AudioSettings.enabled
-	menu_music.stream_paused = not AudioSettings.enabled
+	if menu_music.stream != null:
+		menu_music.stream_paused = not AudioSettings.enabled
 	_update_music_label()
 
 
 func _update_music_label() -> void:
-	music_button.tooltip_text = "Music on · click to mute" if AudioSettings.enabled else "Music off · click to play"
+	music_button.tooltip_text = "Sound on · click to mute" if AudioSettings.enabled else "Sound off · click to unmute"
 	# Dim the whole control when muted; the tooltip carries the state in words.
 	music_control.modulate.a = 1.0 if AudioSettings.enabled else 0.55
 

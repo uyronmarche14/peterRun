@@ -2,6 +2,8 @@
 
 Status: 2026-10-13 implementation inventory. The 19 J09-J18/S10-S18 formations below are authored in [`l01_barangay.tres`](../data/levels/l01_barangay.tres) and pass deterministic rendering, lane-clearance, and one-repetition integration tests. They have not received therapist, controller-hardware, or user acceptance testing. J19/S19 remain deferred. This catalog does not change repetition rules, timing, or art.
 
+Visual review on 2026-10-14 found that a side-lane laundry line became much shorter than a centre-lane line at the same depth. The L01 projection now preserves the slide gate's vertical post/under-space height while fitting its crossbar width inside the painted curb. [`l01_new_formation_integration_test.gd`](../tests/l01_new_formation_integration_test.gd) checks equal same-depth laundry height; local 960x540, 1024x768, and 1920x1080 comparison captures are in `test_evidence/l01_v6_formations/`. A bespoke narrow-lane redraw may further improve cloth proportions after art review.
+
 ## Meaning of a combination
 
 Read each layout as **Left / Centre / Right** at one shared approach depth:

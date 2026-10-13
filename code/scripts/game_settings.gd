@@ -1,7 +1,7 @@
 class_name GameSettings
 extends RefCounted
 
-# Visual pace affects road and roadside motion only. Prompt response timing stays prescribed.
+# Visual pace affects road and ambient scenery only. Prompt response timing stays prescribed.
 const CALM_PACE := 0.85
 const STANDARD_PACE := 1.0
 const LIVELY_PACE := 1.15

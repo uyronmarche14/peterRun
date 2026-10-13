@@ -56,18 +56,23 @@ func _test_formation(level: Node, formation: Dictionary) -> void:
 	motion.set_process(false)
 	for fraction in [0.0, 0.5, 1.0]:
 		motion.call("_process", 0.0 if fraction == 0.0 else 2.25)
+		var laundry_heights: Array[float] = []
 		for prop_value in props:
 			var prop := prop_value as Node2D
 			var lane := int(prop.get_meta(&"formation_lane", -1))
 			var expected_x: float = motion.call("lane_center_for", lane, fraction)
 			var footprint: Vector2 = prop.get_meta(&"projection_footprint", Vector2.ZERO)
 			var half_width := footprint.x * prop.global_scale.x * 0.5
+			if String(prop.name).begins_with("Formation_laundry_line"):
+				laundry_heights.append(footprint.y * prop.global_scale.y)
 			_expect(absf(prop.global_position.x - expected_x) <= 8.1, "%s lane %d projects near its centre at %.1f" % [id, lane, fraction])
 			if lane != 1:
 				var side := -1 if lane == 0 else 1
 				var curb := Geometry.painted_curb_x(side, prop.global_position.y)
 				var clearance := prop.global_position.x - half_width - curb if side < 0 else curb - prop.global_position.x - half_width
 				_expect(clearance >= 2.0, "%s lane %d stays inside painted curb at %.1f (%.1f px)" % [id, lane, fraction, clearance])
+		if laundry_heights.size() > 1:
+			_expect(absf(laundry_heights.max() - laundry_heights.min()) <= 1.0, "%s same-depth laundry lines keep equal readable height at %.1f" % [id, fraction])
 	director.call("open_response_window")
 	var before: int = int(level.get("session_result").get_completed(action))
 	level.call("receive_input", action, true, 1000.0 + float(before))

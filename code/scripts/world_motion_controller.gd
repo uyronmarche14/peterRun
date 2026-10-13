@@ -166,6 +166,7 @@ func _apply_lane_safe_prop_scales(fraction: float) -> void:
 		var l01_height_cap := float(child.get_meta(&"l01_screen_height_cap", 0.0))
 		if road_presentation.visible and l01_height_cap > 0.0 and footprint.y > 0.0:
 			fit = minf(fit, l01_height_cap / (footprint.y * depth_scale))
+		var vertical_fit := fit
 		var lane := _lane_for_prop(child)
 		var base_local_x := float(lane - _prompt_lane) * lane_span / depth_scale
 		var inset := 0.0
@@ -184,7 +185,9 @@ func _apply_lane_safe_prop_scales(fraction: float) -> void:
 			var separator_room := separator_x - adjusted_centre - L01_PROP_SEPARATOR_CLEARANCE if side < 0 else adjusted_centre - separator_x - L01_PROP_SEPARATOR_CLEARANCE
 			fit = minf(fit, maxf(0.0, minf(curb_room, separator_room)) / (visual_half_width * depth_scale))
 		child.position.x = base_local_x + (inset if lane == 0 else -inset) / depth_scale
-		child.scale = Vector2.ONE * fit
+		# Side-lane slide gates need narrower crossbars to fit the painted curb,
+		# but their posts and under-space must remain as tall as the centre gate.
+		child.scale = Vector2(fit, vertical_fit if road_presentation.visible and child.get_meta(&"l01_preserve_height", false) else fit)
 
 
 func _lane_for_prop(prop: Node2D) -> int:

@@ -1,6 +1,7 @@
 extends SceneTree
 
 const OUTPUT := "res://../test_evidence/l01_v16_review"
+const RouteJourney = preload("res://scripts/route_journey.gd")
 const STAGES := ["home", "waiting", "sari_sari", "palengke", "plaza"]
 const SIZES := [Vector2i(480, 270), Vector2i(960, 540), Vector2i(1024, 768), Vector2i(1920, 1080)]
 
@@ -28,6 +29,7 @@ func _run() -> void:
 	route.set_process(false)
 	level.get_node(^"WorldMotion").set_process(false)
 	for index in STAGES.size():
+		_set_completed_progress(level, index)
 		route.call("configure_route", 41, index)
 		for size in SIZES:
 			await _capture(STAGES[index], "rest", size)
@@ -47,6 +49,28 @@ func _run() -> void:
 	level.free()
 	print("L01 v16 visual review: %d captures" % captures.size())
 	quit(0)
+
+
+func _set_completed_progress(level: Node, stage: int) -> void:
+	var config: Variant = level.get("session_config")
+	var result: Variant = level.get("session_result")
+	var target := 0
+	for action in config.ACTIONS:
+		target += config.get_target(action)
+	var desired := 0
+	while desired < target and RouteJourney.get_progress(desired, target) < stage:
+		desired += 1
+	var completed := 0
+	for action in config.ACTIONS:
+		completed += result.get_completed(action)
+	var index := 0
+	while completed < desired:
+		var action: StringName = config.ACTIONS[index % config.ACTIONS.size()]
+		if result.get_completed(action) < config.get_target(action):
+			result.record_success(action)
+			completed += 1
+		index += 1
+	level.call("_update_progress_hud", false)
 
 
 func _capture(stage: String, pose: String, size: Vector2i) -> void:

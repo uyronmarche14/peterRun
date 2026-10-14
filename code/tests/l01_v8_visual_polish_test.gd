@@ -62,6 +62,27 @@ func _run() -> void:
 		_expect(signature.frame == 0 and is_zero_approx(signature.rotation), "%s signature rests in Reduced Motion" % STAGES[index])
 		Settings.set_reduced_motion(false)
 
+	# A spatial stage wipe must not show freestanding sidewalk sprites ahead
+	# of the new painted street plate.
+	route.call("configure_route", 17, 0)
+	route.call("set_route_progress", 1, true)
+	route.call("advance_layer_motion", 0.6)
+	var incoming_life := route.get_node(^"JourneyStages/StageWaitingShed/StreetLife") as Node2D
+	_expect(incoming_life.modulate.a <= 0.1, "Stage details wait for their supporting street plate")
+	route.call("advance_layer_motion", 0.6)
+	_expect(incoming_life.modulate.a >= 0.9, "Stage details become visible after the reveal")
+
+	var laundry := (load("res://scenes/props/laundry_line.tscn") as PackedScene).instantiate() as Node2D
+	level.get_node(^"LevelWorld/PromptWorldAnchor/PromptProps").add_child(laundry)
+	var motion := level.get_node(^"WorldMotion")
+	motion.call("begin_prompt_approach", 0, 2.5, 2.0)
+	motion.set("_prompt_elapsed", 4.5)
+	motion.call("_apply_prompt_projection")
+	var laundry_aspect := laundry.scale.x / laundry.scale.y
+	print("V8 side-lane laundry scale aspect: %.3f" % laundry_aspect)
+	_expect(laundry_aspect >= 0.85, "Side-lane laundry retains a natural post-to-crossbar proportion")
+	laundry.free()
+
 	level.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)

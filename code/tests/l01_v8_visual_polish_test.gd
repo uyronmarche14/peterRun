@@ -24,6 +24,8 @@ func _run() -> void:
 
 	var hint := level.get_node_or_null(^"HUD/HUDRoot/PromptControlHint") as Label
 	_expect(hint != null, "Single prompt card includes an action-specific control hint")
+	var prompt_card := level.get_node(^"HUD/HUDRoot/PromptCard") as Control
+	_expect(prompt_card.offset_bottom <= 32.0, "Prompt card does not cover the Hall tower")
 	if hint != null:
 		for action in [&"move_left", &"move_right", &"jump", &"slide"]:
 			level.call("_update_prompt_card", action, "GET READY", Color.WHITE)
@@ -79,7 +81,7 @@ func _run() -> void:
 	motion.set("_prompt_elapsed", 4.5)
 	motion.call("_apply_prompt_projection")
 	var laundry_aspect := laundry.scale.x / laundry.scale.y
-	print("V8 side-lane laundry scale aspect: %.3f" % laundry_aspect)
+	print("V8 side-lane laundry scale: %s, footprint: %s, aspect: %.3f" % [laundry.scale, laundry.get_meta(&"projection_footprint"), laundry_aspect])
 	_expect(laundry_aspect >= 0.85, "Side-lane laundry retains a natural post-to-crossbar proportion")
 	laundry.free()
 

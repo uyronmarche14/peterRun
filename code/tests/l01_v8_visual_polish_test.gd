@@ -39,6 +39,10 @@ func _run() -> void:
 		level.call("refresh_control_hint", true)
 		_expect(hint.text.contains("A button"), "Controller jump prompt names face button")
 		_expect(hint.get_minimum_size().x <= hint.size.x + 0.5, "Control hint fits the prompt card")
+		level.set("_shown_prompt_action", &"")
+		(level.get_node(^"HUD/HUDRoot/PromptActionLabel") as Label).text = "SAFE PATH"
+		level.call("refresh_control_hint", true)
+		_expect(hint.text == "KEEP YOUR PATH", "Device refresh retains neutral safe-path guidance")
 
 	for index in STAGES.size():
 		route.call("configure_route", 17, index)

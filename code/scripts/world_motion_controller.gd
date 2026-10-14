@@ -204,7 +204,10 @@ func _get_prop_visual_half_width(prop: Node2D, fallback: Vector2) -> float:
 	var key := prop.get_instance_id()
 	if _prop_visual_half_widths.has(key):
 		return _prop_visual_half_widths[key]
-	var half_width := maxf(1.0, fallback.x * 0.5)
+	# The compact laundry source keeps its posts inside a conservative lane
+	# footprint. Use the painted silhouette for curb fitting so the side gate
+	# is not squeezed horizontally a second time.
+	var half_width := 1.0 if prop.get_meta(&"l01_preserve_height", false) else maxf(1.0, fallback.x * 0.5)
 	for child in prop.get_children():
 		var sprite := child as Sprite2D
 		if sprite == null or sprite.texture == null:

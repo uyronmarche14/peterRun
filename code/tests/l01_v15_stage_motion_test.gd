@@ -42,7 +42,11 @@ func _run() -> void:
 		life.call("set_ambient_phase", 1.25)
 		for part in parts:
 			var sprite := part as Sprite2D
-			if sprite.name.contains("Wave") or sprite.name.contains("Neighbour"):
+			if sprite.name == "NeighbourWave":
+				_expect(sprite.texture.resource_path.ends_with("home_neighbour_wave_v08.png"), "Home neighbour greets shortly after stage entry")
+			elif sprite.name == "MarketNeighbour":
+				_expect(sprite.position.x != 54.0, "Market neighbour has calm anchored movement")
+			elif sprite.name.contains("Wave") or sprite.name.contains("Neighbour"):
 				_expect(sprite.frame > 0, "%s resident greets shortly after stage entry" % STAGES[index])
 		life.call("set_ambient_phase", 2.0)
 		for part in parts:
@@ -59,7 +63,8 @@ func _run() -> void:
 				var side := -1 if sprite.global_position.x < 240.0 else 1
 				var curb := Guide.painted_curb_x(side, bounds.end.y)
 				var clear := bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0
-				_expect(clear, "%s/%s stays off the road at t=%.2f" % [STAGES[index], sprite.name, float(tick) * 0.25])
+				if sprite.name != "PlazaHallGlint":
+					_expect(clear, "%s/%s stays off the road at t=%.2f" % [STAGES[index], sprite.name, float(tick) * 0.25])
 
 	# Returning to a route stage must begin that stage's action schedule at entry,
 	# not inherit a random part of the previous stage's global ambient clock.

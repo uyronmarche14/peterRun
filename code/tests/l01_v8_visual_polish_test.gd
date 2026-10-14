@@ -89,7 +89,9 @@ func _run() -> void:
 	_expect(laundry_aspect >= 0.85, "Side-lane laundry retains a natural post-to-crossbar proportion")
 	laundry.free()
 
+	level.call("_stop_gameplay_audio")
 	level.free()
+	await process_frame
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 v8 visual polish: " + ("PASS" if failures.is_empty() else "FAIL"))

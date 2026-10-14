@@ -363,7 +363,10 @@ func _set_stage_reveal(index: int, progress: float) -> void:
 	reveal_material.set_shader_parameter("reveal_progress", clampf(progress, 0.0, 1.0))
 	var life := stage.get_node_or_null(^"StreetLife") as Node2D
 	if life != null:
-		life.modulate.a = clampf(progress, 0.0, 1.0)
+		# Child sprites do not inherit the stage plate's spatial shader. Keep
+		# sidewalk details hidden until their supporting street is almost fully
+		# revealed, then ease them in rather than letting them float ahead.
+		life.modulate.a = clampf((progress - 0.82) / 0.18, 0.0, 1.0)
 
 
 func _get_focal_duration(event_name: StringName) -> float:

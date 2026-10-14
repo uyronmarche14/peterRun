@@ -23,8 +23,9 @@ const CASES := [
 	},
 	{
 		"scene": "res://scenes/props/laundry_line.tscn",
-		"asset": "res://art/prompts/l01_barangay/prompt_l01_laundry_line_v03.png",
-		"size": Vector2i(256, 192),
+		"asset": "res://art/prompts/l01_barangay/prompt_l01_laundry_line_v08.svg",
+		"size": Vector2i(220, 180),
+		"overlay_size": Vector2i(256, 192),
 		"art_scale": Vector2(0.4, 0.4),
 		"overlays": {
 			"ActiveHighlight": "res://art/prompts/l01_barangay/prompt_l01_laundry_line_highlight_v01.png",
@@ -55,13 +56,13 @@ func _init() -> void:
 
 func _test_prop(entry: Dictionary) -> void:
 	var asset_path: String = entry.asset
-	_expect(ResourceLoader.exists(asset_path), "Prompt PNG exists: " + asset_path)
+	_expect(ResourceLoader.exists(asset_path), "Prompt art exists: " + asset_path)
 	var texture: Texture2D = load(asset_path)
-	_expect(texture != null, "Prompt PNG loads: " + asset_path)
+	_expect(texture != null, "Prompt art loads: " + asset_path)
 	if texture != null:
-		_expect(texture.get_size() == Vector2(entry.size), "Prompt PNG preserves native dimensions: " + asset_path)
+		_expect(texture.get_size() == Vector2(entry.size), "Prompt art preserves native dimensions: " + asset_path)
 		var image := texture.get_image()
-		_expect(image != null and image.get_pixel(0, 0).a == 0.0, "Prompt PNG has transparent canvas corners: " + asset_path)
+		_expect(image != null and image.get_pixel(0, 0).a == 0.0, "Prompt art has transparent canvas corners: " + asset_path)
 
 	var packed: PackedScene = load(entry.scene)
 	_expect(packed != null, "Prompt scene loads: " + entry.scene)
@@ -71,7 +72,7 @@ func _test_prop(entry: Dictionary) -> void:
 	var sprite := prop.get_node_or_null(^"ArtSprite") as Sprite2D
 	_expect(sprite != null, "Prompt scene uses its exported ArtSprite: " + entry.scene)
 	if sprite != null:
-		_expect(sprite.texture != null and sprite.texture.resource_path == asset_path, "ArtSprite references the intended prompt PNG: " + entry.scene)
+		_expect(sprite.texture != null and sprite.texture.resource_path == asset_path, "ArtSprite references the intended prompt art: " + entry.scene)
 		_expect(sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "ArtSprite uses nearest-neighbour filtering: " + entry.scene)
 		_expect(sprite.scale == entry.art_scale, "ArtSprite uses its readable 2.5D presentation scale: " + entry.scene)
 	for node_name in entry.overlays:
@@ -82,7 +83,7 @@ func _test_prop(entry: Dictionary) -> void:
 			_expect(overlay.texture != null and overlay.texture.resource_path == overlay_path, "%s references its intended transparent PNG" % node_name)
 			_expect(overlay.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "%s uses nearest-neighbour filtering" % node_name)
 			if overlay.texture != null:
-				_expect(overlay.texture.get_size() == Vector2(entry.size), "%s preserves the prop canvas for stable alignment" % node_name)
+				_expect(overlay.texture.get_size() == Vector2(entry.get("overlay_size", entry.size)), "%s preserves its authored overlay canvas" % node_name)
 				var overlay_image := overlay.texture.get_image()
 				_expect(overlay_image != null and overlay_image.get_pixel(0, 0).a == 0.0, "%s has transparent canvas corners" % node_name)
 	prop.queue_free()

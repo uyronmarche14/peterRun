@@ -58,7 +58,7 @@ func _test_runtime_alignment() -> void:
 		_expect(is_equal_approx(anchor.position.y, RoadProjectionModel.PLAYER_CONTACT_Y), "Prompt reaches the shared ground-contact line")
 	_test_prop_ground_origin("res://scenes/props/crate.tscn", -42.5)
 	_test_prop_ground_origin("res://scenes/props/puddle.tscn", -9.75)
-	_test_prop_ground_origin("res://scenes/props/laundry_line.tscn", -31.2)
+	_test_prop_ground_origin("res://scenes/props/laundry_line.tscn", -34.8)
 	level.free()
 
 

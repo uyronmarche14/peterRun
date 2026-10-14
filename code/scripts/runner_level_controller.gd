@@ -48,6 +48,7 @@ var _progress_tween: Tween
 var _pending_end_reason: StringName = &""
 var _pause_title_text := ""
 var _pause_message_text := ""
+var _shown_prompt_action: StringName = &""
 
 @onready var player: PlayerController = $Player
 @onready var prompt_director: Node = $PromptDirector
@@ -59,6 +60,7 @@ var _pause_message_text := ""
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
+@onready var prompt_control_hint: Label = $HUD/HUDRoot/PromptControlHint
 @onready var prompt_backdrop: Node2D = $LevelWorld/PromptWorldAnchor/PromptProps/PromptBackdrop
 @onready var warning_timer: Timer = $PromptTimers/WarningTimer
 @onready var response_timer: Timer = $PromptTimers/ResponseTimer
@@ -365,6 +367,19 @@ func _apply_level_presentation() -> void:
 
 func refresh_control_hint(gamepad: bool = ControlHints.uses_gamepad()) -> void:
 	$HUD/HUDRoot/KeyboardHint.text = ControlHints.footer_text(gamepad)
+	_refresh_prompt_control_hint(gamepad)
+
+
+func _refresh_prompt_control_hint(gamepad: bool) -> void:
+	if _shown_prompt_action == &"":
+		prompt_control_hint.text = "KEEP YOUR PATH" if prompt_action_label.text == "SAFE PATH" else "CONTROLS READY"
+		return
+	prompt_control_hint.text = "USE " + ControlHints.input_name(_shown_prompt_action, gamepad)
+
+
+func _set_prompt_control_action(action_name: StringName) -> void:
+	_shown_prompt_action = action_name
+	_refresh_prompt_control_hint(ControlHints.uses_gamepad())
 
 
 func _on_joy_connection_changed(_device: int, connected: bool) -> void:
@@ -387,6 +402,7 @@ func get_active_formation_props() -> Array[Node2D]:
 
 func _show_prompt(action_name: StringName, state_text: String, state_color: Color) -> void:
 	_hide_props()
+	_set_prompt_control_action(action_name)
 	prompt_action_label.text = level_definition.get_action_label(action_name)
 	prompt_icon_label.text = level_definition.get_action_icon(action_name)
 	prompt_state_label.text = state_text
@@ -425,6 +441,7 @@ func _show_formation_prompt(action_name: StringName, state_text: String, state_c
 
 
 func _update_prompt_card(action_name: StringName, state_text: String, state_color: Color) -> void:
+	_set_prompt_control_action(action_name)
 	prompt_action_label.text = level_definition.get_action_label(action_name)
 	prompt_icon_label.text = level_definition.get_action_icon(action_name)
 	prompt_state_label.text = state_text
@@ -436,6 +453,8 @@ func _update_formation_guidance(state_text: String, state_color: Color) -> void:
 		_update_prompt_card(StringName(_active_formation.get("required_action", &"")), "ACTION READY", state_color)
 		return
 	if _active_formation.get("allow_idle_safe_clear", false) and player.lane_index == int(_active_formation.get("ending_lane", -1)) and _pending_response_action == &"":
+		_shown_prompt_action = &""
+		prompt_control_hint.text = "KEEP YOUR PATH"
 		prompt_action_label.text = "SAFE PATH"
 		prompt_icon_label.text = "✓"
 		prompt_state_label.text = state_text

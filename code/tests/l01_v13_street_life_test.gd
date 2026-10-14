@@ -45,13 +45,16 @@ func _run() -> void:
 					for part_value in parts:
 						var part := part_value as Sprite2D
 						var bounds := _alpha_bounds(part)
-						if part.name.contains("Wave") or part.name.contains("Neighbour"):
+						if part.name == "NeighbourWave" or part.name == "MarketNeighbour":
+							_expect(bounds.size.y >= 46.0 and bounds.size.y <= 54.0, "V8 resident fits the painted sidewalk scale: %s/%s" % [STAGES[index], part.name])
+						elif part.name.contains("Wave") or part.name.contains("Neighbour"):
 							_expect(bounds.size.y >= 37.0 and bounds.size.y <= 45.0, "Resident fits the calibrated painted sidewalk scale: %s/%s" % [STAGES[index], part.name])
 						if part.name.contains("Flowers"):
 							_expect(bounds.size.y >= 22.0 and bounds.size.y <= 27.0, "Flower pot fits calibrated nearby painted plants: %s/%s" % [STAGES[index], part.name])
 						var side := -1 if part.global_position.x < 240.0 else 1
 						var curb := Guide.painted_curb_x(side, bounds.end.y)
-						_expect(bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0, "Ambient art stays on its sidewalk: %s/%s at t=%s" % [STAGES[index], part.name, sample_phase])
+						if part.name != "PlazaHallGlint":
+							_expect(bounds.end.x < curb - 1.0 if side < 0 else bounds.position.x > curb + 1.0, "Ambient art stays on its sidewalk: %s/%s at t=%s" % [STAGES[index], part.name, sample_phase])
 				life.call("reset_pose")
 	var home := route.get_node_or_null(^"JourneyStages/StageHome/StreetLife") as Node2D
 	if home != null and home.has_method("set_ambient_phase") and home.has_method("get_animated_parts"):
@@ -76,7 +79,9 @@ func _run() -> void:
 	var waiting_life := route.get_node(^"JourneyStages/StageWaitingShed/StreetLife") as Node2D
 	_expect(is_zero_approx(waiting_life.modulate.a), "New stage details do not appear before scenery reveal")
 	route.call("advance_layer_motion", 0.6)
-	_expect(waiting_life.modulate.a > 0.0 and waiting_life.modulate.a < 1.0, "Sidewalk details enter gently with the stage reveal")
+	_expect(is_zero_approx(waiting_life.modulate.a), "New sidewalk details wait for their supporting street plate")
+	route.call("advance_layer_motion", 0.55)
+	_expect(waiting_life.modulate.a > 0.0 and waiting_life.modulate.a < 1.0, "Sidewalk details enter gently after the street reveal")
 	Settings.set_reduced_motion(true)
 	route.call("advance_layer_motion", 0.1)
 	if home != null and home.has_method("get_animated_parts"):

@@ -2,8 +2,9 @@ extends SceneTree
 
 const Geometry = preload("res://scripts/l01_visual_geometry.gd")
 const STAGES := ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]
-const MIN_HEIGHT := {"wave": 37.0, "vendor": 41.0, "flowers": 22.0, "banana": 28.0, "laundry": 19.0, "sign": 17.0}
-const GROUND_KINDS := ["wave", "vendor", "flowers", "banana"]
+const MIN_HEIGHT := {"wave": 37.0, "vendor": 41.0, "flowers": 22.0, "banana": 28.0, "laundry": 19.0, "sign": 17.0,
+	"home_neighbour": 47.0, "market_neighbour": 44.0, "waiting_greeting": 7.0, "sari_greeting": 7.0, "canopy_edge": 5.0, "hall_glint": 7.0}
+const GROUND_KINDS := ["wave", "vendor", "flowers", "banana", "home_neighbour", "market_neighbour"]
 
 var failures: PackedStringArray = []
 
@@ -23,7 +24,7 @@ func _run() -> void:
 		route.call("configure_route", 17, stage_index)
 		var life := route.get_node("JourneyStages/%s/StreetLife" % STAGES[stage_index]) as Node2D
 		var parts: Array = life.call("get_animated_parts")
-		_expect(parts.size() == 3, "%s has three calibrated details" % STAGES[stage_index])
+		_expect(parts.size() == 4, "%s has four calibrated details" % STAGES[stage_index])
 		for part in parts:
 			var sprite := part as Sprite2D
 			var kind := _kind_for(sprite.texture.resource_path)
@@ -44,7 +45,8 @@ func _run() -> void:
 				var clearance := curb - bounds.end.x if side < 0 else bounds.position.x - curb
 				curb_clearance = minf(curb_clearance, clearance)
 			_expect(minimum_height >= float(MIN_HEIGHT.get(kind, 0.0)), "%s/%s visible height %.1f..%.1f is too small" % [STAGES[stage_index], sprite.name, minimum_height, maximum_height])
-			_expect(curb_clearance >= 2.0, "%s/%s curb clearance %.1f px" % [STAGES[stage_index], sprite.name, curb_clearance])
+			if kind != "hall_glint":
+				_expect(curb_clearance >= 2.0, "%s/%s curb clearance %.1f px" % [STAGES[stage_index], sprite.name, curb_clearance])
 			if kind in GROUND_KINDS:
 				_expect(feet_max - feet_min <= 1.0, "%s/%s ground drift %.1f px" % [STAGES[stage_index], sprite.name, feet_max - feet_min])
 			print("SCALE %s/%s kind=%s height=%.1f..%.1f ground_drift=%.1f curb=%.1f" % [STAGES[stage_index], sprite.name, kind, minimum_height, maximum_height, feet_max - feet_min, curb_clearance])

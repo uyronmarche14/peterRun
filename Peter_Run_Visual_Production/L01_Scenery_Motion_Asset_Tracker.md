@@ -1,6 +1,8 @@
 # L01 Barangay Morning — scenery motion asset tracker
 
-Last audited: 2026-10-13. Scope: the five L01 journey scenes only. This is a production tracker, not a claim of visual or clinical approval.
+Last audited: 2026-10-14. Scope: the five L01 journey scenes only. This is a production tracker, not a claim of visual or clinical approval.
+
+**V8 candidate update:** each stage now has four anchored details (20 total). Home and Palengke use new versioned resident cutouts; the other three new signatures are partial-person or scenery overlays. All five additions, the narrower Slide gate, and the three-line prompt card are wired and have automated/native-size capture evidence in `test_evidence/l01_v8_visual_polish/`. They remain **VISUAL QA PENDING**, not product-owner approved or clinically released. Historical counts and statuses below describe earlier iterations unless a V8 row supersedes them.
 
 ## How to use this tracker
 
@@ -19,11 +21,11 @@ Each stage uses seven registered, full-canvas 960×540 layers at 0.5 scale on th
 
 | Journey scene | Progress threshold | Layer folder and basename prefix | Fixed layers | Stage-specific moving details now |
 | --- | --- | --- | --- | --- |
-| Home | 0% | `code/art/backgrounds/l01_home_v10_layers/l01_v10_home_` | `sky`, `far`, `landmark`, `left_street`, `right_street`, `road`, `foreground` | 3 |
-| Waiting Shed | 25% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_` | Same seven suffixes | 3 |
-| Sari-sari Store | 50% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_` | Same seven suffixes | 3 |
-| Palengke Approach | 75% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_` | Same seven suffixes | 3 |
-| Barangay Plaza | 90% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_` | Same seven suffixes | 3 |
+| Home | 0% | `code/art/backgrounds/l01_home_v10_layers/l01_v10_home_` | `sky`, `far`, `landmark`, `left_street`, `right_street`, `road`, `foreground` | 4 |
+| Waiting Shed | 25% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_` | Same seven suffixes | 4 |
+| Sari-sari Store | 50% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_` | Same seven suffixes | 4 |
+| Palengke Approach | 75% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_palengke_` | Same seven suffixes | 4 |
+| Barangay Plaza | 90% | `code/art/backgrounds/l01_journey_v11_layers/l01_v11_plaza_` | Same seven suffixes | 4 |
 
 The thresholds are fractions of the configured repetition target, not fixed repetition counts; see [`route_journey.gd`](../code/scripts/route_journey.gd). The exact stage resources and draw order are in [`runner_level.tscn`](../code/scenes/levels/runner_level.tscn). The Hall/landmark, road, sidewalks, curb, and buildings remain stable through ambient animation. Stage-to-stage reveal is a separate, brief transition.
 
@@ -86,6 +88,20 @@ All coordinates below are **native 480×270 canvas coordinates**, not source-ima
 | `plaza_hall_window_highlight` | TBD; exact Hall-window mask | Brief, soft glint gated to Plaza | New or re-aligned transparent overlay | PLANNED |
 
 Existing shared texture paths are under `code/art/backgrounds/l01_barangay_v05_layers/` and `code/art/backgrounds/l01_barangay_v06_layers/`. New runtime textures should live under a clearly named `code/art/backgrounds/` subfolder; keep raw source art separately under `Peter_Run_Visual_Production/`.
+
+## V8 candidate register (supersedes matching historical rows above)
+
+| Stage / runtime node | Native anchor | Source asset and motion | Status |
+| --- | --- | --- | --- |
+| Home / `NeighbourWave` | Feet `(429,186)` | `home_neighbour_rest_v08.png` and `home_neighbour_wave_v08.png`; gentle two-pose greeting on a 7.5-second cycle | WIRED / VISUAL QA PENDING |
+| Home / `HomeBananaDetail` | Stem/base `(31,180)` | Existing `l01_v06_banana_left_strip.png`; independent slow frame sway | WIRED / VISUAL QA PENDING |
+| Waiting / `WaitingGreeting` | Painted resident's arm `(420,150)` | `waiting_greeting_v08.svg`; partial hand only, 9-second cycle | WIRED / VISUAL QA PENDING |
+| Sari-sari / `SariGreeting` | Painted shopkeeper's arm `(455,141)` | `sari_greeting_v08.svg`; partial hand only, 9-second cycle | WIRED / VISUAL QA PENDING |
+| Palengke / `MarketNeighbour` | Feet `(54,181)` | `palengke_vendor_v08.png`; very small anchored shift | WIRED / VISUAL QA PENDING |
+| Palengke / `MarketCanopyEdge` | Roof seam `(419,100)` | `palengke_canopy_edge_v08.svg`; subpixel breeze | WIRED / VISUAL QA PENDING |
+| Plaza / `PlazaHallGlint` | Hall window `(255,83)` | `plaza_hall_glint_v08.svg`; restrained alpha only | WIRED / VISUAL QA PENDING |
+
+The new art is under `code/art/backgrounds/l01_stage_details_v08/`. The active Slide prop uses `code/art/prompts/l01_barangay/prompt_l01_laundry_line_v08.svg` while retaining its separate shadow/highlight layers. The Home and Palengke resident cutouts were generated with the built-in image tool, then visually checked at native size; all other V8 SVGs are editable original vector source. Stage details appear only during the final part of the spatial reveal, preventing them from floating ahead of their supporting street plate. Building/road plates are unchanged. The existing Plaza resident still uses the older 7.5-second wave cycle, not the historical 13-second description above.
 
 ## Shared motion and inactive legacy assets
 

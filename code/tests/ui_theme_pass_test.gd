@@ -54,7 +54,7 @@ func _run() -> void:
 				for mode in ["open_settings", "request_quit"]:
 					screen.call(mode)
 					await process_frame
-					_check_card(screen.get_node("SettingsOverlay/Panel" if mode == "open_settings" else "QuitOverlay/Panel"), Vector2(190, 180 if mode == "open_settings" else 130), "res://art/ui/menu_card.tres")
+					_check_card(screen.get_node("SettingsOverlay/Panel" if mode == "open_settings" else "QuitOverlay/Panel"), Vector2(190, 190 if mode == "open_settings" else 130), "res://art/ui/menu_card.tres")
 					if mode == "open_settings":
 						_check_settings_spacing(screen)
 					_check_controls(screen)

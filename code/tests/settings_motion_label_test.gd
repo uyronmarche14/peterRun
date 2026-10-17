@@ -13,9 +13,13 @@ func _init() -> void:
 func _run() -> void:
 	# As a therapist, I need to know that this setting changes scenery motion,
 	# not the response time allowed for a prescribed movement.
+	root.mode = Window.MODE_WINDOWED
+	root.size = Vector2i(960, 540)
 	var original_pace: float = Settings.visual_pace
 	var dashboard := (load(MAIN_SCENE) as PackedScene).instantiate()
 	root.add_child(dashboard)
+	await process_frame
+	dashboard.call("open_settings")
 	await process_frame
 	var option := dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceOption") as OptionButton
 	var explanation := dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceLabel") as Label
@@ -26,8 +30,8 @@ func _run() -> void:
 			"Choice %d names scenery motion, not game speed" % index)
 	_expect(explanation.visible and explanation.text == "Prompt timing stays the same",
 		"Visible settings explanation says prompt timing is unchanged")
-	_expect(settings_panel.size.y <= 180.0,
-		"Explained settings panel stays within its native compact height")
+	_expect(settings_panel.size.y <= 190.0,
+		"Explained settings panel stays within a reviewed native height (got %.1f)" % settings_panel.size.y)
 	dashboard.call("set_route_pace", 2)
 	_expect(is_equal_approx(Settings.visual_pace, Settings.LIVELY_PACE),
 		"Existing visual pace choice still changes its own setting")

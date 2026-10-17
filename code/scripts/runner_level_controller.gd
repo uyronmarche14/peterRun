@@ -81,6 +81,8 @@ var _shown_prompt_action: StringName = &""
 @onready var gameplay_ambience: AudioStreamPlayer = $GameplayAudio/Ambience
 @onready var prompt_cue: AudioStreamPlayer = $GameplayAudio/PromptCue
 @onready var action_cue: AudioStreamPlayer = $GameplayAudio/ActionCue
+@onready var jump_cue: AudioStreamPlayer = $GameplayAudio/JumpCue
+@onready var slide_cue: AudioStreamPlayer = $GameplayAudio/SlideCue
 @onready var success_cue: AudioStreamPlayer = $GameplayAudio/SuccessCue
 
 
@@ -165,7 +167,12 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		visual_contact_seconds = world_motion.call("get_prompt_remaining_seconds")
 	var movement_accepted := player.handle_action(logical_action, visual_contact_seconds)
 	if movement_accepted:
-		_play_gameplay_cue(action_cue)
+		var movement_cue := action_cue
+		if logical_action == &"jump":
+			movement_cue = jump_cue
+		elif logical_action == &"slide":
+			movement_cue = slide_cue
+		_play_gameplay_cue(movement_cue)
 	if not _active_formation.is_empty() and prompt_director.state in [PromptDirectorModel.State.WARNING, PromptDirectorModel.State.ACTIVE]:
 		# Keep the latest deliberate movement, but leave Peter correctable until
 		# the formation reaches the contact line. A correct warning-phase
@@ -671,7 +678,7 @@ func _set_gameplay_updates_paused(should_pause: bool) -> void:
 	feedback_toast.set_feedback_paused(should_pause)
 	contact_effects.set_effects_paused(should_pause)
 	if should_pause:
-		for cue in [prompt_cue, action_cue, success_cue]:
+		for cue in [prompt_cue, action_cue, jump_cue, slide_cue, success_cue]:
 			cue.stop()
 	sync_audio_settings()
 	if _progress_tween != null:
@@ -723,9 +730,9 @@ func _start_gameplay_audio() -> void:
 func sync_audio_settings() -> void:
 	var audible := AudioSettings.enabled and AudioSettings.volume > 0.0 and not is_gameplay_paused and not is_session_ended
 	var gain := linear_to_db(maxf(AudioSettings.volume / 100.0, 0.0001))
-	gameplay_ambience.volume_db = -80.0 if not audible else gain - 24.0
-	for cue in [prompt_cue, action_cue, success_cue]:
-		cue.volume_db = -80.0 if not audible else gain - 18.0
+	gameplay_ambience.volume_db = -80.0 if not audible else gain - 11.0
+	for cue in [prompt_cue, action_cue, jump_cue, slide_cue, success_cue]:
+		cue.volume_db = -80.0 if not audible else gain - 6.0
 		cue.stream_paused = not audible
 	gameplay_ambience.stream_paused = not audible
 
@@ -738,5 +745,5 @@ func _play_gameplay_cue(cue: AudioStreamPlayer) -> void:
 
 
 func _stop_gameplay_audio() -> void:
-	for player_node in [gameplay_ambience, prompt_cue, action_cue, success_cue]:
+	for player_node in [gameplay_ambience, prompt_cue, action_cue, jump_cue, slide_cue, success_cue]:
 		player_node.stop()

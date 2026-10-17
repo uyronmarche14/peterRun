@@ -15,6 +15,8 @@ func _build() -> void:
 	success = _save("l01_barangay_ambience_v01.wav", _ambience()) and success
 	success = _save("l01_prompt_ready_v01.wav", _cue(0.32, [392.0, 523.25], 0.115)) and success
 	success = _save("l01_action_ack_v01.wav", _cue(0.18, [440.0], 0.105)) and success
+	success = _save("l01_jump_v01.wav", _jump_cue()) and success
+	success = _save("l01_slide_v01.wav", _slide_cue()) and success
 	success = _save("l01_success_v01.wav", _cue(0.48, [523.25, 659.25], 0.14)) and success
 	quit(0 if success else 1)
 
@@ -57,6 +59,41 @@ func _cue(seconds: float, notes: Array[float], amplitude: float) -> PackedFloat3
 			var envelope := minf(1.0, local / 0.012) * exp(-local * 13.0) * minf(1.0, (seconds - t) / 0.045)
 			value += (sin(TAU * notes[note_index] * local) + 0.16 * sin(TAU * notes[note_index] * 2.0 * local)) * envelope * amplitude
 		samples[index] = value
+	return samples
+
+
+func _jump_cue() -> PackedFloat32Array:
+	var seconds := 0.34
+	var samples := PackedFloat32Array()
+	samples.resize(int(seconds * RATE))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 190924
+	for index in samples.size():
+		var t := float(index) / RATE
+		var lift := sin(PI * clampf(t / 0.27, 0.0, 1.0))
+		var rising_tone := sin(TAU * (290.0 * t + 220.0 * t * t)) * lift * 0.11
+		var landing_time := t - 0.25
+		var landing := 0.0
+		if landing_time >= 0.0:
+			landing = rng.randf_range(-1.0, 1.0) * exp(-landing_time * 60.0) * 0.055
+		samples[index] = rising_tone + landing
+	return samples
+
+
+func _slide_cue() -> PackedFloat32Array:
+	var seconds := 0.3
+	var samples := PackedFloat32Array()
+	samples.resize(int(seconds * RATE))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 190925
+	var filtered_noise := 0.0
+	for index in samples.size():
+		var t := float(index) / RATE
+		filtered_noise = lerpf(filtered_noise, rng.randf_range(-1.0, 1.0), 0.22)
+		var envelope := minf(1.0, t / 0.025) * pow(maxf(0.0, 1.0 - t / seconds), 1.6)
+		var soft_brush := filtered_noise * envelope * 0.12
+		var low_note := sin(TAU * (170.0 - 90.0 * t) * t) * envelope * 0.04
+		samples[index] = soft_brush + low_note
 	return samples
 
 

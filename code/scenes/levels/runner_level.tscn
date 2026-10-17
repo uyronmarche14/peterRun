@@ -1,4 +1,4 @@
-[gd_scene load_steps=75 format=3]
+[gd_scene load_steps=77 format=3]
 
 [ext_resource type="Script" path="res://scripts/runner_level_controller.gd" id="1_runner"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -7,6 +7,8 @@
 [ext_resource type="AudioStream" path="res://art/audio/l01_barangay_ambience_v01.wav" id="v6_ambience"]
 [ext_resource type="AudioStream" path="res://art/audio/l01_prompt_ready_v01.wav" id="v6_prompt_cue"]
 [ext_resource type="AudioStream" path="res://art/audio/l01_action_ack_v01.wav" id="v6_action_cue"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_jump_v01.wav" id="v10_jump_cue"]
+[ext_resource type="AudioStream" path="res://art/audio/l01_slide_v01.wav" id="v10_slide_cue"]
 [ext_resource type="AudioStream" path="res://art/audio/l01_success_v01.wav" id="v6_success_cue"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_environment.png" id="5_l01_environment"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_clouds.png" id="6_l01_clouds"]
@@ -722,6 +724,12 @@ stream = ExtResource("v6_prompt_cue")
 
 [node name="ActionCue" type="AudioStreamPlayer" parent="GameplayAudio"]
 stream = ExtResource("v6_action_cue")
+
+[node name="JumpCue" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v10_jump_cue")
+
+[node name="SlideCue" type="AudioStreamPlayer" parent="GameplayAudio"]
+stream = ExtResource("v10_slide_cue")
 
 [node name="SuccessCue" type="AudioStreamPlayer" parent="GameplayAudio"]
 stream = ExtResource("v6_success_cue")

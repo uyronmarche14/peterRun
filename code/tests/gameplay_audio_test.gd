@@ -73,7 +73,7 @@ func _test_runner_pause_and_end() -> void:
 	AudioSettings.enabled = false
 	if level.has_method("sync_audio_settings"):
 		level.call("sync_audio_settings")
-	_expect(ambience.stream_paused and jump.stream_paused and slide.stream_paused, "The shared Sound mute also silences gameplay")
+	_expect(ambience.stream_paused and jump.volume_db <= -79.0 and slide.volume_db <= -79.0, "The shared Sound mute also silences gameplay")
 	level.call("end_session_neutrally")
 	_expect(not ambience.playing and not prompt.playing and not action.playing and not jump.playing and not slide.playing and not success.playing, "End Session stops all gameplay audio")
 	level.free()

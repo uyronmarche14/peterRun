@@ -1,6 +1,6 @@
 extends SceneTree
 
-const OUTPUT := "res://../test_evidence/l01_full_lane_action_cues"
+var output_dir := "res://../test_evidence/l01_full_lane_action_cues"
 const RoadProjection = preload("res://scripts/road_projection.gd")
 const FORMATIONS := [
 	"l01_p10_jump_gate_center",
@@ -13,6 +13,9 @@ const FORMATIONS := [
 
 
 func _init() -> void:
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--output-dir="):
+			output_dir = argument.trim_prefix("--output-dir=")
 	call_deferred("_run")
 
 
@@ -21,7 +24,7 @@ func _run() -> void:
 		printerr("Full-lane visual capture needs graphical Godot")
 		quit(2)
 		return
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(output_dir))
 	root.mode = Window.MODE_WINDOWED
 	var level := (load("res://scenes/levels/runner_level.tscn") as PackedScene).instantiate()
 	root.add_child(level)
@@ -62,7 +65,7 @@ func _run() -> void:
 			await process_frame
 			await process_frame
 			await RenderingServer.frame_post_draw
-			var path := "%s/%s_%dx%d.png" % [OUTPUT, id, size.x, size.y]
+			var path := "%s/%s_%dx%d.png" % [output_dir, id, size.x, size.y]
 			var result := root.get_texture().get_image().save_png(path)
 			assert(result == OK, "Cannot save " + path)
 			captures += 1

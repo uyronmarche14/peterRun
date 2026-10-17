@@ -19,12 +19,15 @@ func _run() -> void:
 	await process_frame
 	var option := dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceOption") as OptionButton
 	var explanation := dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceLabel") as Label
+	var settings_panel := dashboard.get_node(^"SettingsOverlay/Panel") as Control
 	_expect(option.item_count == 3, "Three visual motion comfort choices remain")
 	for index in mini(3, option.item_count):
 		_expect(option.get_item_text(index).begins_with("Scenery motion: "),
 			"Choice %d names scenery motion, not game speed" % index)
 	_expect(explanation.visible and explanation.text == "Prompt timing stays the same",
 		"Visible settings explanation says prompt timing is unchanged")
+	_expect(settings_panel.size.y <= 180.0,
+		"Explained settings panel stays within its native compact height")
 	dashboard.call("set_route_pace", 2)
 	_expect(is_equal_approx(Settings.visual_pace, Settings.LIVELY_PACE),
 		"Existing visual pace choice still changes its own setting")

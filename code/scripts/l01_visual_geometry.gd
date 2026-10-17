@@ -25,3 +25,11 @@ static func painted_curb_x(side: int, screen_y: float) -> float:
 			var far: Vector3 = CURB_PROFILE[index - 1]
 			return lerpf(far[coordinate], near[coordinate], inverse_lerp(far.x, near.x, screen_y))
 	return CURB_PROFILE[-1][coordinate]
+
+
+## Nearest permitted roadside edge for art at a given ground-contact depth.
+## A sprite must extend away from the curb from this point, not toward a lane.
+## This is visual-only; RoadProjection continues to own gameplay lane centres.
+static func roadside_contact_x(side: int, screen_y: float, clearance: float = 2.0) -> float:
+	var outward := -1.0 if side < 0 else 1.0
+	return painted_curb_x(side, screen_y) + outward * maxf(0.0, clearance)

@@ -481,10 +481,9 @@ value = 35.0
 focus_mode = 0
 
 [node name="RoutePaceLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
-visible = false
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Route pace · Standard"
+theme_override_font_sizes/font_size = 7
+text = "Prompt timing stays the same"
 horizontal_alignment = 1
 
 [node name="RoutePaceOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]

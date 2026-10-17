@@ -209,9 +209,9 @@ func set_music_volume(value: float) -> void:
 
 func _configure_route_pace() -> void:
 	route_pace_option.clear()
-	route_pace_option.add_item("Route pace: Calm", 0)
-	route_pace_option.add_item("Route pace: Standard", 1)
-	route_pace_option.add_item("Route pace: Lively", 2)
+	route_pace_option.add_item("Scenery motion: Calm", 0)
+	route_pace_option.add_item("Scenery motion: Standard", 1)
+	route_pace_option.add_item("Scenery motion: Lively", 2)
 	var selected := 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
 	route_pace_option.select(selected)
 	_update_route_pace_label()
@@ -226,7 +226,7 @@ func set_route_pace(index: int) -> void:
 
 
 func _update_route_pace_label() -> void:
-	$SettingsOverlay/Panel/Margin/Content/RoutePaceLabel.text = "Route pace · %s (visual only)" % GameSettings.get_pace_label()
+	$SettingsOverlay/Panel/Margin/Content/RoutePaceLabel.text = "Prompt timing stays the same"
 
 
 func _configure_comfort_preferences() -> void:

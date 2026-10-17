@@ -14,6 +14,7 @@ func _run() -> void:
 	for input_at in [0.0, 2.49, 2.5, 3.5, 4.49]:
 		await _test_visual_contact(&"jump", input_at)
 	await _test_visual_contact(&"slide", 2.5)
+	await _test_early_anticipation_pause()
 	await _test_warning_input_remains_one_rep()
 	for failure in failures:
 		printerr("FAIL: " + failure)
@@ -87,6 +88,25 @@ func _test_warning_input_remains_one_rep() -> void:
 	level.call("_on_response_timer_timeout")
 	_expect(level.get("session_result").get_completed(&"jump") == 1, "Contact adds exactly one Jump repetition")
 	level.free()
+
+
+func _test_early_anticipation_pause() -> void:
+	var player: Node = (load(PLAYER_SCENE) as PackedScene).instantiate()
+	root.add_child(player)
+	await process_frame
+	player.set_process(false)
+	player.call("set_walking", true)
+	player.call("handle_action", &"jump", 4.5)
+	player.call("_process", 0.14)
+	var sprite: Sprite2D = player.get_node(^"Visual/CharacterSprite")
+	var before := [sprite.get("animation"), sprite.get("elapsed"), sprite.call("get_clip_frame"), player.get("_contact_visual_delay")]
+	player.call("set_gameplay_paused", true)
+	player.call("_process", 1.0)
+	_expect([sprite.get("animation"), sprite.get("elapsed"), sprite.call("get_clip_frame"), player.get("_contact_visual_delay")] == before, "Pause freezes immediate anticipation and contact scheduling")
+	player.call("set_gameplay_paused", false)
+	player.call("_process", 0.10)
+	_expect(sprite.get("animation") == &"walk_forward", "Resume finishes the same anticipation rather than restarting it")
+	player.free()
 
 
 func _expect(condition: bool, message: String) -> void:

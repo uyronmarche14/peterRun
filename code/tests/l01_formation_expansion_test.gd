@@ -22,6 +22,7 @@ func _run() -> void:
 	_test_validation(library)
 	_test_complexity_ramp(library)
 	_test_full_lane_action_selection(library)
+	_test_repeated_only_action_stays_full(library)
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 formation expansion test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -108,6 +109,19 @@ func _test_full_lane_action_selection(library: Array) -> void:
 				_expect(formation.get("required_action", &"") in [&"jump", &"slide"], "Only unfinished Jump/Slide targets are selected")
 				_expect(_is_full_lane_action(formation), "%s has one puddle/laundry cue and two crates, with no open lane" % formation.pattern_id)
 				_expect(formation.get("entry_lanes", []).has(start_lane), "%s is reachable from lane %d" % [formation.pattern_id, start_lane])
+
+
+func _test_repeated_only_action_stays_full(library: Array) -> void:
+	for action in [&"jump", &"slide"]:
+		for lane in [0, 1, 2]:
+			var resolver := Resolver.new()
+			resolver.set_seed(57)
+			var targets := {&"move_left": 0, &"move_right": 0, &"jump": 0, &"slide": 0}
+			targets[action] = 2
+			for index in 2:
+				var formation: Dictionary = resolver.select_next_for_targets(library, lane, targets)
+				_expect(formation.get("required_action", &"") == action, "Repeated %s remains the unfinished target in lane %d" % [action, lane])
+				_expect(_is_full_lane_action(formation), "Repeated %s in lane %d never falls back to a sparse cue" % [action, lane])
 
 
 func _is_full_lane_action(formation: Dictionary) -> bool:

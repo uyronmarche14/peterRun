@@ -854,18 +854,18 @@ layout_mode = 0
 offset_top = 5
 offset_left = 197
 offset_right = 305
-offset_bottom = 15
+offset_bottom = 19
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
 text = "NEXT ACTION"
 
 [node name="PromptStateLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 197
-offset_top = 14
-offset_right = 305
-offset_bottom = 23
+offset_top = 20
+offset_right = 250
+offset_bottom = 31
 theme_override_colors/font_color = Color(0.35, 0.78, 0.66, 1)
 theme_override_font_sizes/font_size = 7
 horizontal_alignment = 1
@@ -873,8 +873,8 @@ text = "GET READY"
 
 [node name="PromptControlHint" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 197
-offset_top = 22
+offset_left = 250
+offset_top = 20
 offset_right = 305
 offset_bottom = 31
 theme_override_colors/font_color = Color(0.91, 0.94, 0.84, 1)

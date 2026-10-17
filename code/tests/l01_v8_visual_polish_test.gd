@@ -26,6 +26,13 @@ func _run() -> void:
 	_expect(hint != null, "Single prompt card includes an action-specific control hint")
 	var prompt_card := level.get_node(^"HUD/HUDRoot/PromptCard") as Control
 	_expect(prompt_card.offset_bottom <= 32.0, "Prompt card does not cover the Hall tower")
+	# As a patient, I need the requested movement to read before the detailed
+	# scenery or the smaller state/control lines at the native 480x270 canvas.
+	var action_word := level.get_node(^"HUD/HUDRoot/PromptActionLabel") as Label
+	_expect(action_word.get_theme_font_size("font_size") >= 11,
+		"Native action word is at least 11 px")
+	_expect(action_word.position.y >= prompt_card.position.y and action_word.position.y + action_word.size.y <= prompt_card.position.y + prompt_card.size.y,
+		"Larger action word stays within the existing prompt card height")
 	if hint != null:
 		for action in [&"move_left", &"move_right", &"jump", &"slide"]:
 			level.call("_update_prompt_card", action, "GET READY", Color.WHITE)

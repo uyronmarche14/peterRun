@@ -29,10 +29,16 @@ func _run() -> void:
 	# As a patient, I need the requested movement to read before the detailed
 	# scenery or the smaller state/control lines at the native 480x270 canvas.
 	var action_word := level.get_node(^"HUD/HUDRoot/PromptActionLabel") as Label
+	var state_line := level.get_node(^"HUD/HUDRoot/PromptStateLabel") as Label
 	_expect(action_word.get_theme_font_size("font_size") >= 11,
 		"Native action word is at least 11 px")
 	_expect(action_word.position.y >= prompt_card.position.y and action_word.position.y + action_word.size.y <= prompt_card.position.y + prompt_card.size.y,
 		"Larger action word stays within the existing prompt card height")
+	_expect(action_word.position.y + action_word.size.y <= state_line.position.y + 0.5,
+		"Action word does not overlap the prompt state row")
+	if hint != null:
+		_expect(absf(state_line.position.y - hint.position.y) <= 1.0 and state_line.position.x + state_line.size.x <= hint.position.x + 0.5,
+			"State and input hint share a non-overlapping second row")
 	if hint != null:
 		for action in [&"move_left", &"move_right", &"jump", &"slide"]:
 			level.call("_update_prompt_card", action, "GET READY", Color.WHITE)

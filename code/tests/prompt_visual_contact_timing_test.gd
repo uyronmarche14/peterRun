@@ -43,7 +43,9 @@ func _test_visual_contact(action: StringName, input_at: float) -> void:
 		_expect(not player.get("_contact_visual_active"), "Early %s anticipation is not the contact clearance" % action)
 		player.call("_process", 0.14)
 		_expect(sprite.call("get_clip_frame") > 0, "%s anticipation visibly advances without waiting for contact" % action)
-		_expect(is_zero_approx(player.get_node(^"Visual").position.y), "Early %s does not lift or duck twice" % action)
+		var anticipation_y: float = player.get_node(^"Visual").position.y
+		_expect(anticipation_y < -2.0 and anticipation_y > -8.0 if action == &"jump" else anticipation_y > 1.0 and anticipation_y < 5.0,
+			"Early %s immediately moves into a small preparation pose without using its full clearance height" % action)
 		player.call("_process", 0.10)
 		_expect(sprite.get("animation") == &"walk_forward", "%s returns to travel after the immediate anticipation" % action)
 		player.call("_process", eta - lead - 0.25)

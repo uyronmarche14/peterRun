@@ -57,6 +57,14 @@ func select_next_for_targets(library: Array, current_lane: int, remaining_target
 func _select_from_candidates(candidates: Array, prefer_recovery: bool = false) -> Dictionary:
 	if candidates.is_empty():
 		return {}
+	# Apply the no-repeat preference only after unfinished targets have been
+	# chosen. A last remaining Jump/Slide target must never fall back to a
+	# sparse cue merely because its full-lane layout was just used.
+	var fresh_candidates := candidates.filter(func(candidate: Dictionary) -> bool:
+		return StringName(candidate.get("pattern_id", &"")) != _last_pattern_id
+	)
+	if not fresh_candidates.is_empty():
+		candidates = fresh_candidates
 	var fair_candidates := _apply_gentle_pacing(candidates)
 	# Choose the prescribed action before its visual layout: adding art variants
 	# must not make Jump or Slide more frequent than lateral actions.
@@ -69,12 +77,16 @@ func _select_from_candidates(candidates: Array, prefer_recovery: bool = false) -
 	var actions: Array = action_groups.keys()
 	if actions.size() > 1 and actions.has(_last_action):
 		actions.erase(_last_action)
-	if _last_was_three_prop and not prefer_recovery and _selection_count >= 4:
-		var not_due_for_gate := actions.filter(func(action: StringName) -> bool:
-			return not _lane_action_counts.has(action) or int(_lane_action_counts[action]) % 3 != 2
+	if _last_was_three_prop and not prefer_recovery:
+		# Give the eye a quieter two-crate movement gate after a filled road,
+		# whenever the remaining prescribed actions permit one.
+		var quieter_actions := actions.filter(func(action: StringName) -> bool:
+			return (action_groups[action] as Array).any(func(candidate: Dictionary) -> bool:
+				return (candidate.get("obstacles", []) as Array).size() < 3
+			)
 		)
-		if not not_due_for_gate.is_empty():
-			actions = not_due_for_gate
+		if not quieter_actions.is_empty():
+			actions = quieter_actions
 	var chosen_action: StringName = actions[_random.randi_range(0, actions.size() - 1)]
 	var action_candidates: Array = action_groups[chosen_action]
 	if _lane_action_counts.has(chosen_action):
@@ -82,7 +94,7 @@ func _select_from_candidates(candidates: Array, prefer_recovery: bool = false) -
 			var simple_recovery := action_candidates.filter(func(candidate: Dictionary) -> bool: return candidate.get("obstacles", []).size() == 1)
 			if not simple_recovery.is_empty():
 				action_candidates = simple_recovery
-		else:
+		elif action_candidates.any(func(candidate: Dictionary) -> bool: return (candidate.get("obstacles", []) as Array).size() < 3):
 			var desired_size := 1 + int(_lane_action_counts[chosen_action]) % 3
 			if _selection_count < 4:
 				desired_size = 1
@@ -143,12 +155,42 @@ func _get_reachable_candidates(library: Array, current_lane: int) -> Array:
 		var candidate: Dictionary = candidate_value
 		if not Pattern.validate(candidate).is_empty():
 			continue
-		var pattern_id := StringName(candidate.get("pattern_id", &""))
 		var entry_lanes: Array = candidate.get("entry_lanes", [])
-		if pattern_id == _last_pattern_id or not entry_lanes.has(current_lane):
+		if not entry_lanes.has(current_lane):
 			continue
 		candidates.append(candidate)
-	return candidates
+	# L01 has an authored one-cue/two-crate composition in every entry lane.
+	# Keep sparse variants in the catalog for art review, but do not select a
+	# lone puddle or laundry line when the complete composition is reachable.
+	var full_lane_actions: Dictionary = {}
+	for candidate in candidates:
+		if _is_full_lane_action_cue(candidate):
+			full_lane_actions[StringName(candidate.get("required_action", &""))] = true
+	return candidates.filter(func(candidate: Dictionary) -> bool:
+		var action := StringName(candidate.get("required_action", &""))
+		return not full_lane_actions.has(action) or _is_full_lane_action_cue(candidate)
+	)
+
+
+func _is_full_lane_action_cue(candidate: Dictionary) -> bool:
+	var action := StringName(candidate.get("required_action", &""))
+	if action not in [&"jump", &"slide"]:
+		return false
+	var cue_kind := &"puddle" if action == &"jump" else &"laundry_line"
+	var obstacles: Array = candidate.get("obstacles", [])
+	if obstacles.size() != 3:
+		return false
+	var lanes := {}
+	var cues := 0
+	var crates := 0
+	for obstacle_value in obstacles:
+		if not obstacle_value is Dictionary:
+			return false
+		var obstacle: Dictionary = obstacle_value
+		lanes[int(obstacle.get("lane", -1))] = true
+		cues += int(obstacle.get("kind", &"") == cue_kind)
+		crates += int(obstacle.get("kind", &"") == &"crate")
+	return lanes.size() == 3 and cues == 1 and crates == 2
 
 
 func _get_layout_key(pattern: Dictionary) -> String:

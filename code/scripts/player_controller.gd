@@ -17,6 +17,7 @@ const ACTION_HOLD_SECONDS := 0.16
 const ACTION_RETURN_SECONDS := 0.28
 const JUMP_EXTRA_LIFT := 18.0
 const SLIDE_EXTRA_DROP := 4.0
+const ACTION_ANTICIPATION_SECONDS := 0.22
 var _lane_state := PlayerLaneStateModel.new()
 var _lane_tween: Tween
 var _action_tween: Tween
@@ -33,6 +34,7 @@ var _contact_visual_action: StringName = &""
 var _contact_visual_delay := 0.0
 var _contact_visual_fit := 0.0
 var _contact_visual_active := false
+var _contact_visual_anticipation_remaining := 0.0
 
 @onready var visual: Node2D = $Visual
 @onready var shadow: Node2D = $Shadow
@@ -125,12 +127,23 @@ func _process(delta: float) -> void:
 	if is_gameplay_paused:
 		return
 	var sprite_delta := delta
+	var anticipation_before := _contact_visual_anticipation_remaining
+	if anticipation_before > 0.0 and not _contact_visual_active:
+		_contact_visual_anticipation_remaining = maxf(0.0, anticipation_before - delta)
+	var contact_started := false
 	if _contact_visual_action != &"" and not _contact_visual_active:
 		var previous_delay := _contact_visual_delay
 		_contact_visual_delay = maxf(0.0, _contact_visual_delay - delta)
 		if _contact_visual_delay <= 0.0:
 			_start_contact_visual()
 			sprite_delta = maxf(0.0, delta - previous_delay)
+			contact_started = true
+	if anticipation_before > 0.0 and not contact_started:
+		if _contact_visual_anticipation_remaining <= 0.0:
+			_play_base_animation()
+			sprite_delta = maxf(0.0, delta - anticipation_before)
+		else:
+			sprite_delta = minf(sprite_delta, anticipation_before)
 	if not (Settings.reduced_motion and character_sprite.animation in [&"idle_ready", &"walk_forward", &"rest"]):
 		character_sprite.advance(sprite_delta)
 	_update_action_pose()
@@ -206,7 +219,13 @@ func _update_ground_feedback(delta: float) -> void:
 
 
 func _update_action_pose() -> void:
-	if (action_state == PlayerLaneStateModel.ActionState.JUMP or _contact_visual_active) and character_sprite.animation == &"jump_low":
+	if _contact_visual_action != &"" and not _contact_visual_active:
+		# A few pixels of response are visible on the next drawn frame; the full
+		# clearance still happens only as the prop reaches the contact line.
+		var anticipation_fraction := 1.0 - _contact_visual_anticipation_remaining / ACTION_ANTICIPATION_SECONDS
+		var anticipation_offset := sin(clampf(anticipation_fraction, 0.0, 1.0) * PI)
+		visual.position = Vector2(0.0, (-3.5 if _contact_visual_action == &"jump" else 2.5) * anticipation_offset)
+	elif ((_contact_visual_action == &"" and action_state == PlayerLaneStateModel.ActionState.JUMP) or _contact_visual_active) and character_sprite.animation == &"jump_low":
 		var contact_time := JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS
 		var authored_seconds := contact_time + JUMP_RECOVERY_SECONDS
 		var elapsed := minf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001) * authored_seconds, contact_time)
@@ -221,7 +240,7 @@ func _update_action_pose() -> void:
 		visual.position = Vector2(0.0, -JUMP_EXTRA_LIFT * lift_fraction)
 		if elapsed >= contact_time and not _jump_contact_emitted:
 			_start_landing_feedback()
-	elif (action_state == PlayerLaneStateModel.ActionState.SLIDE or _contact_visual_active) and character_sprite.animation == &"slide_duck":
+	elif ((_contact_visual_action == &"" and action_state == PlayerLaneStateModel.ActionState.SLIDE) or _contact_visual_active) and character_sprite.animation == &"slide_duck":
 		var fraction := clampf(character_sprite.elapsed / maxf(character_sprite.duration, 0.001), 0.0, 1.0)
 		visual.position = Vector2(0.0, SLIDE_EXTRA_DROP * sin(fraction * PI))
 
@@ -268,8 +287,15 @@ func _queue_contact_action_animation(action_name: StringName, seconds_until_cont
 	_action_tween = create_tween()
 	_action_tween.tween_interval(action_seconds)
 	_action_tween.tween_callback(_finish_deferred_action_state)
-	if _contact_visual_delay <= 0.0:
+	if _contact_visual_delay <= ACTION_ANTICIPATION_SECONDS:
+		# Near-contact input can begin the clearance clip at once. For earlier
+		# input, show only the opening preparation frames now, then resume the
+		# travel pose until the same clip meets the prop at contact.
+		_contact_visual_delay = 0.0
 		_start_contact_visual()
+	else:
+		_contact_visual_anticipation_remaining = ACTION_ANTICIPATION_SECONDS
+		character_sprite.play_clip(&"jump_low" if action_name == &"jump" else &"slide_duck", action_seconds)
 
 
 func _start_contact_visual() -> void:
@@ -322,6 +348,7 @@ func _clear_contact_visual() -> void:
 	_contact_visual_delay = 0.0
 	_contact_visual_fit = 0.0
 	_contact_visual_active = false
+	_contact_visual_anticipation_remaining = 0.0
 
 
 func _finish_action_animation() -> void:

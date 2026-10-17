@@ -21,6 +21,7 @@ func _run() -> void:
 	_test_catalog(library)
 	_test_validation(library)
 	_test_complexity_ramp(library)
+	_test_full_lane_action_selection(library)
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN L01 formation expansion test: " + ("PASS" if failures.is_empty() else "FAIL"))
@@ -75,21 +76,56 @@ func _test_complexity_ramp(library: Array) -> void:
 			_expect(formation.get("category", &"") == &"beginner", "Opening %d remains beginner" % index)
 		var size: int = formation.get("obstacles", []).size()
 		var action := StringName(formation.get("required_action", &""))
-		if index >= 4 and sizes.has(action):
+		if sizes.has(action):
 			sizes[action].append(size)
+			_expect(_is_full_lane_action(formation), "%s occupies all three lanes with its action cue and two crates" % formation.pattern_id)
 		if action in [&"jump", &"slide"]:
 			current_lane = current_lane
 		else:
 			current_lane = int(formation.get("ending_lane", current_lane))
-		_expect(not (size == 3 and previous_size == 3), "Three-prop gates never occur back-to-back")
+		_expect(not (size == 3 and previous_size == 3), "Three-prop gates are separated when all four actions are available")
 		previous_size = size
 	for action in sizes:
 		_expect(sizes[action].size() >= 3, "%s appears often enough to assess its ramp" % action)
 		if sizes[action].size() >= 3:
-			_expect(sizes[action].slice(0, 3) == [1, 2, 3], "%s grows through 1, 2, 3 props" % action)
+			_expect(sizes[action].all(func(size: int) -> bool: return size == 3), "%s never leaves two open lanes" % action)
 	var only_jump := {&"move_left": 0, &"move_right": 0, &"jump": 2, &"slide": 0}
 	var recovery := resolver.select_next_for_targets(library, current_lane, only_jump, true)
-	_expect(recovery.get("obstacles", []).size() == 1, "Recovery returns to a single cue")
+	_expect(_is_full_lane_action(recovery), "Recovery remains a single clear action cue with both side lanes occupied")
+
+
+func _test_full_lane_action_selection(library: Array) -> void:
+	for seed in [17, 83, 311]:
+		for start_lane in [0, 1, 2]:
+			var resolver := Resolver.new()
+			resolver.set_seed(seed)
+			var targets := {&"move_left": 0, &"move_right": 0, &"jump": 20, &"slide": 20}
+			for index in 24:
+				var formation: Dictionary = resolver.select_next_for_targets(library, start_lane, targets)
+				_expect(not formation.is_empty(), "Seed %d lane %d selection %d is reachable" % [seed, start_lane, index])
+				if formation.is_empty():
+					break
+				_expect(formation.get("required_action", &"") in [&"jump", &"slide"], "Only unfinished Jump/Slide targets are selected")
+				_expect(_is_full_lane_action(formation), "%s has one puddle/laundry cue and two crates, with no open lane" % formation.pattern_id)
+				_expect(formation.get("entry_lanes", []).has(start_lane), "%s is reachable from lane %d" % [formation.pattern_id, start_lane])
+
+
+func _is_full_lane_action(formation: Dictionary) -> bool:
+	var action := StringName(formation.get("required_action", &""))
+	if action not in [&"jump", &"slide"]:
+		return false
+	var cue_kind := &"puddle" if action == &"jump" else &"laundry_line"
+	var obstacles: Array = formation.get("obstacles", [])
+	if obstacles.size() != 3:
+		return false
+	var lanes := {}
+	var cue_count := 0
+	var crate_count := 0
+	for obstacle in obstacles:
+		lanes[int(obstacle.get("lane", -1))] = true
+		cue_count += int(obstacle.get("kind", &"") == cue_kind)
+		crate_count += int(obstacle.get("kind", &"") == &"crate")
+	return lanes.size() == 3 and cue_count == 1 and crate_count == 2
 
 
 func _layout(formation: Dictionary) -> String:

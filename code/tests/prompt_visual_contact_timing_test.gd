@@ -37,15 +37,21 @@ func _test_visual_contact(action: StringName, input_at: float) -> void:
 	_expect(player.get("action_state") != 0, "Input changes action state immediately at t=%.2f" % input_at)
 	var lead := 0.43 if action == &"jump" else 0.33
 	var clip := &"jump_low" if action == &"jump" else &"slide_duck"
-	if eta > lead:
-		_expect(sprite.get("animation") != clip, "Early %s input at t=%.2f waits for its contact pose" % [action, input_at])
-		player.call("_process", eta - lead - 0.01)
-		_expect(sprite.get("animation") != clip, "%s at t=%.2f has not started too early" % [action, input_at])
+	if eta > lead + 0.24:
+		_expect(sprite.get("animation") == clip, "Early %s input at t=%.2f immediately shows anticipation" % [action, input_at])
+		_expect(not player.get("_contact_visual_active"), "Early %s anticipation is not the contact clearance" % action)
+		player.call("_process", 0.14)
+		_expect(sprite.call("get_clip_frame") > 0, "%s anticipation visibly advances without waiting for contact" % action)
+		_expect(is_zero_approx(player.get_node(^"Visual").position.y), "Early %s does not lift or duck twice" % action)
+		player.call("_process", 0.10)
+		_expect(sprite.get("animation") == &"walk_forward", "%s returns to travel after the immediate anticipation" % action)
+		player.call("_process", eta - lead - 0.25)
+		_expect(sprite.get("animation") != clip, "%s contact clearance has not started too early" % action)
 		player.call("_process", 0.02)
-		_expect(sprite.get("animation") == clip, "%s at t=%.2f starts before contact" % [action, input_at])
+		_expect(sprite.get("animation") == clip, "%s clearance starts before contact" % action)
 		player.call("_process", lead - 0.01)
 	else:
-		_expect(sprite.get("animation") == clip, "Late %s input at t=%.2f shows the action immediately" % [action, input_at])
+		_expect(sprite.get("animation") == clip, "Near-contact %s input at t=%.2f starts immediately" % [action, input_at])
 		player.call("_process", eta)
 	_expect(sprite.get("animation") == clip, "%s remains visible at contact t=%.2f" % [action, input_at])
 	var body_y: float = player.get_node(^"Visual").position.y
@@ -75,7 +81,7 @@ func _test_warning_input_remains_one_rep() -> void:
 	director.call("schedule_with_action_lanes", &"jump", [1])
 	level.get_node(^"WorldMotion").call("begin_prompt_approach", 1, 2.5, 2.0)
 	level.call("receive_input", &"jump", true, 10.0)
-	_expect(level.get_node(^"Player/Visual/CharacterSprite").get("animation") != &"jump_low", "Warning-phase Jump acknowledges input without finishing before contact")
+	_expect(level.get_node(^"Player/Visual/CharacterSprite").get("animation") == &"jump_low", "Warning-phase Jump shows immediate anticipation")
 	_expect(level.get("session_result").get_completed(&"jump") == 0, "Warning input cannot add an early repetition")
 	level.call("_on_warning_timer_timeout")
 	level.call("_on_response_timer_timeout")

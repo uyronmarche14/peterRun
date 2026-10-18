@@ -15,7 +15,7 @@ const LANDING_SECONDS := 0.22
 const ACTION_RISE_SECONDS := 0.22
 const ACTION_HOLD_SECONDS := 0.16
 const ACTION_RETURN_SECONDS := 0.28
-const JUMP_EXTRA_LIFT := 18.0
+const JUMP_EXTRA_LIFT := 28.0
 const SLIDE_EXTRA_DROP := 4.0
 const ACTION_ANTICIPATION_SECONDS := 0.22
 var _lane_state := PlayerLaneStateModel.new()
@@ -379,7 +379,7 @@ func _play_jump_shadow_animation(fit_seconds: float = 0.92) -> void:
 		_shadow_tween.kill()
 	_shadow_tween = create_tween()
 	var timing_scale := fit_seconds / (JUMP_RISE_SECONDS + JUMP_HOLD_SECONDS + JUMP_RETURN_SECONDS + JUMP_RECOVERY_SECONDS)
-	_shadow_tween.tween_property(shadow, ^"scale", Vector2(0.48, 0.48), JUMP_RISE_SECONDS * timing_scale).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_shadow_tween.tween_property(shadow, ^"scale", Vector2(0.42, 0.42), JUMP_RISE_SECONDS * timing_scale).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_shadow_tween.tween_interval(JUMP_HOLD_SECONDS * timing_scale)
 	_shadow_tween.tween_property(shadow, ^"scale", Vector2.ONE, JUMP_RETURN_SECONDS * timing_scale).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 

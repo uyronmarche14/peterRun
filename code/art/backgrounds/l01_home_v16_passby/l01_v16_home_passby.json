@@ -1,0 +1,78 @@
+{
+	"art_canvas_px": [
+		960,
+		540
+	],
+	"canvas_px": [
+		480,
+		270
+	],
+	"modules": [
+		{
+			"contact_px": [
+				737.5,
+				375.0
+			],
+			"id": "left_veranda",
+			"phase": 0.03,
+			"side": "left",
+			"source_to_runtime_factor": 0.5,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_left_veranda.png"
+		},
+		{
+			"contact_px": [
+				740.0,
+				410.0
+			],
+			"id": "left_sawali",
+			"phase": 0.36,
+			"side": "left",
+			"source_to_runtime_factor": 0.5,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_left_sawali.png"
+		},
+		{
+			"contact_px": [
+				728.038269042969,
+				349.090911865234
+			],
+			"id": "left_workshop",
+			"phase": 0.69,
+			"side": "left",
+			"source_to_runtime_factor": 0.45933014354067,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_left_workshop.png"
+		},
+		{
+			"contact_px": [
+				91.8660278320313,
+				360.574157714844
+			],
+			"id": "right_sari_sari",
+			"phase": 0.2,
+			"side": "right",
+			"source_to_runtime_factor": 0.45933014354067,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_right_sari_sari.png"
+		},
+		{
+			"contact_px": [
+				75.7894744873047,
+				277.894744873047
+			],
+			"id": "right_bungalow",
+			"phase": 0.53,
+			"side": "right",
+			"source_to_runtime_factor": 0.45933014354067,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_right_bungalow.png"
+		},
+		{
+			"contact_px": [
+				99.5140914916992,
+				348.29931640625
+			],
+			"id": "right_teal_house",
+			"phase": 0.86,
+			"side": "right",
+			"source_to_runtime_factor": 0.49757045675413,
+			"texture": "res://art/backgrounds/l01_home_v16_passby/l01_v16_right_teal_house.png"
+		}
+	]
+}

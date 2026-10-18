@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v05_layers/l01_v05_birds_strip.png" id="15_l01_birds"]
 [ext_resource type="Script" path="res://scripts/l01_layered_route_motion.gd" id="17_l01_motion"]
 [ext_resource type="Script" path="res://scripts/l01_stage_street_life.gd" id="v13_street_life"]
+[ext_resource type="Script" path="res://scripts/l01_home_passing_street.gd" id="v16_home_passby"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_home_v10_layers/l01_v10_home_road.png" id="54_home_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_waiting_road.png" id="v11_waiting_road"]
 [ext_resource type="Texture2D" path="res://art/backgrounds/l01_journey_v11_layers/l01_v11_sari_sari_road.png" id="v11_sari_sari_road"]
@@ -223,6 +224,9 @@ texture_filter = 1
 texture = ExtResource("54_home_road")
 centered = false
 use_parent_material = true
+
+[node name="PassingFrontages" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
+script = ExtResource("v16_home_passby")
 
 [node name="StreetLife" type="Node2D" parent="LevelWorld/L01BarangayLayers/JourneyStages/StageHome"]
 z_index = 4

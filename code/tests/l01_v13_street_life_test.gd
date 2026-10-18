@@ -29,7 +29,10 @@ func _run() -> void:
 		var left := stage.get_node(^"LeftStreet") as Sprite2D
 		var right := stage.get_node(^"RightStreet") as Sprite2D
 		var road := stage.get_node(^"Road") as Sprite2D
-		_expect(left.visible and right.visible, "Fixed side buildings remain visible in " + STAGES[index])
+		if index == 0:
+			_expect(not left.visible and not right.visible, "Home hides its fixed side plates while frontages pass")
+		else:
+			_expect(left.visible and right.visible, "Later-stage fixed side buildings remain visible in " + STAGES[index])
 		_expect(road.texture != null and road.texture.resource_path.ends_with(ROAD_NAMES[index]), "Stage keeps its registered original road: " + STAGES[index])
 		var passing := stage.get_node_or_null(^"PassingStreet") as Node2D
 		_expect(passing == null or not passing.visible, "Whole-building travel is inactive in " + STAGES[index])

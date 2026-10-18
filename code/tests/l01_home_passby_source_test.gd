@@ -25,7 +25,7 @@ func _check_manifest() -> void:
 	if not parsed is Dictionary:
 		return
 	var entries: Array = parsed.get("modules", [])
-	_expect(entries.size() >= 4, "At least two varied frontages per side")
+	_expect(entries.size() >= 6, "At least three varied frontages per side")
 	var side_count := {"left": 0, "right": 0}
 	var paths := {}
 	for entry in entries:
@@ -56,7 +56,7 @@ func _check_manifest() -> void:
 				"Ground-contact origin lies in source canvas")
 		var phase := float(entry.get("phase", -1.0))
 		_expect(phase >= 0.0 and phase < 1.0, "Module phase lies in travel cycle")
-	_expect(side_count["left"] >= 2 and side_count["right"] >= 2, "Both sides have two distinct frontages")
+	_expect(side_count["left"] >= 3 and side_count["right"] >= 3, "Both sides have three distinct frontages")
 
 
 func _expect(condition: bool, message: String) -> void:

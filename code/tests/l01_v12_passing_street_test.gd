@@ -80,7 +80,10 @@ func _test_archived_passing_street_is_inactive() -> void:
 		_expect(passing == null or not passing.visible, "Archived V12 whole-building travel is not active")
 		var left := stage.get_node(^"LeftStreet") as Sprite2D
 		var right := stage.get_node(^"RightStreet") as Sprite2D
-		_expect(left.visible and right.visible, "Fixed scenery is used instead of V12 travel")
+		if index == 0:
+			_expect(not left.visible and not right.visible, "Home V16 has no duplicate fixed street")
+		else:
+			_expect(left.visible and right.visible, "Later stages retain fixed scenery instead of V12 travel")
 	level.free()
 
 

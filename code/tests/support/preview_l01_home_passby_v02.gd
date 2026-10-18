@@ -40,7 +40,7 @@ func _run() -> void:
 			var entry: Dictionary = raw_entry
 			var local_phase := fposmod(cycle_phase + float(entry["phase"]), 1.0)
 			var depth := pow(local_phase, 1.18)
-			var ground_y := lerpf(138.0, 246.0, depth)
+			var ground_y := lerpf(128.0, 246.0, depth)
 			placements.append({"entry": entry, "ground_y": ground_y, "depth": depth})
 		placements.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["ground_y"] < b["ground_y"])
 		for placement in placements:
@@ -72,7 +72,7 @@ func _blend_module(destination: Image, placement: Dictionary) -> void:
 	var side := -1 if String(entry["side"]) == "left" else 1
 	var ground_y := float(placement["ground_y"])
 	var depth := float(placement["depth"])
-	var art_scale := lerpf(0.13, 0.51, depth)
+	var art_scale := lerpf(0.035, 0.51, depth)
 	var contact_array: Array = entry["contact"]
 	var source_contact := Vector2(float(contact_array[0]), float(contact_array[1]))
 	var contact := Vector2(Geometry.roadside_contact_x(side, ground_y, 2.0) * 2.0, ground_y * 2.0)

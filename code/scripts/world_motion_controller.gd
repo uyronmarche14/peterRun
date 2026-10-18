@@ -32,6 +32,7 @@ var _prop_visual_half_widths: Dictionary = {}
 @onready var road_motion_dashes: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadMotionDashes") as Node2D
 @onready var road_presentation: Node2D = get_node("../LevelWorld/RoadAndLanes/RoadPresentation") as Node2D
 @onready var roadside_travel: Node2D = get_node("../LevelWorld/RoadsideMotion") as Node2D
+@onready var home_passing: Node2D = get_node("../LevelWorld/L01BarangayLayers/JourneyStages/StageHome/PassingFrontages") as Node2D
 @onready var prompt_anchor: Marker2D = get_node("../LevelWorld/PromptWorldAnchor") as Marker2D
 
 
@@ -43,6 +44,8 @@ func _ready() -> void:
 	# their authored editor placeholders can never flash as opaque bars.
 	_update_road()
 	roadside_travel.call("set_travel_distance", motion_distance)
+	home_passing.call("set_reduced_motion", GameSettings.reduced_motion)
+	home_passing.call("set_travel_distance", motion_distance)
 
 
 func _process(delta: float) -> void:
@@ -51,6 +54,8 @@ func _process(delta: float) -> void:
 	motion_distance += delta * GameSettings.visual_pace
 	_update_road()
 	roadside_travel.call("set_reduced_motion", GameSettings.reduced_motion)
+	home_passing.call("set_reduced_motion", GameSettings.reduced_motion)
+	home_passing.call("set_travel_distance", motion_distance)
 	if not GameSettings.reduced_motion:
 		roadside_travel.call("set_travel_distance", motion_distance)
 	if not _prompt_is_visible:
@@ -126,6 +131,7 @@ func _update_road() -> void:
 func set_motion_paused(should_pause: bool) -> void:
 	is_motion_paused = should_pause
 	roadside_travel.call("set_motion_paused", should_pause)
+	home_passing.call("set_motion_paused", should_pause)
 
 
 func get_prompt_remaining_seconds() -> float:

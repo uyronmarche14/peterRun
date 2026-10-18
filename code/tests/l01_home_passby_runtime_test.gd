@@ -28,8 +28,8 @@ func _run() -> void:
 		_expect(not (home.get_node(^"LeftStreet") as Sprite2D).visible, "Moving Home has no duplicate fixed left buildings")
 		_expect(not (home.get_node(^"RightStreet") as Sprite2D).visible, "Moving Home has no duplicate fixed right buildings")
 		var sprites: Array = passing.call("get_module_sprites")
-		_expect(sprites.size() == 4, "Home has four distinct passing frontages")
-		if sprites.size() == 4:
+		_expect(sprites.size() == 6, "Home has six distinct passing frontages")
+		if sprites.size() == 6:
 			var before: Vector2 = sprites[0].position
 			passing.call("set_travel_distance", 1.8)
 			_expect(sprites[0].position.distance_to(before) > 1.0, "Shared travel moves frontage in perspective")
@@ -41,12 +41,13 @@ func _run() -> void:
 			passing.call("set_travel_distance", 3.0)
 			_expect(sprites[0].position.distance_to(moved) > 1.0, "Frontage resumes from shared distance")
 			var contacts: Array = passing.call("get_contact_points")
-			_expect(contacts.size() == 4, "Every frontage exposes a measured ground contact")
+			_expect(contacts.size() == 6, "Every frontage exposes a measured ground contact")
 			for contact in contacts:
 				var side: int = contact["side"]
 				var point: Vector2 = contact["point"]
 				_expect(absf(point.x - Guide.roadside_contact_x(side, point.y, 2.0)) <= 0.5,
 					"Frontage contact stays registered to the painted curb")
+			_check_roadside_alpha(passing)
 		passing.call("set_reduced_motion", true)
 		_expect(not passing.visible, "Reduced Motion hides the passing frontages")
 		_expect((home.get_node(^"LeftStreet") as Sprite2D).visible and (home.get_node(^"RightStreet") as Sprite2D).visible,
@@ -64,3 +65,23 @@ func _run() -> void:
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _check_roadside_alpha(passing: Node2D) -> void:
+	for phase in 17:
+		passing.call("set_travel_distance", 34.0 * float(phase) / 17.0)
+		var contacts: Array = passing.call("get_contact_points")
+		var sprites: Array = passing.call("get_module_sprites")
+		for index in sprites.size():
+			var sprite := sprites[index] as Sprite2D
+			var side: int = contacts[index]["side"]
+			var image := sprite.texture.get_image()
+			for native_y in [150, 190, 218, 241]:
+				var curb := Guide.painted_curb_x(side, float(native_y))
+				for inset in 17:
+					var native_x := int(ceil(curb)) + inset if side < 0 else int(floor(curb)) - inset
+					var art_point := (Vector2(native_x, native_y) * 2.0 - sprite.position) / sprite.scale.x - sprite.offset
+					var pixel := Vector2i(art_point.floor())
+					if pixel.x >= 0 and pixel.y >= 0 and pixel.x < image.get_width() and pixel.y < image.get_height():
+						_expect(image.get_pixelv(pixel).a <= 0.05,
+							"Passing frontage alpha stays out of active road at phase %d, y=%d" % [phase, native_y])

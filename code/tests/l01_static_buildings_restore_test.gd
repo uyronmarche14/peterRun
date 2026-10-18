@@ -63,7 +63,12 @@ func _run() -> void:
 		_expect(overlay != null and overlay.visible, "aligned ambient layer remains visible: " + String(path))
 	for stage_name in ["StageHome", "StageWaitingShed", "StageSariSari", "StagePalengke", "StagePlaza"]:
 		var stage := layers.get_node("JourneyStages/" + stage_name) as Sprite2D
-		_expect((stage.get_node(^"LeftStreet") as Sprite2D).visible and (stage.get_node(^"RightStreet") as Sprite2D).visible, "fixed stage buildings remain visible: " + stage_name)
+		var fixed_sides_visible := (stage.get_node(^"LeftStreet") as Sprite2D).visible and (stage.get_node(^"RightStreet") as Sprite2D).visible
+		if stage_name == "StageHome":
+			_expect(not fixed_sides_visible and (stage.get_node(^"PassingFrontages") as Node2D).visible,
+				"Home uses distinct curb-locked frontages without fixed duplicates")
+		else:
+			_expect(fixed_sides_visible, "later-stage fixed buildings remain visible: " + stage_name)
 		_expect(stage.get_node_or_null(^"StreetLife") != null, "small aligned street-life overlay replaces old floating sprite: " + stage_name)
 	if before.size() == STATIC_BUILDINGS.size():
 		layers.set_process(false)

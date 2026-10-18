@@ -30,6 +30,9 @@ func _run() -> void:
 		var sprites: Array = passing.call("get_module_sprites")
 		_expect(sprites.size() == 6, "Home has six distinct passing frontages")
 		if sprites.size() == 6:
+			var shop := passing.get_node_or_null(^"right_sari_sari") as Sprite2D
+			var neighbour := shop.get_node_or_null(^"NeighbourWave") as Sprite2D if shop != null else null
+			_expect(neighbour != null, "Home waving neighbour is attached to a passing frontage")
 			var before: Vector2 = sprites[0].position
 			passing.call("set_travel_distance", 1.8)
 			_expect(sprites[0].position.distance_to(before) > 1.0, "Shared travel moves frontage in perspective")
@@ -40,6 +43,13 @@ func _run() -> void:
 			passing.call("set_motion_paused", false)
 			passing.call("set_travel_distance", 3.0)
 			_expect(sprites[0].position.distance_to(moved) > 1.0, "Frontage resumes from shared distance")
+			if neighbour != null:
+				passing.call("set_travel_distance", 8.0)
+				_expect(neighbour.visible, "Neighbour appears beside shop only at readable depth")
+				var resident_before := neighbour.global_position
+				passing.call("set_travel_distance", 10.0)
+				_expect(neighbour.global_position.distance_to(resident_before) > 1.0,
+					"Neighbour travels with the shop rather than staying at an old fixed anchor")
 			var contacts: Array = passing.call("get_contact_points")
 			_expect(contacts.size() == 6, "Every frontage exposes a measured ground contact")
 			for contact in contacts:

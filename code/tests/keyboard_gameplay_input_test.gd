@@ -22,11 +22,12 @@ func _run() -> void:
 		_expect_equal(player.get("lane_index"), 0, "Real A key moves player one lane left")
 		level.call("_input", _keyboard_event(KEY_A, false))
 
+		player.set_process(false)
 		level.call("_input", _keyboard_event(KEY_W, true))
 		_expect_equal(player.get("action_state"), 1, "Real W key starts the jump action")
-		await create_timer(0.08).timeout
+		player.call("_process", 0.08)
 		var visual := player.get_node_or_null(^"Visual") as Node2D
-		_expect(visual != null and visual.position.y < -2.0 and visual.scale == Vector2.ONE and player.character_sprite.animation == &"jump_low", "Real jump input starts the higher visual arc without distorting Peter")
+		_expect(visual != null and visual.position.y < -2.0 and visual.scale == Vector2.ONE and player.character_sprite.animation == &"jump_low", "Real jump input starts the higher visual arc without distorting Peter (y=%s, scale=%s, clip=%s, frame=%s)" % [visual.position.y if visual != null else INF, visual.scale if visual != null else Vector2.ZERO, player.character_sprite.animation, player.character_sprite.get_clip_frame()])
 		level.call("_input", _keyboard_event(KEY_W, false))
 
 	level.free()

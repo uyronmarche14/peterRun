@@ -4,6 +4,7 @@
     "source_type":  "transparent illustrated sprite strips",
     "design_reference":  "Peter_Run_Visual_Production/character_concepts/peter_character_v03/peter_character_turnaround_v03.png",
     "source_directory":  "Peter_Run_Visual_Production/generated/peter_adult_image_v04/source_strips",
+    "inbetween_source_directory":  "Peter_Run_Visual_Production/generated/peter_adult_image_v06/source_strips",
     "generation_method":  "OpenAI built-in image generation with identity-preserving reference prompts",
     "canvas":  [
                    256,
@@ -15,27 +16,11 @@
               ],
     "visual_adjustments":  {
                                "display_scale":  0.4,
-                               "jump_lift_pixels":  [
-                                                        0,
-                                                        -12,
-                                                        -28,
-                                                        -46,
-                                                        -56,
-                                                        -36,
-                                                        0,
-                                                        0
-                                                    ],
-                               "slide_vertical_scale":  [
-                                                            1,
-                                                            0.96,
-                                                            0.9,
-                                                            0.88,
-                                                            0.95,
-                                                            1
-                                                        ]
+                               "jump_lift_pixels":  [0, -6, -12, -20, -28, -37, -46, -51, -56, -46, -36, -18, 0, 0, 0],
+                               "slide_vertical_scale":  [1, 0.98, 0.96, 0.93, 0.9, 0.89, 0.88, 0.915, 0.95, 0.975, 1]
                            },
     "playback_contract":  "Existing Godot controller remains the sole owner of lane position, timing, repetition, and pause.",
-    "jump_displacement":  "eight-pose baked 56 px source arc plus an 8 px Godot visual accent; gameplay collision and route timing remain unchanged",
+    "jump_displacement":  "fifteen-pose baked 56 px source arc plus a 28 px Godot visual lift; gameplay collision and route timing remain unchanged",
     "jump_source_directory":  "Peter_Run_Visual_Production/generated/peter_adult_image_v05/source_strips",
     "shadow":  "ground_shadow.png",
     "feedback_effects":  {
@@ -293,141 +278,51 @@
                                                       ]
                                       },
                        "jump_low":  {
-                                        "frames":  8,
-                                        "fps":  8.695652173913043,
+                                        "frames":  15,
+                                        "fps":  16.304347826086957,
                                         "duration_seconds":  0.92,
                                         "loop":  false,
-                                        "timestamps":  [
-                                                           0,
-                                                           0.13,
-                                                           0.26,
-                                                           0.39,
-                                                           0.52,
-                                                           0.65,
-                                                           0.78,
-                                                           0.86
-                                                       ],
-                                        "frame_durations":  [
-                                                                0.13,
-                                                                0.13,
-                                                                0.13,
-                                                                0.13,
-                                                                0.13,
-                                                                0.13,
-                                                                0.08,
-                                                                0.06
-                                                            ],
-                                        "atlas":  "jump_high_v05.png",
+                                        "timestamps":  [0, 0.065, 0.13, 0.195, 0.26, 0.325, 0.39, 0.455, 0.52, 0.585, 0.65, 0.715, 0.78, 0.82, 0.86],
+                                        "frame_durations":  [0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.065, 0.04, 0.04, 0.06],
+                                        "atlas":  "jump_smooth_v06.png",
                                         "regions":  [
-                                                        [
-                                                            2,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            262,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            522,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            782,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            1042,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            1302,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            1562,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ],
-                                                        [
-                                                            1822,
-                                                            2,
-                                                            256,
-                                                            256
-                                                        ]
+                                                        [2, 2, 256, 256],
+                                                        [262, 2, 256, 256],
+                                                        [522, 2, 256, 256],
+                                                        [782, 2, 256, 256],
+                                                        [1042, 2, 256, 256],
+                                                        [1302, 2, 256, 256],
+                                                        [1562, 2, 256, 256],
+                                                        [1822, 2, 256, 256],
+                                                        [2082, 2, 256, 256],
+                                                        [2342, 2, 256, 256],
+                                                        [2602, 2, 256, 256],
+                                                        [2862, 2, 256, 256],
+                                                        [3122, 2, 256, 256],
+                                                        [3382, 2, 256, 256],
+                                                        [3642, 2, 256, 256]
                                                     ]
                                     },
                        "slide_duck":  {
-                                          "frames":  6,
-                                          "fps":  12.5,
+                                          "frames":  11,
+                                          "fps":  22.916666666666668,
                                           "duration_seconds":  0.48,
                                           "loop":  false,
-                                          "timestamps":  [
-                                                             0,
-                                                             0.08,
-                                                             0.16,
-                                                             0.24,
-                                                             0.32,
-                                                             0.39999999999999997
-                                                         ],
-                                          "frame_durations":  [
-                                                                  0.08,
-                                                                  0.08,
-                                                                  0.08,
-                                                                  0.08,
-                                                                  0.08,
-                                                                  0.08
-                                                              ],
-                                          "atlas":  "slide_duck.png",
+                                          "timestamps":  [0, 0.04, 0.08, 0.12, 0.16, 0.2, 0.24, 0.28, 0.32, 0.36, 0.4],
+                                          "frame_durations":  [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.08],
+                                          "atlas":  "slide_smooth_v06.png",
                                           "regions":  [
-                                                          [
-                                                              2,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ],
-                                                          [
-                                                              262,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ],
-                                                          [
-                                                              522,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ],
-                                                          [
-                                                              782,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ],
-                                                          [
-                                                              1042,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ],
-                                                          [
-                                                              1302,
-                                                              2,
-                                                              256,
-                                                              256
-                                                          ]
+                                                          [2, 2, 256, 256],
+                                                          [262, 2, 256, 256],
+                                                          [522, 2, 256, 256],
+                                                          [782, 2, 256, 256],
+                                                          [1042, 2, 256, 256],
+                                                          [1302, 2, 256, 256],
+                                                          [1562, 2, 256, 256],
+                                                          [1822, 2, 256, 256],
+                                                          [2082, 2, 256, 256],
+                                                          [2342, 2, 256, 256],
+                                                          [2602, 2, 256, 256]
                                                       ]
                                       },
                        "rest":  {

@@ -41,7 +41,8 @@ func _run() -> void:
 			tween.pause()
 			tween.custom_step(seconds * 0.5)
 			player.call("_process", seconds * 0.5)
-			_expect(sprite.call("get_clip_frame") == 3, "Action advances using exact authored timestamps")
+			var expected_midframe := 7 if action == &"jump" else 6
+			_expect(sprite.call("get_clip_frame") == expected_midframe, "Action advances using the denser authored timestamps")
 			_expect(visual.scale == Vector2.ONE and is_zero_approx(visual.rotation), "Jump/slide enhancement preserves Peter's authored proportions")
 			if action == &"jump":
 				_expect(visual.position.y <= -8.0, "Jump receives the requested higher visual apex")

@@ -3,6 +3,8 @@ extends SceneTree
 var output_dir := "res://../test_evidence/l01_full_lane_action_cues"
 const RoadProjection = preload("res://scripts/road_projection.gd")
 const FORMATIONS := [
+	"l01_p01_move_left",
+	"l01_p02_move_right",
 	"l01_p10_jump_gate_center",
 	"l01_p11_slide_gate_center",
 	"l01_p21_jump_gate_left",

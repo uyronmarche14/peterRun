@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/tutorial_controller.gd" id="1_tutorial"]
 
@@ -9,6 +9,10 @@
 [ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
 
 [ext_resource type="Texture2D" path="res://art/backgrounds/ui_barangay_flow_v01.png" id="11_backdrop"]
+[ext_resource type="Texture2D" path="res://art/ui/action_icons/move_left.svg" id="12_left_icon"]
+[ext_resource type="Texture2D" path="res://art/ui/action_icons/move_right.svg" id="13_right_icon"]
+[ext_resource type="Texture2D" path="res://art/ui/action_icons/jump.svg" id="14_jump_icon"]
+[ext_resource type="Texture2D" path="res://art/ui/action_icons/slide.svg" id="15_slide_icon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxActionCard"]
 bg_color = Color(0.027, 0.11, 0.145, 0.94)
@@ -109,6 +113,96 @@ text = "Start with a calm practice, watch an example, or continue when ready."
 horizontal_alignment = 1
 autowrap_mode = 2
 
+[node name="MovementPreviewGrid" type="GridContainer" parent="Panel/Margin/Content/Welcome"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 3
+
+[node name="LeftPreview" type="HBoxContainer" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 28)
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="Icon" type="TextureRect" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/LeftPreview"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+modulate = Color(0.15, 0.42, 0.43, 1)
+texture = ExtResource("12_left_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/LeftPreview"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "MOVE LEFT"
+vertical_alignment = 1
+
+[node name="RightPreview" type="HBoxContainer" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 28)
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="Icon" type="TextureRect" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/RightPreview"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+modulate = Color(0.15, 0.42, 0.43, 1)
+texture = ExtResource("13_right_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/RightPreview"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "MOVE RIGHT"
+vertical_alignment = 1
+
+[node name="JumpPreview" type="HBoxContainer" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 28)
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="Icon" type="TextureRect" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/JumpPreview"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+modulate = Color(0.15, 0.42, 0.43, 1)
+texture = ExtResource("14_jump_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/JumpPreview"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "JUMP"
+vertical_alignment = 1
+
+[node name="SlidePreview" type="HBoxContainer" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 28)
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="Icon" type="TextureRect" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/SlidePreview"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+modulate = Color(0.15, 0.42, 0.43, 1)
+texture = ExtResource("15_slide_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Content/Welcome/MovementPreviewGrid/SlidePreview"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "SLIDE"
+vertical_alignment = 1
+
 [node name="Actions" type="HBoxContainer" parent="Panel/Margin/Content/Welcome"]
 layout_mode = 2
 theme_override_constants/separation = 4
@@ -149,6 +243,17 @@ theme_override_colors/font_color = Color(1, 0.8, 0.39, 1)
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ActionIcon" type="TextureRect" parent="Panel/Margin/Content/ActionCard"]
+visible = false
+layout_mode = 0
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 34.0
+offset_bottom = 30.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
 
 [node name="ActionLabel" type="Label" parent="Panel/Margin/Content/ActionCard"]
 anchor_right = 1

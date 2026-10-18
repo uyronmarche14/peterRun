@@ -7,7 +7,7 @@ const COMPACT_THEME_PATH := "res://art/ui/compact_theme.tres"
 const SCREENS := {
 	"main": Vector2(205, 195), "patient_setup": Vector2(250, 205),
 	"controller_check": Vector2(280, 160), "ready": Vector2(260, 160),
-	"tutorial": Vector2(330, 235), "session_summary": Vector2(310, 220),
+	"tutorial": Vector2(330, 235), "session_summary": Vector2(360, 250),
 }
 
 
@@ -21,10 +21,14 @@ func _init() -> void:
 
 func _run() -> void:
 	root.mode = Window.MODE_WINDOWED
+	await process_frame
+	await process_frame
 	_check_game_font()
 	_check_effort_rating_theme()
-	for dimensions in [Vector2i(1920, 1080), Vector2i(960, 540), Vector2i(1024, 768)]:
+	for dimensions in [Vector2i(480, 270), Vector2i(960, 540), Vector2i(1024, 768), Vector2i(1920, 1080)]:
 		root.size = dimensions
+		await process_frame
+		await process_frame
 		for screen_name in SCREENS:
 			var screen: Control = load("res://scenes/%s.tscn" % screen_name).instantiate()
 			root.add_child(screen)
@@ -173,7 +177,7 @@ func _check_controls(node: Node) -> void:
 		_expect(Rect2(0, 0, 480, 270).grow(1).encloses(node.get_global_rect()), "Viewport contains " + str(node.get_path()))
 		if node is BaseButton:
 			_expect(node.size.x >= 16 and node.size.y >= 16, "64px minimum target at 1080p: " + str(node.get_path()))
-			_expect(node.size.y <= 20, "Compact button height: " + str(node.get_path()))
+			_expect(node.size.y <= (28 if node.theme_type_variation == &"EffortRatingButton" else 20), "Compact button height: " + str(node.get_path()))
 	for child in node.get_children():
 		_check_controls(child)
 
@@ -199,7 +203,18 @@ func _capture(label: String, dimensions: Vector2i) -> void:
 	await RenderingServer.frame_post_draw
 	var path := "%s/ui_theme_%s_%dx%d.png" % [capture_dir, label, dimensions.x, dimensions.y]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(capture_dir))
-	_expect(root.get_texture().get_image().save_png(ProjectSettings.globalize_path(path)) == OK, "Save " + path)
+	var frame := root.get_texture().get_image()
+	if frame.get_size() != dimensions:
+		# Godot renders the fixed 16:9 gameplay viewport inside a 4:3 window.
+		# Preserve that aspect with letterboxing in the exact-size evidence image.
+		frame.convert(Image.FORMAT_RGBA8)
+		var letterboxed := Image.create(dimensions.x, dimensions.y, false, Image.FORMAT_RGBA8)
+		letterboxed.fill(Color(0.019, 0.065, 0.09, 1))
+		var origin := (dimensions - frame.get_size()) / 2
+		letterboxed.blit_rect(frame, Rect2i(Vector2i.ZERO, frame.get_size()), origin)
+		frame = letterboxed
+	_expect(frame.get_size() == dimensions, "Capture uses requested output size: " + str(dimensions))
+	_expect(frame.save_png(ProjectSettings.globalize_path(path)) == OK, "Save " + path)
 
 
 func _expect(condition: bool, message: String) -> void:

@@ -13,7 +13,7 @@ const CASES := [
 	},
 	{
 		"scene": "res://scenes/props/puddle.tscn",
-		"asset": "res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v03.png",
+		"asset": "res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v04.png",
 		"size": Vector2i(256, 128),
 		"art_scale": Vector2(0.375, 0.375),
 		"overlays": {

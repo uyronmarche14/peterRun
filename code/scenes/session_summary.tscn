@@ -38,10 +38,10 @@ stretch_mode = 6
 mouse_filter = 2
 
 [node name="Panel" type="Panel" parent="."]
-anchor_left = 0.1875
-anchor_top = 0.11481481481481481
-anchor_right = 0.8125
-anchor_bottom = 0.8851851851851852
+anchor_left = 0.14583333333333334
+anchor_top = 0.044444444444444446
+anchor_right = 0.8541666666666666
+anchor_bottom = 0.9555555555555556
 offset_left = 0
 offset_top = 0
 offset_right = 0
@@ -147,9 +147,11 @@ theme_override_font_sizes/font_size = 8
 text = "How much effort did it take?  Choose 1–10"
 
 
-[node name="Ratings" type="HBoxContainer" parent="Panel/Margin/Content"]
+[node name="Ratings" type="GridContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_constants/separation = 3
+columns = 5
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 3
 
 [node name="ScaleNote" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2

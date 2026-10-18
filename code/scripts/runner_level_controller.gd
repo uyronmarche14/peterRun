@@ -13,6 +13,7 @@ const SessionResultModel = preload("res://scripts/session_result.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const SessionReviewStore = preload("res://scripts/session_review_store.gd")
 const AudioSettings = preload("res://scripts/menu_audio_settings.gd")
+const ActionIconLibrary = preload("res://scripts/action_icon_library.gd")
 
 const SUMMARY_SCENE_PATH := "res://scenes/session_summary.tscn"
 const DISCONNECT_PAUSE_TITLE := "Controller disconnected"
@@ -58,6 +59,7 @@ var _shown_prompt_action: StringName = &""
 @onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
 @onready var journey_label: Label = $HUD/HUDRoot/JourneyLabel
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
+@onready var prompt_action_icon: TextureRect = $HUD/HUDRoot/PromptCard/ActionIcon
 @onready var prompt_action_label: Label = $HUD/HUDRoot/PromptActionLabel
 @onready var prompt_state_label: Label = $HUD/HUDRoot/PromptStateLabel
 @onready var prompt_control_hint: Label = $HUD/HUDRoot/PromptControlHint
@@ -451,6 +453,9 @@ func _update_prompt_card(action_name: StringName, state_text: String, state_colo
 	_set_prompt_control_action(action_name)
 	prompt_action_label.text = level_definition.get_action_label(action_name)
 	prompt_icon_label.text = level_definition.get_action_icon(action_name)
+	prompt_action_icon.texture = ActionIconLibrary.for_action(action_name)
+	prompt_action_icon.visible = prompt_action_icon.texture != null
+	prompt_icon_label.visible = not prompt_action_icon.visible
 	prompt_state_label.text = state_text
 	prompt_state_label.add_theme_color_override("font_color", state_color)
 
@@ -464,6 +469,8 @@ func _update_formation_guidance(state_text: String, state_color: Color) -> void:
 		prompt_control_hint.text = "KEEP YOUR PATH"
 		prompt_action_label.text = "SAFE PATH"
 		prompt_icon_label.text = "✓"
+		prompt_action_icon.hide()
+		prompt_icon_label.show()
 		prompt_state_label.text = state_text
 		prompt_state_label.add_theme_color_override("font_color", state_color)
 		return
@@ -497,6 +504,8 @@ func _hide_props() -> void:
 	_visible_prompt = null
 	prompt_backdrop.visible = false
 	prompt_icon_label.text = "•"
+	prompt_action_icon.hide()
+	prompt_icon_label.show()
 
 
 func _record_prompt_resolution(action_name: StringName, resolution: int) -> void:

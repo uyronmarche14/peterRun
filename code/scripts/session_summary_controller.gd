@@ -31,7 +31,7 @@ func _ready() -> void:
 		button.name = "Rating%d" % rating
 		button.text = str(rating)
 		button.theme_type_variation = &"EffortRatingButton"
-		button.custom_minimum_size = Vector2(18, 18)
+		button.custom_minimum_size = Vector2(24, 24)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.focus_mode = Control.FOCUS_NONE
 		button.toggle_mode = true

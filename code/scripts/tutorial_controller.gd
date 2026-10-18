@@ -7,6 +7,7 @@ const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const Store = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const Hints = preload("res://scripts/control_hints.gd")
+const ActionIconLibrary = preload("res://scripts/action_icon_library.gd")
 const PRACTICE_ACTIONS: Array[StringName] = [&"move_left", &"move_right", &"jump", &"slide"]
 
 const ACTIONS: Array[Dictionary] = [
@@ -40,6 +41,7 @@ var tutorial_started := false
 @onready var start_practice_button: Button = $Panel/Margin/Content/Welcome/Actions/StartPracticeButton
 @onready var show_first_demo_button: Button = $Panel/Margin/Content/Welcome/Actions/ShowFirstDemoButton
 @onready var action_icon_label: Label = $Panel/Margin/Content/ActionCard/ActionIconLabel
+@onready var action_icon: TextureRect = $Panel/Margin/Content/ActionCard/ActionIcon
 @onready var action_label: Label = $Panel/Margin/Content/ActionCard/ActionLabel
 @onready var instruction_label: Label = $Panel/Margin/Content/ActionCard/InstructionLabel
 @onready var tutorial_status: Label = $Panel/Margin/Content/TutorialStatus
@@ -183,6 +185,9 @@ func show_action_index(index: int) -> void:
 	practice_player.reset_for_practice()
 	var action: Dictionary = ACTIONS[current_action_index]
 	action_icon_label.text = action["icon"]
+	action_icon.texture = ActionIconLibrary.for_action(PRACTICE_ACTIONS[current_action_index])
+	action_icon.visible = action_icon.texture != null
+	action_icon_label.visible = not action_icon.visible
 	action_label.text = action["label"]
 	instruction_label.text = _practice_instruction()
 	progress_label.text = "Action %d of %d" % [current_action_index + 1, ACTIONS.size()]

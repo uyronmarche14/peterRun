@@ -754,16 +754,16 @@ mouse_filter = 2
 [node name="TopBar" type="Panel" parent="HUD/HUDRoot"]
 offset_top = 4.0
 offset_left = 8.0
-offset_right = 166.0
+offset_right = 157.0
 offset_bottom = 33.0
 theme_override_styles/panel = ExtResource("hud_surface")
 mouse_filter = 2
 
 [node name="PromptCard" type="Panel" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 170
+offset_left = 163
 offset_top = 4
-offset_right = 310
+offset_right = 317
 offset_bottom = 32
 theme_override_styles/panel = ExtResource("prompt_card")
 mouse_filter = 2
@@ -780,11 +780,22 @@ text = "•"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ActionIcon" type="TextureRect" parent="HUD/HUDRoot/PromptCard"]
+visible = false
+layout_mode = 0
+offset_left = 5.0
+offset_top = 2.0
+offset_right = 25.0
+offset_bottom = 22.0
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
 [node name="LevelLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_left = 14
 offset_top = 7
-offset_right = 160
+offset_right = 151
 offset_bottom = 17
 theme_override_colors/font_color = Color(0.839, 0.925, 0.875, 1)
 theme_override_font_sizes/font_size = 8
@@ -794,7 +805,7 @@ text = "L01 · Barangay Morning"
 layout_mode = 0
 offset_left = 14
 offset_top = 18
-offset_right = 160
+offset_right = 151
 offset_bottom = 28
 theme_override_colors/font_color = Color(0.349, 0.667, 0.612, 1)
 theme_override_font_sizes/font_size = 8
@@ -803,7 +814,7 @@ text = "Reps: 0 / 40"
 [node name="ProgressBar" type="ProgressBar" parent="HUD/HUDRoot"]
 offset_left = 14
 offset_top = 29
-offset_right = 156
+offset_right = 147
 offset_bottom = 31
 mouse_filter = 2
 theme_override_styles/background = SubResource("ProgressTrack")
@@ -852,8 +863,8 @@ horizontal_alignment = 1
 [node name="PromptActionLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
 offset_top = 5
-offset_left = 197
-offset_right = 305
+offset_left = 190
+offset_right = 312
 offset_bottom = 19
 theme_override_colors/font_color = Color(1, 0.855, 0.51, 1)
 theme_override_font_sizes/font_size = 11
@@ -862,9 +873,9 @@ text = "NEXT ACTION"
 
 [node name="PromptStateLabel" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 197
+offset_left = 190
 offset_top = 20
-offset_right = 250
+offset_right = 249
 offset_bottom = 31
 theme_override_colors/font_color = Color(0.35, 0.78, 0.66, 1)
 theme_override_font_sizes/font_size = 7
@@ -873,9 +884,9 @@ text = "GET READY"
 
 [node name="PromptControlHint" type="Label" parent="HUD/HUDRoot"]
 layout_mode = 0
-offset_left = 250
+offset_left = 249
 offset_top = 20
-offset_right = 305
+offset_right = 312
 offset_bottom = 31
 theme_override_colors/font_color = Color(0.91, 0.94, 0.84, 1)
 theme_override_font_sizes/font_size = 7

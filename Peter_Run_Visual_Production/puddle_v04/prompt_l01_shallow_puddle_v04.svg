@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="128" viewBox="0 0 256 128">
+  <!-- Source art: centered, transparent, low-profile jump cue. Ground origin (128, 88). -->
+  <path d="M11 64C16 56 27 55 38 51C54 43 74 46 91 44C108 39 130 40 147 43C165 40 182 41 198 46C217 47 237 54 244 62C250 68 244 75 231 79C218 82 207 85 192 85C175 90 158 86 143 87C122 91 101 87 84 87C62 87 48 84 32 80C16 78 8 72 11 64Z" fill="#304a4a" stroke="#233a3d" stroke-width="2"/>
+  <path d="M18 63C27 56 39 55 49 51C66 45 83 50 98 47C117 43 135 45 151 47C170 43 189 48 205 51C222 53 236 59 239 65C242 71 229 75 217 77C196 79 190 84 172 82C152 85 137 82 119 84C99 84 83 81 68 82C48 81 35 77 23 73C18 71 15 67 18 63Z" fill="#35727b" stroke="#78aaa1" stroke-width="2"/>
+  <path d="M25 67C37 60 53 59 67 58C83 52 103 51 122 52C141 49 159 53 177 55C198 56 218 62 229 67C218 73 202 75 184 75C165 79 148 78 128 78C106 80 88 77 70 78C48 77 34 74 25 67Z" fill="#5d9da2"/>
+  <path d="M29 63C45 59 58 60 70 57C87 55 98 54 112 56C128 54 143 54 155 56C169 56 179 57 190 61C184 65 172 66 157 65C143 66 127 64 115 67C99 67 82 64 69 67C52 66 37 67 29 63Z" fill="#a4c5bd" opacity=".82"/>
+  <path d="M48 61C59 59 71 60 82 57C98 55 109 57 120 58C111 61 101 61 90 62C76 64 60 64 48 61Z" fill="#f2e8c8" opacity=".9"/>
+  <path d="M133 59C148 56 162 58 173 59C183 60 189 62 198 63C190 66 177 65 166 65C154 63 145 66 133 64Z" fill="#eee0b8" opacity=".86"/>
+  <path d="M71 75C93 74 107 77 123 76M145 79C162 76 172 77 184 75" fill="none" stroke="#a4c9bd" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>
+  <path d="M27 74C43 81 66 83 86 83M175 84C198 84 217 80 232 74" fill="none" stroke="#e4b65f" stroke-width="2.4" stroke-linecap="round" opacity=".95"/>
+  <path d="M108 84C123 87 140 86 153 84" fill="none" stroke="#f4ddaa" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+  <path d="M55 54Q60 49 66 52Q62 57 55 54Z" fill="#5a754d" stroke="#344f42" stroke-width="1"/>
+  <path d="M199 75Q205 72 210 76Q206 79 199 75Z" fill="#9a7c46" stroke="#5f6046" stroke-width="1"/>
+</svg>

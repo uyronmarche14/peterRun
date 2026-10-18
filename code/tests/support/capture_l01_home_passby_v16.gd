@@ -31,7 +31,12 @@ func _run() -> void:
 	world = level.get_node(^"WorldMotion")
 	world.set_process(false)
 	level.get_node(^"LevelWorld/L01BarangayLayers").set_process(false)
-	passing = level.get_node(^"LevelWorld/L01BarangayLayers/JourneyStages/StageHome/PassingFrontages") as Node2D
+	passing = level.get_node_or_null(^"LevelWorld/L01BarangayLayers/JourneyStages/StageHome/PassingFrontages") as Node2D
+	if passing == null:
+		printerr("V16 passing-building pilot is archived and inactive; use capture_l01_v15_stage_motion.gd for the fixed street")
+		level.free()
+		quit(2)
+		return
 	for distance in [0.0, 8.0, 16.0, 24.0, 32.0]:
 		world.set("motion_distance", distance)
 		world.call("_process", 0.0)

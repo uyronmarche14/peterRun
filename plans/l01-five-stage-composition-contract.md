@@ -1,6 +1,6 @@
 # L01 five-stage composition and anchor contract
 
-Status: measured visual guide, 2026-10-18. This is **not** approval to enable moving buildings. The current five fixed streets, road, Hall, sun, prompt projection, movement timing, and gameplay lanes remain unchanged.
+Status: measured visual guide with **fixed buildings in all five stages**, 2026-10-18. The Home passing-frontage pilot was removed from the active scene because its motion did not fit the composition. The road, Hall, sun, prompt projection, movement timing, gameplay lanes, and small ambient sidewalk motions remain unchanged.
 
 ## Source and coordinate system
 
@@ -67,6 +67,8 @@ Each of the five stages has a `480x270`, `960x540`, `1024x768`, and `1920x1080` 
 
 ## Next visual gate
 
-The clean-plate/side-section art gate is still open. The current left/right stage PNGs contain the static buildings and planters; overlaying passing buildings would duplicate them. Omitting those two layers produces an exact, aligned Home clean plate from the existing sky/far/Hall/road/foreground layers, but reveals broad empty side fields. A generated clean-plate edit was rejected because it altered the road and Hall geometry. A transparent left-frontage source was previewed at three curb-anchored depths; one section exits quickly and does not preserve street density. See `Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v01/README.md` and the `l01_home_left_passby_candidate_*` evidence images. Make varied, overlapping Home sections, with contact shadows, continuous frontage and attached animated details. Compare the first composite and whole pass-by cycle against the current Home stage at **480 x 270**. Keep the static stage active unless there is no blank verge, duplicate building, curb intrusion, parent/cloth detachment, or visible recycle pop. Only then make the right side and other four stages.
+The first single-house experiment remains rejected. Six distinct Home frontage sources and a deterministic eight-phase 480 x 270 preview remain under `Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v02/` for reference only. The V16 exports and earlier captures in `test_evidence/l01_home_passby_v16/` document an archived experiment, **not the current game**. The active Home stage again displays its fixed left and right street plates in both normal and Reduced Motion. Its small street-life animation remains separate and active in normal motion.
+
+Moving whole buildings is currently out of the active visual direction. If reconsidered later, stage-specific art would need whole-cycle visual review, landmark preservation, anchored residents/details, Pause and Reduced Motion behavior before integration. For now, keep the fixed street plates in all five stages and use only small, aligned ambient movement in `StreetLife`.
 
 The new contract test checks road dimensions/origin, identical sampled alpha edges, three lane centres, and a curb-safe anchor. It does not prove that any future moving sprite is ready. Existing prompt-clearance and stage-life tests remain separate gates. The unresolved contact-versus-neutral-miss requirement is unrelated to this visual measurement and remains pending therapist/product-owner review.

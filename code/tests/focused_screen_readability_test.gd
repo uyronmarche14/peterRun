@@ -44,6 +44,18 @@ func _run() -> void:
 			level.call("_update_prompt_card", action, "GET READY", Color.WHITE)
 			_expect(icon.visible and icon.texture != null, "Prompt icon is shown for " + str(action))
 	level.free()
+	var puddle_path := "res://art/prompts/l01_barangay/prompt_l01_shallow_puddle_v04.png"
+	_expect(ResourceLoader.exists(puddle_path), "Native-readable shallow-water sprite exists")
+	if ResourceLoader.exists(puddle_path):
+		var puddle_image := (load(puddle_path) as Texture2D).get_image()
+		_expect(puddle_image.get_size() == Vector2i(256, 128), "Puddle keeps its 256x128 source canvas")
+		_expect(puddle_image.get_pixel(0, 0).a < 0.01, "Puddle retains transparent corners")
+	var puddle_scene: Node2D = load("res://scenes/props/puddle.tscn").instantiate()
+	_expect(puddle_scene.get_meta("projection_footprint") == Vector2(89.25, 17.625),
+		"Puddle gameplay projection footprint remains unchanged")
+	_expect((puddle_scene.get_node("ArtSprite") as Sprite2D).texture.resource_path == puddle_path,
+		"Prompt scene uses the approved v04 puddle")
+	puddle_scene.free()
 
 	var summary: Control = load("res://scenes/session_summary.tscn").instantiate()
 	root.add_child(summary)

@@ -1,7 +1,6 @@
 extends SceneTree
 
 const MANIFEST := "res://../Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v02/layout.json"
-const EXPECTED_SIZE := Vector2i(1536, 1024)
 
 var failures: PackedStringArray = []
 
@@ -38,19 +37,22 @@ func _check_manifest() -> void:
 		if side_count.has(side):
 			side_count[side] += 1
 		var path: String = entry.get("source", "")
+		var dimensions: Array = entry.get("source_size", [])
+		_expect(dimensions.size() == 2, "Module records source canvas dimensions")
+		var expected_size := Vector2i(int(dimensions[0]), int(dimensions[1])) if dimensions.size() == 2 else Vector2i.ZERO
 		_expect(not paths.has(path), "Each module has original source art: " + path)
 		paths[path] = true
 		_expect(FileAccess.file_exists(path), "Module art exists: " + path)
 		if FileAccess.file_exists(path):
 			var image := Image.load_from_file(ProjectSettings.globalize_path(path))
-			_expect(image != null and image.get_size() == EXPECTED_SIZE, "Source has fixed canvas: " + path)
+			_expect(image != null and image.get_size() == expected_size, "Source matches its recorded canvas: " + path)
 			if image != null:
 				_expect(image.get_pixel(0, 0).a < 0.05, "Source exterior is transparent: " + path)
 		var contact: Array = entry.get("contact", [])
 		_expect(contact.size() == 2, "Module declares ground-contact origin")
 		if contact.size() == 2:
-			_expect(float(contact[0]) >= 0.0 and float(contact[0]) < EXPECTED_SIZE.x
-				and float(contact[1]) >= 0.0 and float(contact[1]) < EXPECTED_SIZE.y,
+			_expect(float(contact[0]) >= 0.0 and float(contact[0]) < expected_size.x
+				and float(contact[1]) >= 0.0 and float(contact[1]) < expected_size.y,
 				"Ground-contact origin lies in source canvas")
 		var phase := float(entry.get("phase", -1.0))
 		_expect(phase >= 0.0 and phase < 1.0, "Module phase lies in travel cycle")

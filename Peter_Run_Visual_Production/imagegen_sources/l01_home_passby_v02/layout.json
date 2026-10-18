@@ -1,0 +1,38 @@
+{
+  "canvas_px": [960, 540],
+  "native_canvas_px": [480, 270],
+  "modules": [
+    {
+      "id": "left_veranda",
+      "side": "left",
+      "phase": 0.05,
+      "source_size": [1536, 1024],
+      "contact": [1475, 750],
+      "source": "res://../Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v01/home_left_frontage_source_v01.png"
+    },
+    {
+      "id": "left_sawali",
+      "side": "left",
+      "phase": 0.55,
+      "source_size": [1536, 1024],
+      "contact": [1480, 820],
+      "source": "res://../Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v02/home_left_sawali_source_v01.png"
+    },
+    {
+      "id": "right_sari_sari",
+      "side": "right",
+      "phase": 0.27,
+      "source_size": [1672, 941],
+      "contact": [200, 785],
+      "source": "res://../Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v02/home_right_sari_sari_source_v01.png"
+    },
+    {
+      "id": "right_bungalow",
+      "side": "right",
+      "phase": 0.77,
+      "source_size": [1672, 941],
+      "contact": [165, 605],
+      "source": "res://../Peter_Run_Visual_Production/imagegen_sources/l01_home_passby_v02/home_right_bungalow_source_v01.png"
+    }
+  ]
+}

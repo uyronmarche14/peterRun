@@ -37,6 +37,7 @@ func _check_clip(sprite: Sprite2D, clip: StringName, frame_count: int, seconds: 
 		return
 	var atlas: Texture2D = load(atlas_path)
 	var image := atlas.get_image()
+	var previous_pixels := PackedByteArray()
 	for index in frame_count:
 		var region: Array = spec.regions[index]
 		var x := int(region[0])
@@ -49,6 +50,10 @@ func _check_clip(sprite: Sprite2D, clip: StringName, frame_count: int, seconds: 
 				if image.get_pixel(sx, sy).a > 0.15:
 					visible_samples += 1
 		_expect(visible_samples >= 8, "%s frame %d contains a visible Peter pose" % [clip, index])
+		var frame_pixels := image.get_region(Rect2i(x, y, 256, 256)).get_data()
+		if index > 0:
+			_expect(frame_pixels != previous_pixels, "%s frame %d is a new pose, not a duplicate" % [clip, index])
+		previous_pixels = frame_pixels
 	sprite.play_clip(clip, seconds)
 	sprite.call("advance", first_midpoint + 0.001)
 	_expect(sprite.call("get_clip_frame") == 1, "%s actually displays its new first in-between" % clip)

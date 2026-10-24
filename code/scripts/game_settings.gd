@@ -14,6 +14,8 @@ static var reduced_motion := false
 static var effects_intensity := 1.0
 # One-shot: the Ready screen sets it, the runner consumes it to play the 3-2-1 start countdown.
 static var start_countdown_pending := false
+# Seconds counted down before a run (0 = off). Only 0, 3 and 5 are offered in Settings.
+static var countdown_seconds := 3
 
 
 static func set_visual_pace(value: float) -> void:
@@ -32,6 +34,8 @@ static func get_pace_label() -> String:
 		return "Calm"
 	if is_equal_approx(visual_pace, LIVELY_PACE):
 		return "Lively"
+	if not is_preset_pace():
+		return "Review (%.2fx)" % visual_pace
 	return "Standard"
 
 
@@ -42,3 +46,12 @@ static func set_reduced_motion(value: bool) -> void:
 static func set_effects_intensity(value: float) -> void:
 	if is_equal_approx(value, 0.5) or is_equal_approx(value, 1.0):
 		effects_intensity = value
+
+
+static func set_countdown_seconds(value: int) -> void:
+	if value == 0 or value == 3 or value == 5:
+		countdown_seconds = value
+
+
+static func is_preset_pace() -> bool:
+	return is_equal_approx(visual_pace, CALM_PACE) or is_equal_approx(visual_pace, STANDARD_PACE) or is_equal_approx(visual_pace, LIVELY_PACE)

@@ -15,6 +15,8 @@ func _init() -> void:
 func _run() -> void:
 	await _test_default_run_has_no_countdown()
 	await _test_countdown_holds_then_starts_first_prompt()
+	await _test_five_second_countdown()
+	await _test_countdown_can_be_turned_off()
 	await _test_ready_screen_requests_countdown()
 	_finish()
 
@@ -73,6 +75,34 @@ func _test_countdown_holds_then_starts_first_prompt() -> void:
 
 	level.receive_input(&"move_left", true, 30.0)
 	_expect(level.player.lane_index == 0, "movement works after the countdown")
+	level.free()
+
+
+func _test_five_second_countdown() -> void:
+	GameSettingsModel.countdown_seconds = 5
+	GameSettingsModel.start_countdown_pending = true
+	var level := await _make_level()
+	var number := level.get_node("CountdownOverlay/Number") as Label
+	var timer := level.get_node("PromptTimers/CountdownTimer") as Timer
+	var seen: Array[String] = [number.text]
+	for i in 5:
+		timer.timeout.emit()
+		seen.append(number.text)
+	_expect(seen == ["5", "4", "3", "2", "1", "Go!"], "a 5 second countdown shows 5 4 3 2 1 Go! (got %s)" % str(seen))
+	timer.timeout.emit()
+	_expect(not level.is_countdown_active, "the 5 second countdown ends after Go!")
+	GameSettingsModel.countdown_seconds = 3
+	level.free()
+
+
+func _test_countdown_can_be_turned_off() -> void:
+	GameSettingsModel.countdown_seconds = 0
+	GameSettingsModel.start_countdown_pending = true
+	var level := await _make_level()
+	_expect(not level.is_countdown_active, "countdown set to Off does not run")
+	_expect(level.get_node("PromptDirector").state == PromptDirectorModel.State.WARNING, "with the countdown Off the first prompt starts at once")
+	_expect(not GameSettingsModel.start_countdown_pending, "the one-shot flag is still consumed when the countdown is Off")
+	GameSettingsModel.countdown_seconds = 3
 	level.free()
 
 

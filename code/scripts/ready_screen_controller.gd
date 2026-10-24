@@ -69,4 +69,4 @@ func _refresh_session_details() -> void:
 		return
 	start_session_button.text = "Start Session"
 	var target_repetitions: int = int(config.get_target(&"jump"))
-	session_details.text = "%s • %d reps/action" % [definition.title, target_repetitions]
+	session_details.text = "%s • %d reps/action • Scenery: %s" % [definition.title, target_repetitions, GameSettings.get_pace_label()]

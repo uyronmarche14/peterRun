@@ -30,13 +30,37 @@ func _run() -> void:
 			"Choice %d names scenery motion, not game speed" % index)
 	_expect(explanation.visible and explanation.text == "Prompt timing stays the same",
 		"Visible settings explanation says prompt timing is unchanged")
-	_expect(settings_panel.size.y <= 190.0,
+	_expect(settings_panel.size.y <= 210.0,
 		"Explained settings panel stays within a reviewed native height (got %.1f)" % settings_panel.size.y)
 	dashboard.call("set_route_pace", 2)
 	_expect(is_equal_approx(Settings.visual_pace, Settings.LIVELY_PACE),
 		"Existing visual pace choice still changes its own setting")
 	dashboard.free()
 	Settings.set_visual_pace(original_pace)
+	# A speed chosen on the review screen is not one of the three presets; the menu must say so.
+	Settings.set_visual_pace(1.3)
+	var custom_dashboard := (load(MAIN_SCENE) as PackedScene).instantiate()
+	root.add_child(custom_dashboard)
+	await process_frame
+	var custom_option := custom_dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceOption") as OptionButton
+	_expect(custom_option.item_count == 4 and custom_option.selected == 3, "A review-chosen pace is shown as its own selected choice")
+	_expect(custom_option.get_item_text(3).begins_with("Scenery motion: Review"), "The review-chosen pace is labelled as set by review")
+	custom_dashboard.free()
+	Settings.set_visual_pace(original_pace)
+	# Start countdown choice.
+	var cd_dashboard := (load(MAIN_SCENE) as PackedScene).instantiate()
+	root.add_child(cd_dashboard)
+	await process_frame
+	var cd_option := cd_dashboard.get_node_or_null(^"SettingsOverlay/Panel/Margin/Content/CountdownOption") as OptionButton
+	_expect(cd_option != null and cd_option.item_count == 3, "Settings offer a start countdown choice (3 s, 5 s, Off)")
+	if cd_option != null:
+		_expect(cd_option.selected == 0 and Settings.countdown_seconds == 3, "Countdown defaults to 3 seconds")
+		cd_dashboard.call("set_countdown_choice", 1)
+		_expect(Settings.countdown_seconds == 5, "Choosing 5 seconds sets the countdown to 5")
+		cd_dashboard.call("set_countdown_choice", 2)
+		_expect(Settings.countdown_seconds == 0, "Choosing Off sets the countdown to 0")
+	Settings.set_countdown_seconds(3)
+	cd_dashboard.free()
 	for failure in failures:
 		printerr("FAIL: " + failure)
 	print("PETER RUN settings motion label: " + ("PASS" if failures.is_empty() else "FAIL"))

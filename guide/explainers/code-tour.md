@@ -68,7 +68,7 @@ main → patient_setup → ready → runner_level → session_summary → (ready
 ## Stop 2 — The data (5–8 min)
 
 **Open, in this order:**
-1. `scripts/session_config.gd` — the **plan**: affected side, route id, `target_repetitions` per action (default 10).
+1. `scripts/session_config.gd` — the **plan**: route id (an inert `affected_side` field remains), `target_repetitions` per action (default 10).
 2. `scripts/session_result.gd` — the **outcome**: `completed_repetitions`, `neutral_misses`, `route_seed`, `rpe`. Note `has_met_targets()` and `set_rpe()` (only 1–10).
 3. `scripts/level_definition.gd` — a Godot `Resource` with colours, props, timings (`warning_seconds 2.5`, `response_seconds 2.0`, `resolved_seconds 0.75`) and `show_in_setup`.
 4. `data/levels/l01_barangay.tres` and `catalog.tres` — real data using that class.
@@ -103,12 +103,12 @@ main → patient_setup → ready → runner_level → session_summary → (ready
 
 | Anchor | ~Line | What to point out |
 | --- | --- | --- |
-| `_ready()` | 87 | Loads the config, builds `InputAdapter`, loads and **duplicates** the level, picks a random `route_seed`, then either runs the 3-2-1-Go! countdown (when `GameSettings.start_countdown_pending` was set by the Ready screen) or calls `_start_run()` → `_schedule_next_prompt()` |
-| `_input()` | 131 | Handles all five actions and marks the event handled so a focused button can't turn the D-pad into menu movement |
-| `receive_input()` | 144 | Adapter → pause toggle → ignore if paused/ended → `player.handle_action()` → either store a pending response or call the director |
-| Timers | 536–545 | `warning_timer` → open window; `response_timer` → judge; `resolve_timer` → next |
-| `_on_prompt_state_changed()` | 248 | One `match` over the director's states: this is where the UI, props, collision and counting all hook in |
-| `_record_prompt_resolution()` | 495 | Updates `SessionResult`, toast, effects, and the recovery preference after a miss |
+| `_ready()` | 97 | Loads the config, builds `InputAdapter`, loads and **duplicates** the level, picks a random `route_seed`, then either runs the 3-2-1-Go! countdown (when `GameSettings.start_countdown_pending` was set by the Ready screen) or calls `_start_run()` → `_schedule_next_prompt()` |
+| `_input()` | 205 | Handles all five actions and marks the event handled so a focused button can't turn the D-pad into menu movement |
+| `receive_input()` | 218 | Adapter → pause toggle → ignore if paused/ended → `player.handle_action()` → either store a pending response or call the director |
+| Timers | 624–680 | `warning_timer` → open window; `response_timer` → judge; `resolve_timer` → next |
+| `_on_prompt_state_changed()` | 329 | One `match` over the director's states: this is where the UI, props, collision and counting all hook in |
+| `_record_prompt_resolution()` | 583 | Updates `SessionResult`, toast, effects, and the recovery preference after a miss |
 
 **Say:** "This file orchestrates; it doesn't decide. The *decisions* live in small classes it calls."
 
@@ -139,7 +139,7 @@ main → patient_setup → ready → runner_level → session_summary → (ready
 
 **Look for:** `player_hits_formation()` returns `false` for SUCCESS and SAFE_CLEAR. Otherwise it returns `true` only if an obstacle sits in Peter's final lane.
 
-**Then go back to** `runner_level_controller.gd`, `_on_prompt_state_changed` → `RESOLVED`, and find `_show_collision_end_overlay()` (~line 707) → `_show_neutral_end_overlay(..., &"collision")`.
+**Then go back to** `runner_level_controller.gd`, `_on_prompt_state_changed` → `RESOLVED`, and find `_show_collision_end_overlay()` (~line 795) → `_show_neutral_end_overlay(..., &"collision")`.
 
 **Say:** "This single function is the rule 'contact ends the run'. It is deliberate: the product owner confirmed it on 2026-09-27. Do not turn it into lives or score loss."
 
@@ -157,7 +157,7 @@ main → patient_setup → ready → runner_level → session_summary → (ready
 - After a neutral miss, prefer a **recovery** formation (one formation only).
 - Seeded by `route_seed`, and `_apply_gentle_pacing()` avoids harsh repeats.
 
-**Then:** `runner_level_controller._schedule_next_prompt()` (~line 183). Show the three sources in order: formation library → legacy pattern sets → legacy planned sequence.
+**Then:** `runner_level_controller._schedule_next_prompt()` (~line 264). Show the three sources in order: formation library → legacy pattern sets → legacy planned sequence.
 
 **Say:** "Content is data. Adding a formation doesn't touch the loop."
 
@@ -179,7 +179,7 @@ main → patient_setup → ready → runner_level → session_summary → (ready
 
 ## Stop 9 — Ending, review and tests (5 min)
 
-**Open:** `runner_level_controller._show_neutral_end_overlay()` (~line 681). It calls `SessionReviewStore.capture(...)` (~line 699); `open_summary()` (~line 655) then changes to `session_summary.tscn`. Next, `session_summary_controller.gd`: `retry_session()` requires a recorded RPE.
+**Open:** `runner_level_controller._show_neutral_end_overlay()` (~line 769). It calls `SessionReviewStore.capture(...)` (~line 787); `open_summary()` (~line 655) then changes to `session_summary.tscn`. Next, `session_summary_controller.gd`: `retry_session()` requires a recorded RPE.
 
 **Then tests:** open `tests/prompt_director_test.gd`, `formation_collision_resolver_test.gd`, `input_adapter_test.gd`. Run one:
 
@@ -204,7 +204,7 @@ Each exercise changes one thing and teaches one idea. Do them on a scratch branc
 | 3 | Make `move_left` correct in the same lane (then undo) | How `_is_spatially_correct` drives results; run `prompt_director_test` and watch it fail | `prompt_director.gd` |
 | 4 | Add a test: a SAFE_CLEAR never collides | Test-first discipline | `tests/formation_collision_resolver_test.gd` |
 | 5 | Add a hidden test route by copying L03's resource | The catalog and `show_in_setup` | `data/levels/` |
-| 6 | Trace what changes if `affected_side` is LEFT | It doesn't affect gameplay, only the record | `input_adapter.gd`, `session_config.gd` |
+| 6 | Change the start countdown to 5 seconds in Settings, then start a run | Settings drive the runner through `GameSettings` | `main_dashboard.gd`, `game_settings.gd`, `runner_level_controller.gd` |
 
 ## Cheat sheet for presenters
 

@@ -26,7 +26,7 @@ Press **Review session** to continue.
 
 - **Test controls** or **Practice movements** again.
 - **Edit session** to go back and change the plan.
-- **Start Session** when the patient is ready. A **3, 2, 1, Go!** countdown plays first (about 4 seconds, with no input accepted) so the patient can settle before the first prompt.
+- **Start Session** when the patient is ready. A **3, 2, 1, Go!** countdown plays first (about 4 seconds, with no input accepted; Settings can change it to 5 seconds or turn it off) so the patient can settle before the first prompt.
 
 Nothing starts until you press Start.
 
@@ -64,7 +64,7 @@ Then choose together:
 
 ## Settings that may help
 
-Under **Settings**: music on/off and volume, route pace, contact effects intensity, and **Reduced motion**. These last only for the current run of the application.
+Under **Settings**: music on/off and volume, scenery motion, contact effects intensity, **Reduced motion**, and the **start countdown** (3 seconds, 5 seconds, or off). The Ready screen shows the current scenery speed; a speed chosen after a run appears there and in Settings as "Review". These last only for the current run of the application.
 
 ## Good to know
 

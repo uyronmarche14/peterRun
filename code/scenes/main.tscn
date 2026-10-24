@@ -511,6 +511,11 @@ focus_mode = 0
 toggle_mode = true
 text = "Reduced motion: Off"
 
+[node name="CountdownOption" type="OptionButton" parent="SettingsOverlay/Panel/Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+focus_mode = 0
+
 [node name="ControlsLabel" type="Label" parent="SettingsOverlay/Panel/Margin/Content"]
 visible = false
 layout_mode = 2

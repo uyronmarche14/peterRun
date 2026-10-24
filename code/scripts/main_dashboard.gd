@@ -28,6 +28,7 @@ var _opening_elapsed := 0.0
 @onready var route_pace_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/RoutePaceOption
 @onready var effects_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/EffectsOption
 @onready var reduced_motion_toggle: Button = $SettingsOverlay/Panel/Margin/Content/ReducedMotionToggle
+@onready var countdown_option: OptionButton = $SettingsOverlay/Panel/Margin/Content/CountdownOption
 @onready var controller_check_button: Button = $SettingsOverlay/Panel/Margin/Content/ControllerCheckButton
 
 
@@ -46,6 +47,7 @@ func _ready() -> void:
 	route_pace_option.item_selected.connect(set_route_pace)
 	effects_option.item_selected.connect(set_effects_intensity)
 	reduced_motion_toggle.toggled.connect(set_reduced_motion)
+	countdown_option.item_selected.connect(set_countdown_choice)
 	$SettingsOverlay/Panel/Margin/Content/CloseButton.pressed.connect(close_overlays)
 	controller_check_button.pressed.connect(_open_controller_check_from_settings)
 	$QuitOverlay/Panel/Margin/Content/CancelButton.pressed.connect(close_overlays)
@@ -55,6 +57,7 @@ func _ready() -> void:
 	_start_music()
 	_configure_route_pace()
 	_configure_comfort_preferences()
+	_configure_countdown_choice()
 	$Dashboard.modulate.a = 0.0
 	create_tween().tween_property($Dashboard, "modulate:a", 1.0, 0.45)
 
@@ -212,7 +215,10 @@ func _configure_route_pace() -> void:
 	route_pace_option.add_item("Scenery motion: Calm", 0)
 	route_pace_option.add_item("Scenery motion: Standard", 1)
 	route_pace_option.add_item("Scenery motion: Lively", 2)
-	var selected := 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
+	# A speed chosen on the review screen is not a preset; show it instead of pretending it is Standard.
+	if not GameSettings.is_preset_pace():
+		route_pace_option.add_item("Scenery motion: Review (%.2fx)" % GameSettings.visual_pace, 3)
+	var selected := 3 if not GameSettings.is_preset_pace() else 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
 	route_pace_option.select(selected)
 	_update_route_pace_label()
 
@@ -221,6 +227,7 @@ func set_route_pace(index: int) -> void:
 	match index:
 		0: GameSettings.set_visual_pace(GameSettings.CALM_PACE)
 		2: GameSettings.set_visual_pace(GameSettings.LIVELY_PACE)
+		3: pass # keep the pace chosen on the review screen
 		_: GameSettings.set_visual_pace(GameSettings.STANDARD_PACE)
 	_update_route_pace_label()
 
@@ -270,3 +277,15 @@ func _update_music_label() -> void:
 func _exit_tree() -> void:
 	if is_instance_valid(menu_music):
 		menu_music.stop()
+
+
+func _configure_countdown_choice() -> void:
+	countdown_option.clear()
+	countdown_option.add_item("Start countdown: 3 seconds", 3)
+	countdown_option.add_item("Start countdown: 5 seconds", 5)
+	countdown_option.add_item("Start countdown: Off", 0)
+	countdown_option.select(1 if GameSettings.countdown_seconds == 5 else 2 if GameSettings.countdown_seconds == 0 else 0)
+
+
+func set_countdown_choice(index: int) -> void:
+	GameSettings.set_countdown_seconds(countdown_option.get_item_id(index))

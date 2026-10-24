@@ -46,7 +46,7 @@ var _sequence_index := 0
 var is_gameplay_paused := false
 var is_session_ended := false
 var is_countdown_active := false
-var _countdown_step := 0
+var _countdown_remaining := 0
 var _countdown_tween: Tween
 var _progress_tween: Tween
 var _pending_end_reason: StringName = &""
@@ -144,40 +144,40 @@ func _start_run() -> void:
 	_schedule_next_prompt()
 
 
-# A calm 3-2-1-Go before the first prompt. Everything is held still and input is
-# ignored; is_gameplay_paused stays false so the normal pause flow is untouched.
+# A calm countdown (3, 5 seconds, or off in Settings) ending in "Go!" before the first
+# prompt. Everything is held still and input is ignored; is_gameplay_paused stays false
+# so the normal pause flow is untouched.
 func _begin_start_countdown() -> void:
+	if GameSettings.countdown_seconds <= 0:
+		_start_run()
+		return
 	is_countdown_active = true
-	_countdown_step = 0
+	_countdown_remaining = GameSettings.countdown_seconds
 	pause_button.disabled = true
 	_set_gameplay_updates_paused(true)
 	countdown_overlay.visible = true
-	_show_countdown_text("3")
+	_show_countdown_text(str(_countdown_remaining), false)
 	countdown_timer.start()
 
 
 func _on_countdown_tick() -> void:
 	if not is_countdown_active:
 		return
-	_countdown_step += 1
-	match _countdown_step:
-		1:
-			_show_countdown_text("2")
-			countdown_timer.start()
-		2:
-			_show_countdown_text("1")
-			countdown_timer.start()
-		3:
-			_show_countdown_text("Go!")
-			_play_gameplay_cue(success_cue)
-			countdown_timer.start()
-		_:
-			_end_start_countdown()
+	_countdown_remaining -= 1
+	if _countdown_remaining > 0:
+		_show_countdown_text(str(_countdown_remaining))
+		countdown_timer.start()
+	elif _countdown_remaining == 0:
+		_show_countdown_text("Go!", false)
+		_play_gameplay_cue(success_cue)
+		countdown_timer.start()
+	else:
+		_end_start_countdown()
 
 
-func _show_countdown_text(text: String) -> void:
+func _show_countdown_text(text: String, tick_sound: bool = true) -> void:
 	countdown_number.text = text
-	if text != "Go!" and text != "3":
+	if tick_sound:
 		_play_gameplay_cue(prompt_cue)
 	if _countdown_tween != null:
 		_countdown_tween.kill()

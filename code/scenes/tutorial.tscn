@@ -91,7 +91,7 @@ theme_type_variation = &"OfficialHeadline"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 theme_override_font_sizes/font_size = 13
-text = "Practise the movements"
+text = "Practice the movements"
 horizontal_alignment = 1
 
 [node name="Guidance" type="Label" parent="Panel/Margin/Content"]

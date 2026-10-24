@@ -125,7 +125,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "L01 · Barangay Morning"
+text = "Barangay Morning"
 horizontal_alignment = 2
 
 [node name="LevelOption" type="OptionButton" parent="Panel/Margin/Content/RouteRow/Row"]
@@ -138,23 +138,6 @@ theme_override_font_sizes/font_size = 8
 [node name="Fields" type="HBoxContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 8
-
-[node name="SideField" type="VBoxContainer" parent="Panel/Margin/Content/Fields"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="AffectedSideLabel" type="Label" parent="Panel/Margin/Content/Fields/SideField"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.36, 0.42, 0.42, 1)
-theme_override_font_sizes/font_size = 8
-text = "Affected side"
-
-[node name="AffectedSideOption" type="OptionButton" parent="Panel/Margin/Content/Fields/SideField"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 8
 
 [node name="RepsField" type="VBoxContainer" parent="Panel/Margin/Content/Fields"]
 layout_mode = 2
@@ -214,7 +197,7 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Practise movements"
+text = "Practice movements"
 
 [node name="Footer" type="HBoxContainer" parent="Panel/Margin/Content"]
 unique_name_in_owner = true

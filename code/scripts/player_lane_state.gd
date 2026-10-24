@@ -45,6 +45,6 @@ func _move_lane(direction: int) -> bool:
 
 func _begin_action(next_action_state: int) -> bool:
 	if action_state != ActionState.IDLE:
-		return false
+		return false	
 	action_state = next_action_state
 	return true

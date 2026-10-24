@@ -47,7 +47,7 @@ func _run() -> void:
 		level.call("_on_prompt_state_changed", 3, &"slide", 1)
 		_expect(result.has_met_targets(config), "All planned action targets can complete")
 		_expect(level.get("is_session_ended"), "Completing targets ends L01 safely")
-		_expect_equal(level.get_node(^"EndSessionOverlay/Panel/Title").text, "L01 complete", "Completion shows a calm L01 completion state")
+		_expect_equal(level.get_node(^"EndSessionOverlay/Panel/Title").text, "Barangay Morning complete", "Completion shows a calm level completion state")
 
 	level.queue_free()
 	await process_frame

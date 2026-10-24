@@ -3,9 +3,8 @@ extends Control
 const Review = preload("res://scripts/session_review_store.gd")
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const Settings = preload("res://scripts/game_settings.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
-const RouteJourney = preload("res://scripts/route_journey.gd")
-const ROUTE_STAMP_ATLAS = preload("res://art/backgrounds/l01_barangay_v06_layers/l01_v06_route_stamp_atlas.png")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
 
@@ -48,14 +47,12 @@ func _ready() -> void:
 		content.get_node("Subtitle").text = "Return to the menu to set up a session."
 		content.get_node("Outcome").hide()
 		content.get_node("Repetitions").hide()
-		content.get_node("Misses").hide()
-		content.get_node("Journey").hide()
 		content.get_node("Actions/RestButton").disabled = true
 		_refresh_rating()
 		return
 	match Review.get_end_reason():
 		&"completed":
-			content.get_node("Title").text = (_level.short_name + " complete") if _level != null else "Session review"
+			content.get_node("Title").text = (_level.title + " complete") if _level != null else "Session review"
 		&"collision":
 			content.get_node("Title").text = "Run ended"
 		&"level_ended":
@@ -63,24 +60,12 @@ func _ready() -> void:
 		_:
 			content.get_node("Title").text = "Session review"
 	content.get_node("Outcome").text = _get_outcome_text(Review.get_end_reason())
-	var side := "Left" if _config.affected_side == Config.AffectedSide.LEFT else "Right"
-	content.get_node("Subtitle").text = "%s  ·  %s affected side" % [_level.title if _level != null else "Level unavailable", side]
-	retry_button.text = ("Retry " + _level.short_name) if _level != null else "Retry"
-	var completed_repetitions := 0
-	var target_repetitions := 0
+	content.get_node("Subtitle").text = _level.title if _level != null else "Level unavailable"
+	retry_button.text = "Retry"
 	for index in range(Config.ACTIONS.size()):
 		var action: StringName = Config.ACTIONS[index]
-		completed_repetitions += mini(_result.get_completed(action), _config.get_target(action))
-		target_repetitions += _config.get_target(action)
 		content.get_node("Repetitions/" + ACTION_NODES[index]).text = "%s: %d / %d" % [
 			ACTION_LABELS[index], _result.get_completed(action), _config.get_target(action)]
-	content.get_node("Misses").text = "Neutral misses: %d" % _result.neutral_misses
-	var route_progress := RouteJourney.get_progress(completed_repetitions, target_repetitions)
-	content.get_node("Journey").text = RouteJourney.get_summary_text(route_progress)
-	var route_stamp := AtlasTexture.new()
-	route_stamp.atlas = ROUTE_STAMP_ATLAS
-	route_stamp.region = Rect2(RouteJourney.get_stamp_index(route_progress) * 128, 0, 128, 128)
-	content.get_node("Journey/JourneyStamp").texture = route_stamp
 	_refresh_rating()
 
 
@@ -96,6 +81,8 @@ func _get_outcome_text(end_reason: StringName) -> String:
 func select_rating(value: Variant) -> bool:
 	if _leaving or _result == null or not _result.set_rpe(value):
 		return false
+	# 1 = faster ... 10 = slower; applies to the next run (Retry) via the shared visual pace.
+	Settings.set_visual_pace(Settings.pace_for_rating(int(value)))
 	_refresh_rating()
 	return true
 
@@ -103,17 +90,17 @@ func select_rating(value: Variant) -> bool:
 func _refresh_rating() -> void:
 	var rating := int(_result.rpe) if _result != null else 0
 	retry_button.disabled = rating == 0 or _level == null
-	finish_button.text = "Finish without rating" if rating == 0 and _result != null else "Finish"
-	content.get_node("Effort").text = "How much effort did it take?  %s" % (
+	finish_button.text = "Finish without choosing" if rating == 0 and _result != null else "Finish"
+	content.get_node("Effort").text = "Choose the game speed:  %s" % (
 		"Choose 1–10" if rating == 0 else "%d / 10" % rating)
 	for button in content.get_node("Ratings").get_children():
 		button.set_pressed_no_signal(int(button.text) == rating)
 	if is_resting:
 		status.text = "Rest as long as needed. Nothing starts automatically."
 	elif rating == 0:
-		status.text = "Record effort before retrying, or finish without a rating."
+		status.text = "Choose a speed before retrying, or finish without choosing."
 	else:
-		status.text = "Discuss your effort with the therapist before retrying."
+		status.text = "Speed set for the next run."
 
 
 func rest_session() -> void:

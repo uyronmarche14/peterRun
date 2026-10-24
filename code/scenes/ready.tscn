@@ -125,7 +125,7 @@ custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
-text = "Practise movements"
+text = "Practice movements"
 
 [node name="Footer" type="HBoxContainer" parent="Panel/Margin/Content"]
 unique_name_in_owner = true
@@ -146,4 +146,4 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 8
-text = "Start L01 Session"
+text = "Start Session"

@@ -45,6 +45,9 @@ var session_result := SessionResultModel.new()
 var _sequence_index := 0
 var is_gameplay_paused := false
 var is_session_ended := false
+var is_countdown_active := false
+var _countdown_step := 0
+var _countdown_tween: Tween
 var _progress_tween: Tween
 var _pending_end_reason: StringName = &""
 var _pause_title_text := ""
@@ -67,6 +70,9 @@ var _shown_prompt_action: StringName = &""
 @onready var warning_timer: Timer = $PromptTimers/WarningTimer
 @onready var response_timer: Timer = $PromptTimers/ResponseTimer
 @onready var resolve_timer: Timer = $PromptTimers/ResolveTimer
+@onready var countdown_timer: Timer = $PromptTimers/CountdownTimer
+@onready var countdown_overlay: CanvasLayer = $CountdownOverlay
+@onready var countdown_number: Label = $CountdownOverlay/Number
 @onready var pause_button: Button = $HUD/HUDRoot/PauseButton
 @onready var pause_overlay: CanvasLayer = $PauseOverlay
 @onready var resume_button: Button = $PauseOverlay/Panel/Actions/ResumeButton
@@ -95,6 +101,7 @@ func _ready() -> void:
 	warning_timer.timeout.connect(_on_warning_timer_timeout)
 	response_timer.timeout.connect(_on_response_timer_timeout)
 	resolve_timer.timeout.connect(_on_resolve_timer_timeout)
+	countdown_timer.timeout.connect(_on_countdown_tick)
 	pause_button.pressed.connect(pause_gameplay)
 	resume_button.pressed.connect(resume_gameplay)
 	end_level_button.pressed.connect(request_end_level)
@@ -121,11 +128,74 @@ func _ready() -> void:
 	session_result.route_seed = route_seed
 	_formation_resolver.set_seed(route_seed)
 	_apply_level_presentation()
-	_start_gameplay_audio()
 	if l01_layered_route.has_method("configure_route"):
 		l01_layered_route.call("configure_route", route_seed, 0)
+	# Only the Ready screen requests the countdown; direct scene loads start at once.
+	if GameSettings.start_countdown_pending:
+		GameSettings.start_countdown_pending = false
+		_begin_start_countdown()
+		return
+	_start_run()
+
+
+func _start_run() -> void:
+	_start_gameplay_audio()
 	player.set_walking(true)
 	_schedule_next_prompt()
+
+
+# A calm 3-2-1-Go before the first prompt. Everything is held still and input is
+# ignored; is_gameplay_paused stays false so the normal pause flow is untouched.
+func _begin_start_countdown() -> void:
+	is_countdown_active = true
+	_countdown_step = 0
+	pause_button.disabled = true
+	_set_gameplay_updates_paused(true)
+	countdown_overlay.visible = true
+	_show_countdown_text("3")
+	countdown_timer.start()
+
+
+func _on_countdown_tick() -> void:
+	if not is_countdown_active:
+		return
+	_countdown_step += 1
+	match _countdown_step:
+		1:
+			_show_countdown_text("2")
+			countdown_timer.start()
+		2:
+			_show_countdown_text("1")
+			countdown_timer.start()
+		3:
+			_show_countdown_text("Go!")
+			_play_gameplay_cue(success_cue)
+			countdown_timer.start()
+		_:
+			_end_start_countdown()
+
+
+func _show_countdown_text(text: String) -> void:
+	countdown_number.text = text
+	if text != "Go!" and text != "3":
+		_play_gameplay_cue(prompt_cue)
+	if _countdown_tween != null:
+		_countdown_tween.kill()
+	countdown_number.scale = Vector2.ONE
+	if GameSettings.reduced_motion:
+		return
+	countdown_number.pivot_offset = countdown_number.size / 2.0
+	countdown_number.scale = Vector2.ONE * 1.3
+	_countdown_tween = create_tween()
+	_countdown_tween.tween_property(countdown_number, "scale", Vector2.ONE, 0.35)
+
+
+func _end_start_countdown() -> void:
+	is_countdown_active = false
+	countdown_overlay.visible = false
+	pause_button.disabled = false
+	_set_gameplay_updates_paused(false)
+	_start_run()
 
 
 # _input runs before GUI focus navigation, so a focused HUD or Pause button
@@ -150,6 +220,8 @@ func receive_input(source_action: StringName, pressed: bool, now_seconds: float)
 		input_adapter.release_action(source_action)
 		return
 
+	if is_countdown_active:
+		return
 	var logical_action := input_adapter.accept_action(source_action, now_seconds)
 	if logical_action == &"":
 		return
@@ -308,7 +380,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 			prompt_state_label.text = resolved_text
 			prompt_state_label.add_theme_color_override("font_color", Color(0.84, 0.93, 0.88, 1.0))
 			if session_result.has_met_targets(session_config):
-				_show_neutral_end_overlay(level_definition.short_name + " complete", "The planned repetitions are complete. Review the session with the therapist.")
+				_show_neutral_end_overlay(level_definition.title + " complete", "The planned repetitions are complete. Review the session with the guardian.")
 				return
 			resolve_timer.start(level_definition.resolved_seconds)
 		PromptDirectorModel.State.IDLE:
@@ -319,7 +391,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 
 
 func _apply_level_presentation() -> void:
-	$HUD/HUDRoot/LevelLabel.text = "%s · %s" % [level_definition.short_name, level_definition.title]
+	$HUD/HUDRoot/LevelLabel.text = level_definition.title
 	$LevelWorld/Sky.color = level_definition.sky_color
 	$LevelWorld/DistantHills.color = level_definition.distant_color
 	$LevelWorld/Horizon.color = level_definition.horizon_color
@@ -605,7 +677,7 @@ func _on_resolve_timer_timeout() -> void:
 
 
 func pause_gameplay() -> void:
-	if is_gameplay_paused or is_session_ended:
+	if is_gameplay_paused or is_session_ended or is_countdown_active:
 		return
 
 	is_gameplay_paused = true

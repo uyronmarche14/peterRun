@@ -58,11 +58,9 @@ func _check_one_footer_row(screen: Node, screen_name: String) -> void:
 
 
 func _check_setup(screen: Node) -> void:
-	var side := screen.get_node("%AffectedSideOption") as Control
-	var stepper := screen.get_node("%TargetRepetitionsSpinBox") as Control
-	_expect(absf(side.get_global_rect().position.y - stepper.get_global_rect().position.y) <= 0.5, "Affected side and repetitions share one row")
-	_expect(absf(side.size.x - stepper.size.x) <= 1.0, "Setup columns have equal width (%.1f vs %.1f)" % [side.size.x, stepper.size.x])
+	_expect(screen.get_node_or_null(^"%AffectedSideOption") == null, "Setup has no affected-side selector")
 	_expect((screen.get_node("%SessionSummary") as Label).text.contains("40"), "Setup summarises the session total")
+
 
 
 func _check_controller_tiles(screen: Node) -> void:

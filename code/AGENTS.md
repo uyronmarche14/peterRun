@@ -16,7 +16,7 @@ This `code/` folder is the Godot 4 project root. Before changing gameplay, read:
 - Keep the base canvas at `480 × 270`; preserve crisp pixel-art scaling.
 - Use only named actions: `move_left`, `move_right`, `jump`, `slide`, `pause_session`.
 - The ESP32 controller must reach Godot as a debounced HID keyboard action. Godot gameplay must never parse raw sensor values.
-- Affected side is recorded for session review; Left and Right inputs must remain literal in-game directions.
+- Left and Right inputs must remain literal in-game directions. Affected side is no longer collected in the Setup UI (the inert model field remains for compatibility).
 - Menus use mouse/trackpad. The gameplay movement controls are not menu navigation controls.
 - Show one active prompt at a time. A prompt needs an icon, word, and distinct world-prop silhouette.
 - A physical obstacle contact ends the current run and opens its review flow. Never add health, lives, score loss, a chase, or shaming language.

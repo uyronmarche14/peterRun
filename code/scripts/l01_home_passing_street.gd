@@ -3,6 +3,8 @@ extends Node2D
 
 const Guide = preload("res://scripts/l01_visual_geometry.gd")
 const MANIFEST := "res://art/backgrounds/l01_home_v16_passby/l01_v16_home_passby.json"
+const NEIGHBOUR_REST = preload("res://art/backgrounds/l01_stage_details_v08/home_neighbour_rest_v08.png")
+const NEIGHBOUR_WAVE = preload("res://art/backgrounds/l01_stage_details_v08/home_neighbour_wave_v08.png")
 const CYCLE_DISTANCE := 34.0
 
 var motion_distance := 0.0
@@ -11,6 +13,7 @@ var reduced_motion := true
 var _sprites: Array[Sprite2D] = []
 var _entries: Array[Dictionary] = []
 var _contacts: Array[Dictionary] = []
+var _neighbour: Sprite2D
 
 
 func _ready() -> void:
@@ -33,6 +36,17 @@ func _ready() -> void:
 		var contact: Array = entry["contact_px"]
 		sprite.offset = -Vector2(float(contact[0]), float(contact[1]))
 		add_child(sprite)
+		if String(entry["id"]) == "right_sari_sari":
+			_neighbour = Sprite2D.new()
+			_neighbour.name = "NeighbourWave"
+			_neighbour.texture = NEIGHBOUR_REST
+			_neighbour.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+			_neighbour.use_parent_material = true
+			_neighbour.scale = Vector2.ONE * 0.05
+			# Feet sit at the shop's road-facing ground contact; the neighbour
+			# inherits the same perspective scale and cannot detach on travel.
+			_neighbour.position = Vector2(115.0, -35.0)
+			sprite.add_child(_neighbour)
 		_sprites.append(sprite)
 		_entries.append(entry)
 		_contacts.append({})
@@ -91,6 +105,10 @@ func _project_all() -> void:
 		sprite.scale = Vector2.ONE * art_scale
 		sprite.modulate.a = 1.0
 		_contacts[index] = {"side": side, "point": Vector2(contact_x, ground_y)}
+		if sprite.name == "right_sari_sari" and _neighbour != null:
+			_neighbour.visible = phase >= 0.27 and phase <= 0.87
+			var gesture_time := fposmod(motion_distance, 9.0)
+			_neighbour.texture = NEIGHBOUR_WAVE if gesture_time >= 3.5 and gesture_time < 5.5 else NEIGHBOUR_REST
 	var order: Array[int] = []
 	for index in _sprites.size():
 		order.append(index)

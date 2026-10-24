@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/session_summary_controller.gd" id="1"]
 [ext_resource type="Theme" path="res://art/ui/compact_theme.tres" id="2"]
@@ -6,7 +6,6 @@
 [ext_resource type="StyleBox" path="res://art/ui/menu_card.tres" id="10_card"]
 
 [ext_resource type="Texture2D" path="res://art/backgrounds/ui_barangay_plaza_review_v01.png" id="11_backdrop"]
-[ext_resource type="Texture2D" path="res://art/backgrounds/l01_barangay_v06_layers/l01_v06_route_stamp_atlas.png" id="12_route_stamps"]
 
 [node name="SessionSummary" type="Control"]
 layout_mode = 3
@@ -118,33 +117,10 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
 text = "Slide: 0 / 10"
 
-[node name="Misses" type="Label" parent="Panel/Margin/Content"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Neutral misses: 0"
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-
-[node name="Journey" type="Label" parent="Panel/Margin/Content"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Journey landmark: Home"
-theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
-
-[node name="JourneyStamp" type="TextureRect" parent="Panel/Margin/Content/Journey"]
-layout_mode = 0
-offset_left = 260.0
-offset_top = -4.0
-offset_right = 280.0
-offset_bottom = 16.0
-mouse_filter = 2
-texture = ExtResource("12_route_stamps")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="Effort" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "How much effort did it take?  Choose 1–10"
+text = "Choose the game speed:  Choose 1–10"
 
 
 [node name="Ratings" type="GridContainer" parent="Panel/Margin/Content"]
@@ -156,13 +132,13 @@ theme_override_constants/v_separation = 3
 [node name="ScaleNote" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "In-game effort rating · 1 = least, 10 = most"
+text = "1 = faster · 10 = slower · applies to the next run"
 theme_override_colors/font_color = Color(0.149, 0.196, 0.22, 1)
 
 [node name="Status" type="Label" parent="Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
-text = "Record effort before retrying, or finish without a rating."
+text = "Choose a speed before retrying, or finish without choosing."
 custom_minimum_size = Vector2(0, 20)
 autowrap_mode = 2
 vertical_alignment = 1
@@ -186,7 +162,7 @@ custom_minimum_size = Vector2(0, 16)
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
 focus_mode = 0
-text = "Retry L01"
+text = "Retry"
 
 [node name="FinishButton" type="Button" parent="Panel/Margin/Content/Actions"]
 layout_mode = 2
@@ -194,4 +170,4 @@ custom_minimum_size = Vector2(0, 16)
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 8
 focus_mode = 0
-text = "Finish without rating"
+text = "Finish without choosing"

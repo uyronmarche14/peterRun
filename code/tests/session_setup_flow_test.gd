@@ -48,31 +48,32 @@ func _test_main_menu_route() -> void:
 
 
 func _test_setup_persists_supervised_session_config(store_script: GDScript) -> void:
+	# The side is no longer chosen in Setup; a previously recorded side must survive saving.
+	store_script.call("configure", SessionConfigModel.AffectedSide.LEFT, 10)
 	var setup: Control = (load(PATIENT_SETUP_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(setup)
 	await process_frame
-	_expect_node(setup, ^"%AffectedSideOption", "affected-side selector")
+	_expect(setup.get_node_or_null(^"%AffectedSideOption") == null, "Setup no longer offers an affected-side selector")
 	_expect_node(setup, ^"%TargetRepetitionsSpinBox", "target repetition selector")
 	var repetition_stepper := setup.get_node("%TargetRepetitionsSpinBox") as SpinBox
 	_expect(repetition_stepper.min_value == 1, "Target repetitions can be lowered to one per action")
 	_expect(repetition_stepper.max_value == 15, "Target repetitions retain the approved maximum")
 	if setup.has_method("set_target_repetitions"):
 		setup.call("set_target_repetitions", 1)
-		_expect_label(setup, ^"%SessionSummary", "4 total  ·  1 per movement  ·  right side", "Setup shows a four-movement minimum session")
+		_expect_label(setup, ^"%SessionSummary", "4 total  ·  1 per movement", "Setup shows a four-movement minimum session")
 	_expect_button(setup, ^"%ContinueButton", "Review session")
 	_expect_button(setup, ^"%TestControlsButton", "Test controls")
-	_expect_button(setup, ^"%PracticeButton", "Practise movements")
+	_expect_button(setup, ^"%PracticeButton", "Practice movements")
 	_expect_button(setup, ^"%BackButton", "Back")
 	_expect(setup.has_method("get_ready_scene_path"), "Patient Setup exposes the direct Ready route")
 	if setup.has_method("get_ready_scene_path"):
 		_expect_equal(setup.call("get_ready_scene_path"), READY_SCENE_PATH, "Review session bypasses optional control and practice screens")
 	_expect(setup.has_method("save_session_settings"), "Patient Setup saves session settings")
 	if setup.has_method("save_session_settings"):
-		setup.call("set_affected_side", SessionConfigModel.AffectedSide.LEFT)
 		setup.call("set_target_repetitions", 12)
 		setup.call("save_session_settings")
 		var config: Variant = store_script.call("get_session_config")
-		_expect_equal(config.affected_side, SessionConfigModel.AffectedSide.LEFT, "Selected affected side persists")
+		_expect_equal(config.affected_side, SessionConfigModel.AffectedSide.LEFT, "Setup preserves the existing recorded side")
 		_expect_equal(config.selected_level_id, &"l01_barangay", "L01 is selected for this build")
 		for action_name in SessionConfigModel.ACTIONS:
 			_expect_equal(config.get_target(action_name), 12, "Selected target persists for %s" % action_name)
@@ -122,10 +123,10 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var ready: Control = (load(READY_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(ready)
 	await process_frame
-	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "L01 Barangay Morning • 12 reps/action • Left affected side", "Ready screen shows selected session settings")
-	_expect_button(ready, ^"%StartSessionButton", "Start L01 Session")
+	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "Barangay Morning • 12 reps/action", "Ready screen shows selected session settings")
+	_expect_button(ready, ^"%StartSessionButton", "Start Session")
 	_expect_button(ready, ^"%TestControlsButton", "Test controls")
-	_expect_button(ready, ^"%PracticeButton", "Practise movements")
+	_expect_button(ready, ^"%PracticeButton", "Practice movements")
 	_expect_button(ready, ^"%BackButton", "Edit session")
 	_expect(ready.has_method("get_runner_scene_path"), "Ready screen exposes the L01 route")
 	if ready.has_method("get_runner_scene_path"):

@@ -44,6 +44,7 @@ func start_session() -> void:
 	if LevelSelection.resolve(SessionSetupStoreModel.get_session_config()) == null:
 		_refresh_session_details()
 		return
+	GameSettings.start_countdown_pending = true
 	get_tree().change_scene_to_file(RUNNER_LEVEL_SCENE_PATH)
 
 
@@ -66,7 +67,6 @@ func _refresh_session_details() -> void:
 	if definition == null:
 		session_details.text = "Level unavailable. Return to setup before starting."
 		return
-	start_session_button.text = "Start %s Session" % definition.short_name
+	start_session_button.text = "Start Session"
 	var target_repetitions: int = int(config.get_target(&"jump"))
-	var side_name := "Left" if config.affected_side == SessionConfigModel.AffectedSide.LEFT else "Right"
-	session_details.text = "%s %s • %d reps/action • %s affected side" % [definition.short_name, definition.title, target_repetitions, side_name]
+	session_details.text = "%s • %d reps/action" % [definition.title, target_repetitions]

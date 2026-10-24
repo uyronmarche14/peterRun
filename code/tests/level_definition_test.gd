@@ -89,6 +89,9 @@ func _test_level(path: String) -> void:
 	await process_frame
 	var runner := current_scene
 	_expect(runner.scene_file_path == "res://scenes/levels/runner_level.tscn", "Both definitions use the same runner scene")
+	# Starting from Ready plays the 3-2-1-Go countdown first; finish it so the first prompt exists.
+	while runner.get("is_countdown_active"):
+		runner.get_node("PromptTimers/CountdownTimer").timeout.emit()
 	_expect(runner.get_node("HUD/HUDRoot/LevelLabel").text.contains(definition.get("title")), "HUD uses resource title")
 	_expect(runner.get_node("LevelWorld/Sky").color == definition.get("sky_color"), "Resource palette reaches world")
 	_expect(runner.get("level_definition") != definition, "Running level settings do not alias the authored resource")

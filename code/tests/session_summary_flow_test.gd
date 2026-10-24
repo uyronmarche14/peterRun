@@ -2,6 +2,7 @@ extends SceneTree
 
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const Settings = preload("res://scripts/game_settings.gd")
 const ReviewPath := "res://scripts/session_review_store.gd"
 const SummaryPath := "res://scenes/session_summary.tscn"
 var failures: PackedStringArray = []
@@ -77,20 +78,15 @@ func _test_completion_and_rating(review: GDScript) -> void:
 	_expect_controls_fit(summary.get_node("Panel"), summary.get_node("Panel").get_global_rect())
 	_expect(summary.get_node("Panel/Margin/Content/Repetitions/Jump").text == "Jump: 1 / 1", "Summary displays completed and planned repetitions")
 	_expect_outcome(summary, "Outcome: Planned repetitions complete", "Summary identifies planned completion")
-	_expect(summary.get_node("Panel/Margin/Content/Misses").text == "Neutral misses: 0", "Summary labels collision-free completion neutrally")
-	_expect(summary.has_node("Panel/Margin/Content/Journey"), "Summary includes calm journey context")
-	if summary.has_node("Panel/Margin/Content/Journey"):
-		_expect(summary.get_node("Panel/Margin/Content/Journey").text == "Journey landmark: Barangay Plaza", "Completed repetitions reach the final journey landmark without a score")
-		_expect(summary.has_node("Panel/Margin/Content/Journey/JourneyStamp"), "Summary journey row includes a calm route stamp")
-		if summary.has_node("Panel/Margin/Content/Journey/JourneyStamp"):
-			var stamp := summary.get_node("Panel/Margin/Content/Journey/JourneyStamp") as TextureRect
-			_expect(stamp.texture is AtlasTexture and int((stamp.texture as AtlasTexture).region.position.x) == 384, "Completed route displays the Barangay Plaza stamp frame")
+	_expect(not summary.has_node("Panel/Margin/Content/Misses"), "Summary no longer shows neutral misses")
+	_expect(not summary.has_node("Panel/Margin/Content/Journey"), "Summary no longer shows the journey landmark")
 	_expect(summary.get_node("Panel/Margin/Content/Actions/RetryButton").disabled, "Retry waits for a recorded rating")
 	for invalid in [0, 11, 3.5, "5"]:
 		_expect(not summary.call("select_rating", invalid), "Invalid rating is rejected")
 	for rating in range(1, 11):
 		summary.get_node("Panel/Margin/Content/Ratings/Rating%d" % rating).pressed.emit()
 		_expect(result.rpe == rating, "Mouse rating button records %d" % rating)
+		_expect(is_equal_approx(Settings.visual_pace, Settings.pace_for_rating(rating)), "Rating %d sets the next-run visual pace" % rating)
 	_expect(current_scene == summary, "Even a high rating never starts a new session automatically")
 	summary.get_node("Panel/Margin/Content/Actions/RestButton").pressed.emit()
 	await process_frame
@@ -149,7 +145,7 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	await process_frame
 	await process_frame
 	_expect_outcome(current_scene, "Outcome: Session ended by therapist", "Summary identifies a therapist-ended session")
-	_expect(current_scene.get_node("Panel/Margin/Content/Actions/FinishButton").text == "Finish without rating", "An explicit unrated exit remains available")
+	_expect(current_scene.get_node("Panel/Margin/Content/Actions/FinishButton").text == "Finish without choosing", "An explicit unrated exit remains available")
 	current_scene.call("finish_session")
 	await process_frame
 	await process_frame

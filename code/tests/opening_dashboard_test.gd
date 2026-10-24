@@ -63,7 +63,7 @@ func _run() -> void:
 	var safety := menu.get_node_or_null(^"Dashboard/Margin/Content/SafetyNote") as Label
 	_expect(safety != null and safety.text.begins_with("Supervised session") and not safety.text.contains("Keyboard mode available"), "Safety note is input-aware")
 	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteName", "BARANGAY MORNING", "Route ticket names Barangay Morning")
-	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteDetail", "L01 · GUIDED MOVEMENT ROUTE", "Route ticket explains the guided route")
+	_expect_label(menu, ^"Dashboard/Margin/Content/RouteTicket/Margin/Content/RouteDetail", "GUIDED MOVEMENT ROUTE", "Route ticket explains the guided route")
 	_expect(menu.has_node("SettingsOverlay"), "Settings opens an actual settings panel")
 	_expect(menu.has_node("QuitOverlay"), "Quit has confirmation")
 	for overlay_name in ["SettingsOverlay", "QuitOverlay"]:

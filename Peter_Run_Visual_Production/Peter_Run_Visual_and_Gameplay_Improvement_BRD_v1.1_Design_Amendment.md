@@ -4,7 +4,7 @@
 >
 > 12 September 2026
 
-This amendment formalises the intended game-feel and 2.5D visual direction. It does not change the project’s supervised-use, safety, clinical, input, or neutral-miss boundaries.
+This amendment formalises the intended game-feel and 2.5D visual direction. It does not change the project’s supervised-use, safety, clinical, input, or neutral-miss and contact-ends-run boundaries.
 
 ## Approved design pattern
 
@@ -104,8 +104,8 @@ Add these bullets:
 
 - L01 communicates a calm, non-competitive Barangay journey through layered scenery and at least one approved route-progression treatment.
 - Prompt presentation, world art, and feedback use one consistent illustrated 2.5D Barangay visual system.
-- No journey-feedback feature introduces points, coins, streak pressure, leaderboards, faster travel, loss states, or changes to neutral miss handling.
+- No journey-feedback feature introduces points, coins, streak pressure, leaderboards, faster travel, loss states, or changes to neutral miss or contact-ends-run handling.
 
 ## Implementation boundary
 
-This amendment is deliberately visual and experiential. Repetition targets, input mapping, action timing, pause/end behaviour, controller validation, therapist authority, and neutral missed prompts remain governed by the original BRD and PRD.
+This amendment is deliberately visual and experiential. Repetition targets, input mapping, action timing, pause/end behaviour, controller validation, therapist authority, neutral missed prompts and the contact-ends-run rule remain governed by the original BRD and PRD.

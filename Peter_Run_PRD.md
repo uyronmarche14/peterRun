@@ -96,7 +96,7 @@ The exertion rating may be displayed with the historical “1–10” product re
 | FR-03 | Debounce input | Pressing/holding a mapped input fires one event until release and a cooldown expires. |
 | FR-04 | Record affected side | Settings stores affected side for session review; left/right controls remain literal in every configuration. |
 | FR-05 | Show prompt warnings | Every exercise prompt is visible sufficiently before its response window; time values are configuration constants. |
-| FR-06 | Resolve actions without punishment | Correct action in window increments its target count; incorrect/missed action gives neutral or encouraging feedback and never ends play. |
+| FR-06 | Resolve actions without punishment | Correct action in window increments its target count; incorrect/missed action gives neutral or encouraging feedback; it ends the run only if Peter is left in an occupied lane at contact (completed work is kept). |
 | FR-07 | End on targets or collision | A level completes when each required action target is reached. Physical obstacle contact ends the current run and retains completed repetitions for review; neither outcome depends on score or elapsed time. |
 | FR-08 | Pause instantly | Pause stops runner movement, timers, and prompt resolution on the same frame; it exposes Resume, End Level, and End Session. |
 | FR-09 | Display progress | HUD shows per-action or aggregate repetitions remaining and a clear pause control. |

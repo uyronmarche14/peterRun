@@ -22,7 +22,7 @@ This phase prioritises final visual integration, readable motion, compact access
 | Main route | L01 Barangay Morning |
 | Supported actions | Move left, move right, jump, slide, and pause |
 | Core flow | Dashboard -> setup -> controller check -> tutorial -> ready -> gameplay -> summary |
-| Gameplay logic | One prompt at a time; success and neutral miss outcomes; no game-over loop |
+| Gameplay logic | One prompt at a time; success and neutral miss outcomes; obstacle contact ends the run with completed work kept; no lives or game-over loop |
 | Current art | Code-drawn/prototype visuals plus reference-only ComfyUI concepts |
 | UI | Compact themed cards, setup, tutorial, HUD, pause, settings, and summary |
 | Input | Named input actions with keyboard fallback; controller integration remains subject to hardware validation |
@@ -33,7 +33,7 @@ This phase prioritises final visual integration, readable motion, compact access
 1. Make the player immediately understand what movement is requested and what happened after they respond.
 2. Make the game look like a coherent original Barangay-inspired runner rather than a technical prototype.
 3. Improve perceived smoothness without increasing unsafe pace or clinical pressure.
-4. Preserve accessibility, supervised-use guardrails, predictable flow, and neutral handling of missed prompts.
+4. Preserve accessibility, supervised-use guardrails, predictable flow, and neutral handling of missed prompts (obstacle contact ends the run).
 5. Establish an asset pipeline that can add later routes without rewriting gameplay code.
 6. Prepare a reliable Windows demonstration build and a documented verification path.
 
@@ -50,7 +50,7 @@ This phase prioritises final visual integration, readable motion, compact access
 ## 5. Product principles and guardrails
 
 - Calm over fast: character travel speed remains gentle and predictable. Difficulty must not be increased by making the game move faster.
-- Encouragement over punishment: missed prompts remain neutral. No health bars, crashes, score loss, chase logic, collision damage, or game-over state may be introduced.
+- Encouragement over punishment: missed prompts remain neutral unless Peter is left in an occupied lane, which ends the run and keeps completed work. No health bars, score loss, chase logic, collision damage, lives or punitive game-over state may be introduced.
 - Therapist in control: pause and end-session actions remain immediately visible and freeze gameplay without delay.
 - Originality: all routes, props, UI, characters, audio, text, and animation must be original or properly licensed. Do not copy commercial endless-runner branding, assets, characters, chase structures, trains, guards, coins, or hoverboards.
 - Accessibility before decoration: interface text and prompts must remain legible before optional texture, illustrations, or effects are added.
@@ -138,7 +138,7 @@ This phase prioritises final visual integration, readable motion, compact access
 | --- | --- | --- | --- |
 | IBR-50 | Continue to consume only named actions: move_left, move_right, jump, slide, and pause_session. | Must | Art and UI work introduces no direct raw sensor dependency. |
 | IBR-51 | Keep Pause visible and immediately freeze player, props, timers, feedback, and presentation motion. | Must | Manual testing confirms no active world motion continues while paused. |
-| IBR-52 | Keep misses neutral and sessions safely endable. | Must | No punitive collision or game-over logic exists; end-session confirmation is understandable and recoverable. |
+| IBR-52 | Keep misses neutral, make contact end the run without penalty, and keep sessions safely endable. | Must | Contact ends the run, keeps completed work and applies no lives, score loss or shaming; end-session confirmation is understandable and recoverable. |
 | IBR-53 | Keep text, icons, and prop silhouettes understandable at native and approved scaled displays. | Must | Contrast and layout checks pass at all three approved display sizes. |
 | IBR-54 | Validate actual controller hardware before any clinical or deployment claim. | Must | HID mapping, debounce, disconnect behaviour, left/right mapping, and therapist-approved movement range are documented and tested. |
 
@@ -242,7 +242,7 @@ This improvement phase is complete only when:
 - Active props approach with understandable depth, grounding, and anticipation without becoming threatening.
 - Dashboard, tutorial, HUD, pause, settings, and summary follow one compact UI system.
 - Gameplay and UI preserve aspect ratio and usability at all three approved display sizes.
-- Pause/end session, neutral misses, named action input, and all safety guardrails remain intact.
+- Pause/end session, neutral misses, contact-ends-run, named action input, and all safety guardrails remain intact.
 - Automated regression passes after integration; visual/manual checks are recorded.
 - Runtime assets are traceable, cleaned, approved, correctly licensed, and outside the raw-reference path.
 - A tested Windows demonstration export, known-limitations note, and controller-validation plan are available.

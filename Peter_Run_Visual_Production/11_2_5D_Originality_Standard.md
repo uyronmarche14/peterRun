@@ -16,7 +16,7 @@ It is not a 3D game and it is not a copy of any commercial runner. The player re
 | Engine | Godot 4, 2D scenes, GDScript, Compatibility renderer |
 | Player space | Three lanes: left, centre, right |
 | Gameplay | One discrete Move / Jump / Slide prompt at a time |
-| Session logic | Therapist-configured repetitions, neutral misses, immediate Pause |
+| Session logic | Therapist-configured repetitions, neutral misses, contact ends the run, immediate Pause |
 | Content structure | Reusable `RunnerLevel` + data-driven `LevelDefinition` resources |
 
 ## 3. What the visual design must become

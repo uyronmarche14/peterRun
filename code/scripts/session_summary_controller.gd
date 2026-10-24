@@ -4,6 +4,7 @@ const Review = preload("res://scripts/session_review_store.gd")
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const Settings = preload("res://scripts/game_settings.gd")
+const History = preload("res://scripts/session_history_store.gd")
 const LevelSelection = preload("res://scripts/level_selection.gd")
 const ACTION_LABELS := ["Move left", "Move right", "Jump", "Slide"]
 const ACTION_NODES := ["Left", "Right", "Jump", "Slide"]
@@ -128,6 +129,8 @@ func _navigate(path: String, decision: StringName) -> void:
 	_leaving = true
 	if get_tree().change_scene_to_file(path) == OK:
 		Review.set_decision(decision)
+		if _result != null and _config != null:
+			History.record(_config, _result, Review.get_end_reason())
 	else:
 		_leaving = false
 		status.text = "Could not open the next screen. Please try again."

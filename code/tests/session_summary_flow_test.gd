@@ -3,6 +3,7 @@ extends SceneTree
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Config = preload("res://scripts/session_config.gd")
 const Settings = preload("res://scripts/game_settings.gd")
+const History = preload("res://scripts/session_history_store.gd")
 const ReviewPath := "res://scripts/session_review_store.gd"
 const SummaryPath := "res://scenes/session_summary.tscn"
 var failures: PackedStringArray = []
@@ -18,6 +19,8 @@ func _run() -> void:
 	if failures.is_empty():
 		var review: GDScript = load(ReviewPath)
 		review.call("reset")
+		History.history_path = "user://test_summary_history.json"
+		History.clear()
 		Setup.reset()
 		await _test_completion_and_rating(review)
 		await _test_early_end_and_retry(review)
@@ -150,6 +153,11 @@ func _test_early_end_and_retry(review: GDScript) -> void:
 	await process_frame
 	await process_frame
 	_expect(review.call("get_result").rpe == 0, "Unrated exit does not invent a rating")
+	var saved := History.load_entries()
+	_expect(saved.size() == 3, "Completion, Retry and Finish each save one history entry (got %d)" % saved.size())
+	if saved.size() == 3:
+		_expect(saved[1]["speed_choice"] == 4 and saved[1]["end_reason"] == "level_ended", "Retry entry keeps the chosen speed and end reason")
+		_expect(saved[2]["speed_choice"] == 0 and saved[2]["end_reason"] == "session_ended", "Unrated finish is saved as speed 0")
 	current_scene.free()
 
 
@@ -172,6 +180,8 @@ func _test_empty_summary(review: GDScript) -> void:
 	await process_frame
 	await process_frame
 	_expect(current_scene.scene_file_path == "res://scenes/main.tscn", "Empty summary has a working exit")
+	_expect(History.load_entries().size() == 3, "An empty summary saves nothing")
+	History.clear()
 	current_scene.free()
 
 

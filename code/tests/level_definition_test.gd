@@ -3,6 +3,7 @@ extends SceneTree
 const Setup = preload("res://scripts/session_setup_store.gd")
 const Review = preload("res://scripts/session_review_store.gd")
 const Config = preload("res://scripts/session_config.gd")
+const HistoryStore = preload("res://scripts/session_history_store.gd")
 const L01 := "res://data/levels/l01_barangay.tres"
 const L02 := "res://data/levels/l02_market.tres"
 const L03 := "res://data/levels/l03_rainy_crossing.tres"
@@ -15,6 +16,7 @@ func _init() -> void:
 
 
 func _run() -> void:
+	HistoryStore.history_path = "user://test_level_history.json"
 	for path in [L01, L02, L03, FIXTURE, "res://scripts/level_definition.gd"]:
 		_expect(ResourceLoader.exists(path), "Level resource exists: " + path)
 	if failures.is_empty():

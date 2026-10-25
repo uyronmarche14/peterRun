@@ -46,9 +46,9 @@ func _run() -> void:
 					_expect(stepper.value == 1, "Stepper retains the customizable minimum target")
 					await _click(stepper.get_node("Stepper/Row/Increase"))
 					_expect(stepper.value == 2, "Stepper increments the customizable target")
-					stepper.value = 15
+					stepper.value = 50
 					stepper.get_node("Stepper/Row/Increase").pressed.emit()
-					_expect(stepper.value == 15, "Stepper retains maximum target")
+					_expect(stepper.value == 50, "Stepper retains maximum target")
 					stepper.value = 1
 			if screen_name != "main":
 				_expect(screen.has_node("BackdropArt"), screen_name + " carries the shared barangay setting")

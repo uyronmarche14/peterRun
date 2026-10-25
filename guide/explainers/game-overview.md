@@ -36,7 +36,7 @@ A run lasts as long as the planned repetitions take: roughly 5 seconds per promp
 ## What is in the game today
 
 - Opening screen with original music (*Hakbang sa Umaga*), settings, and a tutorial.
-- Supervised setup with 1–15 repetitions per movement.
+- Supervised setup with 1–50 repetitions per movement.
 - Controller check for keyboard, gamepad and the MOVE wearable.
 - One playable route: **Barangay Morning**, with a layered, travelling street and living background.
 - Authored obstacle **formations** that vary the lanes and movements.

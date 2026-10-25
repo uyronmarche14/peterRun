@@ -21,7 +21,7 @@ Terms used in the game, the docs and the code. Code names are in `monospace`.
 | **Prompt** | A single instruction shown to the player. Only one at a time. |
 | **Prompt cycle** | `IDLE → WARNING → ACTIVE → RESOLVED → IDLE`, handled by `PromptDirector`. |
 | **Recovery formation** | An easier formation chosen after a neutral miss. |
-| **Repetition (rep)** | One correct response. Targets are set per action, 1–15 each. |
+| **Repetition (rep)** | One correct response. Targets are set per action, 1–50 each. |
 | **Resolution** | The outcome of a prompt: `SUCCESS`, `NEUTRAL_MISS`, or `SAFE_CLEAR`. |
 | **RPE / game-speed choice** | The 1-10 number chosen on the review screen. It is stored as `rpe` and now sets the scenery speed of the next run (1 = faster, 10 = slower). |
 | **Safe clear** | The player was already in a safe lane when time ran out, so nothing was needed. It is not counted as a repetition. |

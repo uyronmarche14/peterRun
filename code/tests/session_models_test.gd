@@ -12,6 +12,7 @@ func _init() -> void:
 	_test_result_tracks_successes_and_neutral_misses()
 	_test_result_completes_only_when_every_target_is_met()
 	_test_result_validates_rpe()
+	_test_counts_beyond_fifteen_repetitions()
 
 	if failures.is_empty():
 		print("PETER RUN session models test: PASS")
@@ -92,3 +93,18 @@ func _expect(condition: bool, message: String) -> void:
 func _expect_equal(actual: Variant, expected: Variant, message: String) -> void:
 	if actual != expected:
 		failures.append("%s (expected %s, got %s)" % [message, expected, actual])
+
+
+func _test_counts_beyond_fifteen_repetitions() -> void:
+	var config := SessionConfig.new()
+	var result := SessionResult.new()
+	for action_name in SessionConfig.ACTIONS:
+		_expect(config.set_target(action_name, 50), "A target of 50 is accepted for %s" % action_name)
+	for i in 49:
+		for action_name in SessionConfig.ACTIONS:
+			result.record_success(action_name)
+	_expect(not result.has_met_targets(config), "49 of 50 repetitions does not complete the session")
+	for action_name in SessionConfig.ACTIONS:
+		result.record_success(action_name)
+	_expect_equal(result.get_completed(&"jump"), 50, "Fifty repetitions are recorded")
+	_expect(result.has_met_targets(config), "50 of 50 repetitions completes the session")

@@ -10,7 +10,7 @@ const MAIN_MENU_SCENE_PATH := "res://scenes/main.tscn"
 const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const MIN_TARGET_REPETITIONS := 1
-const MAX_TARGET_REPETITIONS := 15
+const MAX_TARGET_REPETITIONS := 50
 
 @onready var level_option: OptionButton = %LevelOption
 @onready var level_label: Label = %LevelLabel

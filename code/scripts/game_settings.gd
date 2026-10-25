@@ -6,8 +6,8 @@ const CALM_PACE := 0.85
 const STANDARD_PACE := 1.0
 const LIVELY_PACE := 1.15
 # The review rating (1 = faster ... 10 = slower) maps onto this scenery-only range.
-const MIN_PACE := 0.70
-const MAX_PACE := 1.30
+const MIN_PACE := 0.50
+const MAX_PACE := 1.80
 
 static var visual_pace := STANDARD_PACE
 static var reduced_motion := false

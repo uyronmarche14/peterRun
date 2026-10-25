@@ -16,7 +16,7 @@ func _run() -> void:
 	await process_frame
 
 	_expect_node(level, ^"HUD/HUDRoot/ProgressLabel", "repetition progress label")
-	_expect_node(level, ^"HUD/HUDRoot/NeutralMissLabel", "neutral miss label")
+	_expect(level.get_node_or_null(^"HUD/HUDRoot/NeutralMissLabel") == null, "HUD no longer shows a Misses counter")
 
 	var config: Variant = level.get("session_config")
 	var result: Variant = level.get("session_result")
@@ -40,7 +40,7 @@ func _run() -> void:
 		level.call("_on_prompt_state_changed", 3, &"move_right", 2)
 		_expect_equal(result.get_completed(&"move_right"), 0, "No-input timeout records no repetition")
 		_expect_equal(result.neutral_misses, 2, "No-input timeout records a neutral miss")
-		_expect_equal(level.get_node(^"HUD/HUDRoot/NeutralMissLabel").text, "Misses: 2", "Miss count is visible")
+		_expect(level.get_node_or_null(^"HUD/HUDRoot/NeutralMissLabel") == null, "Misses stay hidden while counted internally")
 
 		level.call("_on_prompt_state_changed", 3, &"move_left", 1)
 		level.call("_on_prompt_state_changed", 3, &"move_right", 1)

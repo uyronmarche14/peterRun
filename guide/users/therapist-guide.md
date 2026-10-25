@@ -15,7 +15,7 @@ Choose **Start Session**. The *Set up this session* screen has:
 | Setting | What it does |
 | --- | --- |
 | **Route** | Currently **Barangay Morning**. |
-| **Repetitions per movement** | Use the **−** / **+** buttons. 1 to 15 for each of Move Left, Move Right, Jump and Slide. Default is 10 each (so 40 total). Range is 4–60 total. |
+| **Repetitions per movement** | Use the **−** / **+** buttons. 1 to 50 for each of Move Left, Move Right, Jump and Slide. Default is 10 each (so 40 total). Range is 4–200 total. |
 | **Test controls / Practice movements** | Optional extras before starting. |
 
 Press **Review session** to continue.

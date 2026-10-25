@@ -57,7 +57,7 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	_expect_node(setup, ^"%TargetRepetitionsSpinBox", "target repetition selector")
 	var repetition_stepper := setup.get_node("%TargetRepetitionsSpinBox") as SpinBox
 	_expect(repetition_stepper.min_value == 1, "Target repetitions can be lowered to one per action")
-	_expect(repetition_stepper.max_value == 15, "Target repetitions retain the approved maximum")
+	_expect(repetition_stepper.max_value == 50, "Target repetitions allow up to 50 per movement")
 	if setup.has_method("set_target_repetitions"):
 		setup.call("set_target_repetitions", 1)
 		_expect_label(setup, ^"%SessionSummary", "4 total  ·  1 per movement", "Setup shows a four-movement minimum session")

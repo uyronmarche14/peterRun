@@ -59,7 +59,6 @@ var _shown_prompt_action: StringName = &""
 @onready var progress_label: Label = $HUD/HUDRoot/ProgressLabel
 @onready var progress_bar: ProgressBar = $HUD/HUDRoot/ProgressBar
 @onready var feedback_toast: PanelContainer = $HUD/HUDRoot/FeedbackToast
-@onready var neutral_miss_label: Label = $HUD/HUDRoot/NeutralMissLabel
 @onready var journey_label: Label = $HUD/HUDRoot/JourneyLabel
 @onready var prompt_icon_label: Label = $HUD/HUDRoot/PromptCard/PromptIconLabel
 @onready var prompt_action_icon: TextureRect = $HUD/HUDRoot/PromptCard/ActionIcon
@@ -95,6 +94,8 @@ var _shown_prompt_action: StringName = &""
 
 
 func _ready() -> void:
+	# Deliver each input event as it arrives instead of one merged event per frame.
+	Input.use_accumulated_input = false
 	session_config = SessionSetupStoreModel.get_session_config()
 	input_adapter = InputAdapterModel.new(session_config.affected_side)
 	prompt_director.connect("prompt_state_changed", _on_prompt_state_changed)
@@ -607,7 +608,6 @@ func _update_progress_hud(animate_success: bool = false) -> void:
 		completed_repetitions += mini(session_result.get_completed(action_name), session_config.get_target(action_name))
 		target_repetitions += session_config.get_target(action_name)
 	progress_label.text = "Reps: %d / %d" % [completed_repetitions, target_repetitions]
-	neutral_miss_label.text = "Misses: %d" % session_result.neutral_misses
 	var route_progress := RouteJourney.get_progress(completed_repetitions, target_repetitions)
 	journey_label.text = RouteJourney.get_hud_text(route_progress)
 	if l01_layered_route.has_method("set_route_progress"):

@@ -38,7 +38,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    M["main.tscn<br/>Opening dashboard + settings"] -->|Start Session| S["patient_setup.tscn<br/>side · reps 1–15 per action · route"]
+    M["main.tscn<br/>Opening dashboard + settings"] -->|Start Session| S["patient_setup.tscn<br/>reps 1–50 per action · route"]
     M -->|Tutorial| TU["tutorial.tscn"]
     M -->|Settings → Check controller| CC["controller_check.tscn"]
     S -->|Continue| RD["ready.tscn<br/>review plan"]

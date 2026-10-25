@@ -63,10 +63,35 @@ static func rating_for_pace(pace: float) -> int:
 	return clampi(roundi(1.0 + step * 9.0), 1, 10)
 
 
-# Evens out how an obstacle closes in, never when it arrives: 0 stays 0 and 1 stays 1.
-# The road's perspective curve already holds distant props small and then rushes them
-# (power 1.85); this softens that so the approach reads as steady. A faster speed
-# softens it a little more. Prompt timing is not touched.
+# An obstacle travels at one steady pace from its start to contact, and contact always
+# lands on time (progress 1 at the end of the approach). A faster speed starts the
+# obstacle farther away, so it covers more ground in the same time; a slower speed
+# starts it nearer. Prompt timing is not touched.
+const SLOWEST_START_DEPTH := 0.6
+# Depth is eased in two straight pieces, so size and ground speed both stay even.
+const APPROACH_KNOT_PROGRESS := 0.4
+
+
+static func approach_start_depth() -> float:
+	return clampf((MAX_PACE - visual_pace) / (MAX_PACE - MIN_PACE), 0.0, 1.0) * SLOWEST_START_DEPTH
+
+
+static func _depth_at(progress: float) -> float:
+	var knot_depth := RoadProjection.MID_DEPTH
+	if progress <= APPROACH_KNOT_PROGRESS:
+		return knot_depth * progress / APPROACH_KNOT_PROGRESS
+	return knot_depth + (1.0 - knot_depth) * (progress - APPROACH_KNOT_PROGRESS) / (1.0 - APPROACH_KNOT_PROGRESS)
+
+
+static func _progress_at_depth(depth: float) -> float:
+	var knot_depth := RoadProjection.MID_DEPTH
+	if depth <= knot_depth:
+		return APPROACH_KNOT_PROGRESS * depth / knot_depth
+	return APPROACH_KNOT_PROGRESS + (1.0 - APPROACH_KNOT_PROGRESS) * (depth - knot_depth) / (1.0 - knot_depth)
+
+
+# Maps time through the approach (0..1) to the road projection fraction.
 static func approach_fraction(fraction: float) -> float:
-	var exponent := clampf(0.65 - maxf(0.0, visual_pace - STANDARD_PACE) * 0.08, 0.5, 0.65)
-	return pow(clampf(fraction, 0.0, 1.0), exponent)
+	var start_progress := _progress_at_depth(approach_start_depth())
+	var progress := lerpf(start_progress, 1.0, clampf(fraction, 0.0, 1.0))
+	return RoadProjection.fraction_from_depth(_depth_at(progress))

@@ -12,6 +12,7 @@ const FAR_SCALE := 0.24
 const MID_SCALE := 0.68
 const PLAYER_SCALE := 1.58
 const MID_DEPTH := 0.48
+const DEPTH_EXPONENT := 1.85
 const FAR_LANE_SPAN := 18.0
 const PLAYER_LANE_SPAN := 132.0
 const FAR_ROAD_HALF_WIDTH := 58.0
@@ -31,7 +32,7 @@ static func depth_curve(fraction: float) -> float:
 	# Hold distant props small, then accelerate their apparent growth as they
 	# enter Peter's foreground. This supplies the runner-style perspective
 	# effect without changing approach time or world speed.
-	return pow(clampf(fraction, 0.0, 1.0), 1.85)
+	return pow(clampf(fraction, 0.0, 1.0), DEPTH_EXPONENT)
 
 
 static func scale_at(fraction: float) -> float:
@@ -41,13 +42,17 @@ static func scale_at(fraction: float) -> float:
 	return lerpf(MID_SCALE, PLAYER_SCALE, (projected_depth - MID_DEPTH) / (1.0 - MID_DEPTH))
 
 
+static func fraction_from_depth(depth: float) -> float:
+	return pow(clampf(depth, 0.0, 1.0), 1.0 / DEPTH_EXPONENT)
+
+
 static func fraction_from_scale(value: float) -> float:
 	var projected_depth := 0.0
 	if value <= MID_SCALE:
 		projected_depth = inverse_lerp(FAR_SCALE, MID_SCALE, clampf(value, FAR_SCALE, MID_SCALE)) * MID_DEPTH
 	else:
 		projected_depth = MID_DEPTH + inverse_lerp(MID_SCALE, PLAYER_SCALE, clampf(value, MID_SCALE, PLAYER_SCALE)) * (1.0 - MID_DEPTH)
-	return pow(clampf(projected_depth, 0.0, 1.0), 1.0 / 1.85)
+	return pow(clampf(projected_depth, 0.0, 1.0), 1.0 / DEPTH_EXPONENT)
 
 
 static func screen_y_at(fraction: float) -> float:

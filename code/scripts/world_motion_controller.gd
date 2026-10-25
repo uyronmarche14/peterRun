@@ -86,6 +86,8 @@ func _apply_prompt_projection() -> void:
 	# Distance haze clears as the prop approaches, reinforcing depth without a
 	# flash, screen shake, or change to the response window.
 	prompt_anchor.modulate.a = lerpf(0.72, 1.0, smoothstep(0.0, 0.42, fraction))
+	# A prop that starts nearer (slower speeds) fades in rather than popping in.
+	prompt_anchor.modulate.a *= smoothstep(0.0, 0.3, _prompt_elapsed)
 	_update_prompt_depth_details(fraction)
 	var local_lane_spacing := RoadProjectionModel.lane_span_at(fraction) / depth_scale
 	for index in mini(_companion_nodes.size(), _companion_lanes.size()):

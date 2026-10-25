@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Settings = preload("res://scripts/game_settings.gd")
+const RoadProjection = preload("res://scripts/road_projection.gd")
 
 var failures: PackedStringArray = []
 
@@ -16,16 +17,37 @@ func _run() -> void:
 	await process_frame
 	var motion := level.get_node("WorldMotion")
 	var original := Settings.visual_pace
+	var travel := {}
 
 	for pace in [Settings.MIN_PACE, Settings.STANDARD_PACE, Settings.MAX_PACE]:
-		var start := _scale_at_time(motion, pace, 0.0)
-		var early := _scale_at_time(motion, pace, 0.9) - start
-		var late := _scale_at_time(motion, pace, 4.5) - _scale_at_time(motion, pace, 3.6)
-		_expect(late / early < 3.5, "Pace %.2f: the last fifth of the approach grows at most 3.5x faster than the first fifth (%.1fx)" % [pace, late / early])
-		_expect(early > 0.1, "Pace %.2f: the obstacle is already visibly moving early (growth %.3f)" % [pace, early])
-		_expect(is_equal_approx(_scale_at_time(motion, pace, 4.5), _scale_at_time(motion, Settings.STANDARD_PACE, 4.5)), "Pace %.2f: contact scale is the same at every speed" % pace)
-		_scale_at_time(motion, pace, 1.0)
+		var ys: Array[float] = []
+		var scales: Array[float] = []
+		for step in 6:
+			var seconds := 4.5 * float(step) / 5.0
+			Settings.set_visual_pace(pace)
+			motion.begin_prompt_approach(1, 2.5, 2.0)
+			motion._prompt_elapsed = seconds
+			motion._apply_prompt_projection()
+			ys.append(motion.prompt_anchor.position.y)
+			scales.append(motion.prompt_anchor.scale.x)
+		var y_steps: Array[float] = []
+		var scale_steps: Array[float] = []
+		for step in 5:
+			y_steps.append(ys[step + 1] - ys[step])
+			scale_steps.append(scales[step + 1] - scales[step])
+		_expect(_spread(y_steps) < 1.6, "Pace %.2f: the obstacle's ground speed stays within 1.6x from start to end (%.2fx)" % [pace, _spread(y_steps)])
+		_expect(_spread(scale_steps) < 1.6, "Pace %.2f: the obstacle's growth stays within 1.6x from start to end (%.2fx)" % [pace, _spread(scale_steps)])
+		_expect(is_equal_approx(scales[5], RoadProjection.PLAYER_SCALE), "Pace %.2f: contact size is the same at every speed" % pace)
+		travel[pace] = ys[5] - ys[0]
+		motion._prompt_elapsed = 1.0
 		_expect(is_equal_approx(motion.get_prompt_remaining_seconds(), 3.5), "Pace %.2f: remaining prompt seconds ignore the speed" % pace)
+
+	_expect(travel[Settings.MAX_PACE] > travel[Settings.MIN_PACE] * 1.8, "Speed 1 covers at least 1.8x the ground of speed 10 in the same time (%.0f vs %.0f)" % [travel[Settings.MAX_PACE], travel[Settings.MIN_PACE]])
+	_expect(travel[Settings.MAX_PACE] >= travel[Settings.STANDARD_PACE] and travel[Settings.STANDARD_PACE] > travel[Settings.MIN_PACE], "Faster speeds cover more ground, in order")
+
+	Settings.set_visual_pace(Settings.MIN_PACE)
+	motion.begin_prompt_approach(1, 2.5, 2.0)
+	_expect(motion.prompt_anchor.modulate.a < 0.05, "A prop that starts nearer fades in instead of popping in")
 
 	Settings.set_visual_pace(original)
 	level.free()
@@ -38,12 +60,8 @@ func _run() -> void:
 	quit(1)
 
 
-func _scale_at_time(motion: Node, pace: float, seconds: float) -> float:
-	Settings.set_visual_pace(pace)
-	motion.begin_prompt_approach(1, 2.5, 2.0)
-	motion._prompt_elapsed = seconds
-	motion._apply_prompt_projection()
-	return motion.prompt_anchor.scale.x
+func _spread(steps: Array[float]) -> float:
+	return steps.max() / maxf(steps.min(), 0.0001)
 
 
 func _expect(condition: bool, description: String) -> void:

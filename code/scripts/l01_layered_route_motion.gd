@@ -124,7 +124,7 @@ func advance_layer_motion(delta: float) -> void:
 		return
 	if _base_positions.is_empty():
 		_capture_base_positions()
-	motion_phase += maxf(0.0, delta) * GameSettings.visual_pace
+	motion_phase += maxf(0.0, delta) * GameSettings.motion_pace()
 	_update_stage_transition(delta)
 	_update_cloud_drift()
 	_update_plant_sway()

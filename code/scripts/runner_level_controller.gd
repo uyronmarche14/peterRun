@@ -48,6 +48,7 @@ var is_session_ended := false
 var is_countdown_active := false
 var _countdown_remaining := 0
 var _countdown_tween: Tween
+var _ramping_to_pace := false
 var _progress_tween: Tween
 var _pending_end_reason: StringName = &""
 var _pause_title_text := ""
@@ -140,15 +141,17 @@ func _ready() -> void:
 
 
 func _start_run() -> void:
-	_start_gameplay_audio()
+	if not gameplay_ambience.playing:
+		_start_gameplay_audio()
 	player.set_walking(true)
 
 	_schedule_next_prompt()
 
 
-# A calm countdown (3, 5 seconds, or off in Settings) ending in "Go!" before the first
-# prompt. Everything is held still and input is ignored; is_gameplay_paused stays false
-# so the normal pause flow is untouched.
+# A calm countdown (3, 5 seconds, or off in Settings). The road, scenery and Peter's walk
+# keep moving slowly and the ambience starts at the first number. Input and prompts wait.
+# "Go!" begins the first prompt and the road eases up to full pace over half a second.
+# is_gameplay_paused stays false so the normal pause flow is untouched.
 func _begin_start_countdown() -> void:
 	if GameSettings.countdown_seconds <= 0:
 		_start_run()
@@ -156,7 +159,9 @@ func _begin_start_countdown() -> void:
 	is_countdown_active = true
 	_countdown_remaining = GameSettings.countdown_seconds
 	pause_button.disabled = true
-	_set_gameplay_updates_paused(true)
+	GameSettings.start_ramp = GameSettings.COUNTDOWN_PACE_FRACTION
+	_start_gameplay_audio()
+	player.set_walking(true)
 	countdown_overlay.visible = true
 	_show_countdown_text(str(_countdown_remaining), false)
 	countdown_timer.start()
@@ -164,17 +169,31 @@ func _begin_start_countdown() -> void:
 
 func _on_countdown_tick() -> void:
 	if not is_countdown_active:
+		# The one-second hold on "Go!" is over.
+		countdown_overlay.visible = false
 		return
 	_countdown_remaining -= 1
 	if _countdown_remaining > 0:
 		_show_countdown_text(str(_countdown_remaining))
 		countdown_timer.start()
-	elif _countdown_remaining == 0:
-		_show_countdown_text("Go!", false)
-		_play_gameplay_cue(success_cue)
-		countdown_timer.start()
-	else:
-		_end_start_countdown()
+		return
+	is_countdown_active = false
+	pause_button.disabled = false
+	_ramping_to_pace = true
+	_show_countdown_text("Go!", false)
+	_play_gameplay_cue(success_cue)
+	_start_run()
+	countdown_timer.start()
+
+
+func _process(delta: float) -> void:
+	if _ramping_to_pace:
+		GameSettings.start_ramp = move_toward(GameSettings.start_ramp, 1.0, delta * (1.0 - GameSettings.COUNTDOWN_PACE_FRACTION) / GameSettings.RAMP_SECONDS)
+		_ramping_to_pace = GameSettings.start_ramp < 1.0
+
+
+func _exit_tree() -> void:
+	GameSettings.start_ramp = 1.0
 
 
 func _show_countdown_text(text: String, tick_sound: bool = true) -> void:
@@ -190,14 +209,6 @@ func _show_countdown_text(text: String, tick_sound: bool = true) -> void:
 	countdown_number.scale = Vector2.ONE * 1.3
 	_countdown_tween = create_tween()
 	_countdown_tween.tween_property(countdown_number, "scale", Vector2.ONE, 0.35)
-
-
-func _end_start_countdown() -> void:
-	is_countdown_active = false
-	countdown_overlay.visible = false
-	pause_button.disabled = false
-	_set_gameplay_updates_paused(false)
-	_start_run()
 
 
 # _input runs before GUI focus navigation, so a focused HUD or Pause button

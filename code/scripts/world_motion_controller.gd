@@ -48,7 +48,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if is_motion_paused:
 		return
-	motion_distance += delta * GameSettings.visual_pace
+	motion_distance += delta * GameSettings.motion_pace()
 	_update_road()
 	roadside_travel.call("set_reduced_motion", GameSettings.reduced_motion)
 	if not GameSettings.reduced_motion:

@@ -55,6 +55,12 @@ func _test_countdown_holds_then_starts_first_prompt() -> void:
 	_expect(number.text == "3", "countdown starts at 3")
 	_expect(director.state == PromptDirectorModel.State.IDLE, "no prompt is scheduled during the countdown")
 	_expect(level.warning_timer.is_stopped(), "prompt timers do not run during the countdown")
+	_expect(level.gameplay_ambience.playing, "the ambience starts at 3")
+	_expect(level.player.character_sprite.animation == &"walk_forward", "Peter walks during the countdown")
+	_expect(is_equal_approx(GameSettingsModel.motion_pace(), GameSettingsModel.visual_pace * GameSettingsModel.COUNTDOWN_PACE_FRACTION), "the road moves slowly during the countdown")
+	var distance_before: float = level.world_motion.motion_distance
+	level.world_motion._process(1.0)
+	_expect(level.world_motion.motion_distance > distance_before, "the road and scenery keep moving during the countdown")
 
 	level.receive_input(&"move_left", true, 10.0)
 	level.receive_input(&"pause_session", true, 20.0)
@@ -67,15 +73,22 @@ func _test_countdown_holds_then_starts_first_prompt() -> void:
 	_expect(number.text == "1", "countdown shows 1")
 	timer.timeout.emit()
 	_expect(number.text == "Go!", "countdown shows Go!")
-	_expect(level.is_countdown_active, "countdown stays active while Go! is shown")
+	_expect(not level.is_countdown_active, "Go! ends the countdown")
+	_expect(director.state == PromptDirectorModel.State.WARNING, "Go! begins the first prompt")
+	_expect(overlay.visible, "Go! stays on screen briefly over the first prompt")
+	_expect(GameSettingsModel.motion_pace() < GameSettingsModel.visual_pace, "the road is still easing up to speed right after Go!")
+	level._process(0.25)
+	var halfway := GameSettingsModel.motion_pace()
+	_expect(halfway > GameSettingsModel.visual_pace * GameSettingsModel.COUNTDOWN_PACE_FRACTION and halfway < GameSettingsModel.visual_pace, "the road speeds up gradually (%.2f)" % halfway)
+	level._process(0.3)
+	_expect(is_equal_approx(GameSettingsModel.motion_pace(), GameSettingsModel.visual_pace), "the road reaches full speed about half a second after Go!")
 	timer.timeout.emit()
-	_expect(not level.is_countdown_active, "countdown ends after Go!")
-	_expect(not overlay.visible, "countdown overlay hides after Go!")
-	_expect(director.state == PromptDirectorModel.State.WARNING, "the first prompt starts after the countdown")
+	_expect(not overlay.visible, "the Go! text is removed after it has been shown")
 
 	level.receive_input(&"move_left", true, 30.0)
-	_expect(level.player.lane_index == 0, "movement works after the countdown")
+	_expect(level.player.lane_index == 0, "movement works from Go!")
 	level.free()
+	_expect(is_equal_approx(GameSettingsModel.motion_pace(), GameSettingsModel.visual_pace), "leaving the run restores the normal pace")
 
 
 func _test_five_second_countdown() -> void:
@@ -89,8 +102,7 @@ func _test_five_second_countdown() -> void:
 		timer.timeout.emit()
 		seen.append(number.text)
 	_expect(seen == ["5", "4", "3", "2", "1", "Go!"], "a 5 second countdown shows 5 4 3 2 1 Go! (got %s)" % str(seen))
-	timer.timeout.emit()
-	_expect(not level.is_countdown_active, "the 5 second countdown ends after Go!")
+	_expect(not level.is_countdown_active, "the 5 second countdown ends at Go!")
 	GameSettingsModel.countdown_seconds = 3
 	level.free()
 

@@ -16,6 +16,11 @@ static var effects_intensity := 1.0
 static var start_countdown_pending := false
 # Seconds counted down before a run (0 = off). Only 0, 3 and 5 are offered in Settings.
 static var countdown_seconds := 3
+# While the start countdown runs the road moves at this share of the chosen pace, then
+# eases up to full pace over RAMP_SECONDS after "Go!".
+const COUNTDOWN_PACE_FRACTION := 0.3
+const RAMP_SECONDS := 0.5
+static var start_ramp := 1.0
 
 
 static func set_visual_pace(value: float) -> void:
@@ -94,3 +99,8 @@ static func warning_seconds_for_pace(pace: float) -> float:
 	if pace >= STANDARD_PACE:
 		return lerpf(WARNING_SECONDS_STANDARD, WARNING_SECONDS_FASTEST, clampf((pace - STANDARD_PACE) / (MAX_PACE - STANDARD_PACE), 0.0, 1.0))
 	return lerpf(WARNING_SECONDS_STANDARD, WARNING_SECONDS_SLOWEST, clampf((STANDARD_PACE - pace) / (STANDARD_PACE - MIN_PACE), 0.0, 1.0))
+
+
+# The pace the road, scenery and Peter's stride actually move at right now.
+static func motion_pace() -> float:
+	return visual_pace * start_ramp

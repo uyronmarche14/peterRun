@@ -90,6 +90,7 @@ func _test_completion_and_rating(review: GDScript) -> void:
 		summary.get_node("Panel/Margin/Content/Ratings/Rating%d" % rating).pressed.emit()
 		_expect(result.rpe == rating, "Mouse rating button records %d" % rating)
 		_expect(is_equal_approx(Settings.visual_pace, Settings.pace_for_rating(rating)), "Rating %d sets the next-run visual pace" % rating)
+		_expect(String(summary.get_node("Panel/Margin/Content/Status").text).contains("Speed %d" % rating), "Status names the chosen speed number (%d)" % rating)
 	_expect(current_scene == summary, "Even a high rating never starts a new session automatically")
 	summary.get_node("Panel/Margin/Content/Actions/RestButton").pressed.emit()
 	await process_frame

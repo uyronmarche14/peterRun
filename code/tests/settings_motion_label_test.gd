@@ -44,7 +44,7 @@ func _run() -> void:
 	await process_frame
 	var custom_option := custom_dashboard.get_node(^"SettingsOverlay/Panel/Margin/Content/RoutePaceOption") as OptionButton
 	_expect(custom_option.item_count == 4 and custom_option.selected == 3, "A review-chosen pace is shown as its own selected choice")
-	_expect(custom_option.get_item_text(3).begins_with("Scenery motion: Review"), "The review-chosen pace is labelled as set by review")
+	_expect(custom_option.get_item_text(3).begins_with("Scenery motion: Speed "), "The review-chosen pace is shows the 1-10 speed number")
 	custom_dashboard.free()
 	Settings.set_visual_pace(original_pace)
 	# Start countdown choice.

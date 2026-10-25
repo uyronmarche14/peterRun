@@ -101,7 +101,7 @@ func _refresh_rating() -> void:
 	elif rating == 0:
 		status.text = "Choose a speed before retrying, or finish without choosing."
 	else:
-		status.text = "Speed set for the next run."
+		status.text = "Speed %d set (scenery %.1fx) for the next run." % [rating, Settings.visual_pace]
 
 
 func rest_session() -> void:

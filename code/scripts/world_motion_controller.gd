@@ -79,7 +79,7 @@ func _screen_y(depth_scale: float) -> float:
 
 
 func _apply_prompt_projection() -> void:
-	var fraction := clampf(_prompt_elapsed / _approach_duration, 0.0, 1.0)
+	var fraction := GameSettings.approach_fraction(_prompt_elapsed / _approach_duration)
 	var depth_scale := RoadProjectionModel.scale_at(fraction)
 	prompt_anchor.position = Vector2(RoadProjectionModel.lane_center_at(_prompt_lane, fraction), RoadProjectionModel.screen_y_at(fraction))
 	prompt_anchor.scale = Vector2.ONE * depth_scale

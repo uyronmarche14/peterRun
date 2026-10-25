@@ -135,7 +135,7 @@ func _test_controller_check_tutorial_ready_routes(store_script: GDScript) -> voi
 	var ready: Control = (load(READY_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(ready)
 	await process_frame
-	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "Barangay Morning • 12 reps/action • Scenery: Standard", "Ready screen shows selected session settings")
+	_expect_label(ready, ^"Panel/Margin/Content/SessionSummary/SessionDetails", "Barangay Morning • 12 reps/action • Speed: Standard", "Ready screen shows selected session settings")
 	_expect_button(ready, ^"%StartSessionButton", "Start Session")
 	_expect_button(ready, ^"%TestControlsButton", "Test controls")
 	_expect_button(ready, ^"%PracticeButton", "Practice movements")

@@ -217,7 +217,7 @@ func _configure_route_pace() -> void:
 	route_pace_option.add_item("Scenery motion: Lively", 2)
 	# A speed chosen on the review screen is not a preset; show it instead of pretending it is Standard.
 	if not GameSettings.is_preset_pace():
-		route_pace_option.add_item("Scenery motion: Review (%.2fx)" % GameSettings.visual_pace, 3)
+		route_pace_option.add_item("Scenery motion: Speed %d (%.2fx)" % [GameSettings.rating_for_pace(GameSettings.visual_pace), GameSettings.visual_pace], 3)
 	var selected := 3 if not GameSettings.is_preset_pace() else 0 if is_equal_approx(GameSettings.visual_pace, GameSettings.CALM_PACE) else 2 if is_equal_approx(GameSettings.visual_pace, GameSettings.LIVELY_PACE) else 1
 	route_pace_option.select(selected)
 	_update_route_pace_label()

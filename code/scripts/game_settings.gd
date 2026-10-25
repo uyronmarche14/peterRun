@@ -35,7 +35,7 @@ static func get_pace_label() -> String:
 	if is_equal_approx(visual_pace, LIVELY_PACE):
 		return "Lively"
 	if not is_preset_pace():
-		return "Review (%.2fx)" % visual_pace
+		return "%d/10 (%.1fx)" % [rating_for_pace(visual_pace), visual_pace]
 	return "Standard"
 
 
@@ -61,3 +61,11 @@ static func is_preset_pace() -> bool:
 static func rating_for_pace(pace: float) -> int:
 	var step := clampf((MAX_PACE - pace) / (MAX_PACE - MIN_PACE), 0.0, 1.0)
 	return clampi(roundi(1.0 + step * 9.0), 1, 10)
+
+
+# Reshapes how an obstacle closes in, never when it arrives: 0 stays 0 and 1 stays 1.
+# Faster speeds keep it small and far for longer, then it rushes the last stretch;
+# slower speeds let it grow earlier and drift in. Prompt timing is not touched.
+static func approach_fraction(fraction: float) -> float:
+	var exponent := maxf(0.3, 1.0 + (visual_pace - STANDARD_PACE) * 0.6)
+	return pow(clampf(fraction, 0.0, 1.0), exponent)

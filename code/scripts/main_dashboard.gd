@@ -33,6 +33,7 @@ var _opening_elapsed := 0.0
 
 
 func _ready() -> void:
+	GameSettings.load_saved_settings()
 	$CharacterMount/OpeningPlayer.set_resting_preview()
 	start_session_button.pressed.connect(open_patient_setup)
 	tutorial_button.pressed.connect(open_tutorial)

@@ -13,6 +13,8 @@ const ACCEPTED_ACTIONS: Array[StringName] = [
 
 var affected_side: int
 var cooldown_seconds: float
+# Why the last press was not accepted: held, cooldown, unknown, or empty when accepted.
+var last_rejection: StringName = &""
 var _held_actions: Dictionary[StringName, bool] = {}
 var _last_accepted_at: Dictionary[StringName, float] = {}
 
@@ -23,14 +25,19 @@ func _init(initial_affected_side: int = SessionConfigModel.AffectedSide.RIGHT, i
 
 
 func accept_action(source_action: StringName, now_seconds: float) -> StringName:
-	if not ACCEPTED_ACTIONS.has(source_action) or _held_actions.has(source_action):
+	last_rejection = &""
+	if not ACCEPTED_ACTIONS.has(source_action):
+		last_rejection = &"unknown"
+		return &""
+	if _held_actions.has(source_action):
+		last_rejection = &"held"
 		return &""
 
 	_held_actions[source_action] = true
 	var last_accepted_at := float(_last_accepted_at.get(source_action, -INF))
 	if now_seconds < last_accepted_at + cooldown_seconds:
+		last_rejection = &"cooldown"
 		return &""
-
 	_last_accepted_at[source_action] = now_seconds
 	return _map_affected_side(source_action)
 

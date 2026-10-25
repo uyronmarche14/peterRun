@@ -308,6 +308,36 @@ theme_override_font_sizes/font_size = 7
 text = "Waiting"
 horizontal_alignment = 1
 
+[node name="TuningRow" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SensitivityOption" type="OptionButton" parent="Panel/Margin/Content/TuningRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 8
+
+[node name="DelayTestButton" type="Button" parent="Panel/Margin/Content/TuningRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 8
+text = "Delay test"
+
+[node name="DelayReadout" type="Label" parent="Panel/Margin/Content/TuningRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.36, 0.42, 0.42, 1)
+theme_override_font_sizes/font_size = 7
+text = "Press any action to see it register."
+vertical_alignment = 1
+autowrap_mode = 3
+
 [node name="Footer" type="HBoxContainer" parent="Panel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2

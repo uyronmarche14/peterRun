@@ -104,3 +104,50 @@ static func warning_seconds_for_pace(pace: float) -> float:
 # The pace the road, scenery and Peter's stride actually move at right now.
 static func motion_pace() -> float:
 	return visual_pace * start_ramp
+
+
+# Input sensitivity: how soon the same action may repeat and how far a stick must move.
+const SENSITIVITY_LOW := 0
+const SENSITIVITY_NORMAL := 1
+const SENSITIVITY_HIGH := 2
+const SENSITIVITY_COOLDOWNS := [0.5, 0.35, 0.15]
+const SENSITIVITY_STICK_THRESHOLDS := [0.65, 0.5, 0.35]
+const SENSITIVITY_ACTIONS: Array[StringName] = [&"move_left", &"move_right", &"jump", &"slide"]
+static var input_sensitivity := SENSITIVITY_NORMAL
+static var settings_path := "user://settings.cfg"
+
+
+static func set_input_sensitivity(value: int) -> void:
+	if value < SENSITIVITY_LOW or value > SENSITIVITY_HIGH:
+		return
+	input_sensitivity = value
+	apply_stick_threshold()
+	var config := ConfigFile.new()
+	config.load(settings_path)
+	config.set_value("input", "sensitivity", value)
+	config.save(settings_path)
+
+
+static func input_cooldown_seconds() -> float:
+	return SENSITIVITY_COOLDOWNS[input_sensitivity]
+
+
+static func stick_threshold() -> float:
+	return SENSITIVITY_STICK_THRESHOLDS[input_sensitivity]
+
+
+static func apply_stick_threshold() -> void:
+	for action_name in SENSITIVITY_ACTIONS:
+		if InputMap.has_action(action_name):
+			InputMap.action_set_deadzone(action_name, stick_threshold())
+
+
+# Reads the remembered sensitivity (called once when the game opens).
+static func load_saved_settings() -> void:
+	var config := ConfigFile.new()
+	if config.load(settings_path) != OK:
+		return
+	var saved: Variant = config.get_value("input", "sensitivity", SENSITIVITY_NORMAL)
+	if typeof(saved) == TYPE_INT and saved >= SENSITIVITY_LOW and saved <= SENSITIVITY_HIGH:
+		input_sensitivity = saved
+		apply_stick_threshold()

@@ -251,7 +251,7 @@ Run all-rules check: `godot --headless --path code -s res://tests/project_setup_
 
 ## 9. Status & planned work
 
-**Done (v18):** full flow menu → setup → ready → 3-2-1 countdown → L01 → summary; formation-based prompts; contact-ends-run; game speed 1–10 (scenery, stride, GET READY warning); up to 50 reps per movement; local session history file; tutorial; controller check; 85 Godot test scripts green.
+**Done (v19):** full flow menu → setup → ready → moving 3-2-1 countdown → L01 → summary; formation-based prompts; contact-ends-run; game speed 1–10 (scenery, stride, GET READY warning); up to 50 reps per movement; local session history file; tutorial; controller check with a Sensitivity setting and a delay test; 86 Godot test scripts green.
 
 **Open / to plan**
 1. **Docs drift:** BRD, PRD and the originality docs still say misses are neutral. Update them to "contact ends the run" (no code change).

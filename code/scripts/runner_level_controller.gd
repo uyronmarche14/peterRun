@@ -98,7 +98,7 @@ func _ready() -> void:
 	# Deliver each input event as it arrives instead of one merged event per frame.
 	Input.use_accumulated_input = false
 	session_config = SessionSetupStoreModel.get_session_config()
-	input_adapter = InputAdapterModel.new(session_config.affected_side)
+	input_adapter = InputAdapterModel.new(session_config.affected_side, GameSettings.input_cooldown_seconds())
 	prompt_director.connect("prompt_state_changed", _on_prompt_state_changed)
 	warning_timer.timeout.connect(_on_warning_timer_timeout)
 	response_timer.timeout.connect(_on_response_timer_timeout)

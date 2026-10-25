@@ -6,6 +6,8 @@ const TUTORIAL_SCENE_PATH := "res://scenes/tutorial.tscn"
 const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const InputAdapterModel = preload("res://scripts/input_adapter.gd")
 const ControlHints = preload("res://scripts/control_hints.gd")
+const LatencyTestModel = preload("res://scripts/latency_test.gd")
+const Settings = preload("res://scripts/game_settings.gd")
 
 const ACTION_TILE_NAMES := {
 	&"move_left": "MoveLeft",
@@ -23,15 +25,22 @@ const WAITING_COLOR := Color(0.36, 0.42, 0.42, 1)
 @onready var controller_status: Label = %ControllerStatus
 @onready var status_detail: Label = %StatusDetail
 @onready var action_tiles: HBoxContainer = %ActionTiles
+@onready var sensitivity_option: OptionButton = %SensitivityOption
+@onready var delay_test_button: Button = %DelayTestButton
+@onready var delay_readout: Label = %DelayReadout
 
 var input_adapter: RefCounted
 var detected_actions: Dictionary[StringName, bool] = {}
+var latency_test: RefCounted = LatencyTestModel.new()
+var _delay_waiting := false
+var _delay_cue_visible := false
+var _delay_timer: Timer
 var _waiting_style: StyleBox
 var _detected_style: StyleBoxFlat
 
 
 func _ready() -> void:
-	input_adapter = InputAdapterModel.new()
+	input_adapter = InputAdapterModel.new(0, Settings.input_cooldown_seconds())
 	_waiting_style = action_tiles.get_child(0).get_theme_stylebox("panel")
 	_detected_style = _waiting_style.duplicate()
 	_detected_style.bg_color = Color(0.85, 0.93, 0.87, 1)
@@ -39,6 +48,13 @@ func _ready() -> void:
 	keyboard_fallback_button.pressed.connect(continue_to_ready)
 	back_button.pressed.connect(return_to_patient_setup)
 	reset_button.pressed.connect(reset_action_check)
+	_configure_sensitivity()
+	delay_test_button.pressed.connect(start_delay_test)
+	_delay_timer = Timer.new()
+	_delay_timer.one_shot = true
+	_delay_timer.timeout.connect(_on_delay_timer_timeout)
+	add_child(_delay_timer)
+	delay_readout.text = "Press any action to see it register."
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	_refresh_control_status()
 	_refresh_action_tiles()
@@ -94,16 +110,78 @@ func receive_test_action(source_action: StringName, pressed: bool, now_seconds: 
 		input_adapter.release_action(source_action)
 		return
 	var logical_action: StringName = input_adapter.accept_action(source_action, now_seconds)
-	if logical_action == &"" or not ACTION_TILE_NAMES.has(logical_action):
+	if logical_action == &"":
+		_show_rejection(input_adapter.last_rejection)
+		return
+	if not ACTION_TILE_NAMES.has(logical_action):
 		return
 	detected_actions[logical_action] = true
+	_note_press_for_delay_test(now_seconds)
 	_refresh_control_status()
 	_refresh_action_tiles()
 
 
+func _configure_sensitivity() -> void:
+	sensitivity_option.clear()
+	sensitivity_option.add_item("Sensitivity: Low (steady)", Settings.SENSITIVITY_LOW)
+	sensitivity_option.add_item("Sensitivity: Normal", Settings.SENSITIVITY_NORMAL)
+	sensitivity_option.add_item("Sensitivity: High (quick)", Settings.SENSITIVITY_HIGH)
+	sensitivity_option.select(Settings.input_sensitivity)
+	sensitivity_option.item_selected.connect(_on_sensitivity_selected)
+
+
+func _on_sensitivity_selected(index: int) -> void:
+	Settings.set_input_sensitivity(index)
+	input_adapter.cooldown_seconds = Settings.input_cooldown_seconds()
+	delay_readout.text = "Sensitivity set: repeats allowed after %.2f s." % input_adapter.cooldown_seconds
+
+
+func _show_rejection(reason: StringName) -> void:
+	if _delay_waiting or _delay_cue_visible:
+		return
+	match reason:
+		&"cooldown":
+			delay_readout.text = "Not counted: too soon after the last press (%.2f s needed)." % input_adapter.cooldown_seconds
+		&"held":
+			delay_readout.text = "Not counted: the button is still held. Release it first."
+
+
+# Delay test: wait for the cue, press, and read the time it took.
+func start_delay_test() -> void:
+	_delay_waiting = true
+	_delay_cue_visible = false
+	delay_test_button.disabled = true
+	delay_readout.text = "Wait for the cue, then press any action."
+	_delay_timer.start(randf_range(1.0, 2.5))
+
+
+func _on_delay_timer_timeout() -> void:
+	show_delay_cue(Time.get_ticks_msec() / 1000.0)
+
+
+func show_delay_cue(now_seconds: float) -> void:
+	_delay_waiting = false
+	_delay_cue_visible = true
+	latency_test.cue_shown(now_seconds)
+	delay_readout.text = "Press NOW"
+
+
+func _note_press_for_delay_test(now_seconds: float) -> void:
+	if _delay_waiting:
+		_delay_timer.start(randf_range(1.0, 2.5))
+		delay_readout.text = "That was early. Wait for the cue."
+		return
+	if not _delay_cue_visible:
+		return
+	var milliseconds: float = latency_test.record_press(now_seconds)
+	_delay_cue_visible = false
+	delay_test_button.disabled = false
+	delay_readout.text = "%d ms   ·   last 5 average %d ms   ·   best %d ms" % [roundi(milliseconds), roundi(latency_test.average_ms()), roundi(latency_test.best_ms())]
+
+
 func reset_action_check() -> void:
 	detected_actions.clear()
-	input_adapter = InputAdapterModel.new()
+	input_adapter = InputAdapterModel.new(0, Settings.input_cooldown_seconds())
 	_refresh_control_status()
 	_refresh_action_tiles()
 

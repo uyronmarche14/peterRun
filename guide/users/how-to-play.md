@@ -55,7 +55,7 @@ If Peter ends up in the same lane as an obstacle, the run **ends** with the mess
 
 ## Starting a run
 
-When a run begins, a large **3 → 2 → 1 → Go!** countdown appears (a 5-second countdown or no countdown can be chosen in Settings). Peter and the street stay still, and the controls do nothing until **Go!**. Use it to settle your feet and look at the screen. Then the first instruction appears.
+When a run begins, a large **3 → 2 → 1 → Go!** countdown appears (a 5-second countdown or no countdown can be chosen in Settings). The street moves slowly and Peter walks while you count, and the music starts at the first number. The controls do nothing until **Go!**. Use the countdown to settle your feet and look at the screen. At **Go!** the first instruction appears and the street eases up to full speed over about half a second.
 
 ## Finishing
 

@@ -46,3 +46,11 @@ The wearable MOVE controller is designed to act like a keyboard. Its firmware se
 | Gamepad not detected | Connect it before opening the game, then check **Settings → Check controller**. |
 | Menu button won't respond to movement keys | Expected. Menus are mouse-only. |
 | Pressed `P` but nothing paused | The run may already be over. Pause works only during play. |
+
+## Sensitivity and delay test (Controller Check)
+
+Open **Settings → Check controller**. Below the five action tiles:
+
+- **Sensitivity: Low / Normal / High.** It sets how soon the same action can repeat (0.50 s / 0.35 s / 0.15 s) and how far a gamepad stick must move to count (65% / 50% / 35%). **Normal** is the default. Use **High** if movements are missed; use **Low** if one movement is counted twice. It is remembered the next time the game opens.
+- **Not counted messages.** If a press is ignored, the screen says why: too soon after the last press, or the button is still held.
+- **Delay test.** Press **Delay test**, wait for **Press NOW**, then press any action. The screen shows the delay in milliseconds, the average of the last five, and the best. Run it once on the keyboard and once on the MOVE controller: the difference is the controller's own delay. The result includes your reaction time, so compare runs, not single presses.

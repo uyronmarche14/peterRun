@@ -25,3 +25,9 @@ The delay between a leg movement and Peter reacting has four parts. Only the las
 3. If the difference is more than about 80 ms: shorten the Bluetooth connection interval, send one packet per movement (not a stream), and lower any smoothing window in the firmware.
 
 Not established: real controller delay (no hardware or firmware in the repository).
+
+## Built into the game (v19)
+- **Sensitivity** (Low / Normal / High) on the Controller Check screen sets the repeat lockout and the stick threshold. Code: `game_settings.gd` (`set_input_sensitivity`, `input_cooldown_seconds`, `stick_threshold`), saved in `user://settings.cfg`.
+- **Delay test** on the same screen. Code: `latency_test.gd` and `controller_check_controller.gd`. It measures cue-to-press time, which includes the player, so use it to compare the keyboard with the controller.
+- **Reason for an ignored press.** `input_adapter.gd` reports `held`, `cooldown` or `unknown` in `last_rejection`.
+- Test: `tests/input_sensitivity_latency_test.gd`.

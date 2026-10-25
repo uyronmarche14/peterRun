@@ -6,7 +6,7 @@ var capture_dir := "res://../test_evidence"
 const COMPACT_THEME_PATH := "res://art/ui/compact_theme.tres"
 const SCREENS := {
 	"main": Vector2(205, 195), "patient_setup": Vector2(250, 205),
-	"controller_check": Vector2(280, 160), "ready": Vector2(260, 160),
+	"controller_check": Vector2(284, 190), "ready": Vector2(260, 160),
 	"tutorial": Vector2(330, 235), "session_summary": Vector2(360, 250),
 }
 

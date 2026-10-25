@@ -28,6 +28,11 @@ func _test_visual_pace_settings() -> void:
 	_expect(is_equal_approx(settings_script.call("pace_for_rating", 1), 2.20), "Rating 1 is the fastest pace")
 	_expect(is_equal_approx(settings_script.call("pace_for_rating", 10), 0.40), "Rating 10 is the slowest pace")
 	_expect(settings_script.call("pace_for_rating", 5) > settings_script.call("pace_for_rating", 6), "Higher ratings are slower")
+	_expect(is_equal_approx(settings_script.call("pace_for_rating", 6), 1.0), "Speed 6 is exactly the standard pace")
+	for rating in range(1, 10):
+		_expect(settings_script.call("pace_for_rating", rating) > settings_script.call("pace_for_rating", rating + 1), "Speed %d is faster than speed %d" % [rating, rating + 1])
+	for rating in range(1, 11):
+		_expect(settings_script.call("rating_for_pace", settings_script.call("pace_for_rating", rating)) == rating, "Speed %d maps to a pace and back" % rating)
 	settings_script.call("set_visual_pace", 2.20)
 	_expect(is_equal_approx(settings_script.get("visual_pace"), 2.20), "Visual pace accepts the fastest rating pace")
 	settings_script.call("set_visual_pace", 0.2)

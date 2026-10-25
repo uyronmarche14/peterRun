@@ -28,10 +28,15 @@ static func set_visual_pace(value: float) -> void:
 		visual_pace = value
 
 
-# 1 = fastest (MAX_PACE) ... 10 = slowest (MIN_PACE), linear in between.
+# Speed 1 = fastest (MAX_PACE), speed 6 = exactly the standard pace, speed 10 = slowest (MIN_PACE).
+const STANDARD_RATING := 6
+
+
 static func pace_for_rating(rating: int) -> float:
-	var step := clampf(float(rating - 1) / 9.0, 0.0, 1.0)
-	return lerpf(MAX_PACE, MIN_PACE, step)
+	var speed := clampi(rating, 1, 10)
+	if speed <= STANDARD_RATING:
+		return lerpf(MAX_PACE, STANDARD_PACE, float(speed - 1) / float(STANDARD_RATING - 1))
+	return lerpf(STANDARD_PACE, MIN_PACE, float(speed - STANDARD_RATING) / float(10 - STANDARD_RATING))
 
 
 static func get_pace_label() -> String:
@@ -64,8 +69,11 @@ static func is_preset_pace() -> bool:
 
 # Nearest 1-10 speed number for the current pace (shown in Setup; 1 = fastest).
 static func rating_for_pace(pace: float) -> int:
-	var step := clampf((MAX_PACE - pace) / (MAX_PACE - MIN_PACE), 0.0, 1.0)
-	return clampi(roundi(1.0 + step * 9.0), 1, 10)
+	if pace >= STANDARD_PACE:
+		var fast_step := clampf((MAX_PACE - pace) / (MAX_PACE - STANDARD_PACE), 0.0, 1.0)
+		return clampi(roundi(1.0 + fast_step * float(STANDARD_RATING - 1)), 1, STANDARD_RATING)
+	var slow_step := clampf((STANDARD_PACE - pace) / (STANDARD_PACE - MIN_PACE), 0.0, 1.0)
+	return clampi(roundi(float(STANDARD_RATING) + slow_step * float(10 - STANDARD_RATING)), STANDARD_RATING, 10)
 
 
 # An obstacle always starts far up the road and travels at one steady pace to contact,

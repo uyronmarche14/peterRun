@@ -177,6 +177,8 @@ min_value = 1.0
 max_value = 10.0
 value = 6.0
 script = ExtResource("12_stepper")
+decrease_hint = "Faster: lower the number"
+increase_hint = "Slower: raise the number"
 
 [node name="SummaryChip" type="PanelContainer" parent="Panel/Margin/Content"]
 layout_mode = 2

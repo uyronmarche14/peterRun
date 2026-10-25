@@ -97,6 +97,7 @@ func _configure_controls() -> void:
 	speed_spin_box.max_value = 10
 	speed_spin_box.step = 1
 	speed_spin_box.set_value_no_signal(Settings.rating_for_pace(Settings.visual_pace))
+	speed_spin_box.refresh_display()
 	speed_spin_box.value_changed.connect(_on_speed_changed)
 	_refresh_level_label()
 	level_option.item_selected.connect(_on_level_selected)

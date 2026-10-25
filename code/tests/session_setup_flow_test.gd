@@ -62,6 +62,18 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	var speed_stepper := setup.get_node_or_null(^"%SpeedSpinBox") as SpinBox
 	_expect(speed_stepper != null and speed_stepper.min_value == 1 and speed_stepper.max_value == 10, "Setup offers a 1 to 10 game speed selector")
 	if speed_stepper != null:
+		var readout := speed_stepper.get_node("Stepper/Row/Value") as Label
+		_expect(speed_stepper.value == 6 and readout.text == "6", "Setup opens on speed 6, shown and stored the same (value %d, shown %s)" % [int(speed_stepper.value), readout.text])
+		_expect(is_equal_approx(GameSettings.visual_pace, GameSettings.STANDARD_PACE), "Speed 6 is the standard pace")
+		GameSettings.set_visual_pace(0.6)
+		speed_stepper.set_value_no_signal(GameSettings.rating_for_pace(0.6))
+		speed_stepper.refresh_display()
+		_expect(readout.text == str(int(speed_stepper.value)), "Setting the value quietly still updates the number shown")
+		GameSettings.set_visual_pace(GameSettings.STANDARD_PACE)
+		speed_stepper.set_value_no_signal(6)
+		speed_stepper.refresh_display()
+		_expect((speed_stepper.get_node("Stepper/Row/Increase") as Button).tooltip_text.contains("Slower") and (speed_stepper.get_node("Stepper/Row/Decrease") as Button).tooltip_text.contains("Faster"), "The speed arrows say faster and slower")
+	if speed_stepper != null:
 		var start_pace: float = GameSettings.visual_pace
 		speed_stepper.value = speed_stepper.value
 		_expect(is_equal_approx(GameSettings.visual_pace, start_pace), "Opening setup does not change the speed by itself")

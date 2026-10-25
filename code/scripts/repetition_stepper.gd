@@ -2,6 +2,8 @@ extends SpinBox
 
 # Retain the existing Range/value_changed contract; replace tiny vertical arrows
 # with two labelled 64x64 screen-pixel targets at the 1080p output scale.
+@export var decrease_hint := "Decrease repetitions"
+@export var increase_hint := "Increase repetitions"
 var _readout: Label
 var _decrease: Button
 var _increase: Button
@@ -21,14 +23,14 @@ func _ready() -> void:
 	row.name = "Row"
 	row.add_theme_constant_override("separation", 4)
 	surface.add_child(row)
-	_decrease = _button("Decrease", "−", "Decrease repetitions", -1)
+	_decrease = _button("Decrease", "−", decrease_hint, -1)
 	row.add_child(_decrease)
 	_readout = Label.new()
 	_readout.name = "Value"
 	_readout.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	row.add_child(_readout)
-	_increase = _button("Increase", "+", "Increase repetitions", 1)
+	_increase = _button("Increase", "+", increase_hint, 1)
 	row.add_child(_increase)
 	value_changed.connect(_refresh)
 	_refresh(value)
@@ -49,3 +51,8 @@ func _refresh(amount: float) -> void:
 	_readout.text = str(int(amount))
 	_decrease.disabled = amount <= min_value
 	_increase.disabled = amount >= max_value
+
+
+# Redraws the number and arrows after the value was set without a signal.
+func refresh_display() -> void:
+	_refresh(value)

@@ -63,9 +63,10 @@ static func rating_for_pace(pace: float) -> int:
 	return clampi(roundi(1.0 + step * 9.0), 1, 10)
 
 
-# Reshapes how an obstacle closes in, never when it arrives: 0 stays 0 and 1 stays 1.
-# Faster speeds keep it small and far for longer, then it rushes the last stretch;
-# slower speeds let it grow earlier and drift in. Prompt timing is not touched.
+# Evens out how an obstacle closes in, never when it arrives: 0 stays 0 and 1 stays 1.
+# The road's perspective curve already holds distant props small and then rushes them
+# (power 1.85); this softens that so the approach reads as steady. A faster speed
+# softens it a little more. Prompt timing is not touched.
 static func approach_fraction(fraction: float) -> float:
-	var exponent := maxf(0.3, 1.0 + (visual_pace - STANDARD_PACE) * 0.8)
+	var exponent := clampf(0.65 - maxf(0.0, visual_pace - STANDARD_PACE) * 0.08, 0.5, 0.65)
 	return pow(clampf(fraction, 0.0, 1.0), exponent)

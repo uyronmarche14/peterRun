@@ -17,18 +17,15 @@ func _run() -> void:
 	var motion := level.get_node("WorldMotion")
 	var original := Settings.visual_pace
 
-	var mid_fast := _scale_at_time(motion, Settings.MAX_PACE, 2.25)
-	var mid_std := _scale_at_time(motion, Settings.STANDARD_PACE, 2.25)
-	var mid_slow := _scale_at_time(motion, Settings.MIN_PACE, 2.25)
-	_expect(mid_fast < mid_std and mid_std < mid_slow, "Halfway to contact a faster speed keeps the obstacle smaller, it then closes harder (%.3f < %.3f < %.3f)" % [mid_fast, mid_std, mid_slow])
-
-	var end_fast := _scale_at_time(motion, Settings.MAX_PACE, 4.5)
-	var end_slow := _scale_at_time(motion, Settings.MIN_PACE, 4.5)
-	_expect(is_equal_approx(end_fast, end_slow), "Contact scale and timing are the same at every speed (%.3f vs %.3f)" % [end_fast, end_slow])
-	_expect(is_equal_approx(motion.get_prompt_remaining_seconds(), 0.0), "Response time left does not depend on speed")
-
-	_scale_at_time(motion, Settings.MAX_PACE, 1.0)
-	_expect(is_equal_approx(motion.get_prompt_remaining_seconds(), 3.5), "Remaining prompt seconds ignore the speed setting")
+	for pace in [Settings.MIN_PACE, Settings.STANDARD_PACE, Settings.MAX_PACE]:
+		var start := _scale_at_time(motion, pace, 0.0)
+		var early := _scale_at_time(motion, pace, 0.9) - start
+		var late := _scale_at_time(motion, pace, 4.5) - _scale_at_time(motion, pace, 3.6)
+		_expect(late / early < 3.5, "Pace %.2f: the last fifth of the approach grows at most 3.5x faster than the first fifth (%.1fx)" % [pace, late / early])
+		_expect(early > 0.1, "Pace %.2f: the obstacle is already visibly moving early (growth %.3f)" % [pace, early])
+		_expect(is_equal_approx(_scale_at_time(motion, pace, 4.5), _scale_at_time(motion, Settings.STANDARD_PACE, 4.5)), "Pace %.2f: contact scale is the same at every speed" % pace)
+		_scale_at_time(motion, pace, 1.0)
+		_expect(is_equal_approx(motion.get_prompt_remaining_seconds(), 3.5), "Pace %.2f: remaining prompt seconds ignore the speed" % pace)
 
 	Settings.set_visual_pace(original)
 	level.free()

@@ -60,7 +60,7 @@ func _test_formation(level: Node, formation: Dictionary) -> void:
 		for prop_value in props:
 			var prop := prop_value as Node2D
 			var lane := int(prop.get_meta(&"formation_lane", -1))
-			var expected_x: float = motion.call("lane_center_for", lane, fraction)
+			var expected_x: float = motion.call("lane_center_for", lane, GameSettings.approach_fraction(fraction))
 			var footprint: Vector2 = prop.get_meta(&"projection_footprint", Vector2.ZERO)
 			var half_width := footprint.x * prop.global_scale.x * 0.5
 			if String(prop.name).begins_with("Formation_laundry_line"):

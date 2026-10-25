@@ -1,4 +1,4 @@
-# How the Game Works
+# Detailed Diagrams (for developers)
 
 ## One run in plain words
 
@@ -10,12 +10,12 @@
 6. After a short settle (under 1 s), the next instruction comes. This repeats until every repetition target is met, or the therapist ends the session.
 7. The player chooses the game speed for the next run (1 = faster, 10 = slower; also set in Setup), then the therapist chooses Rest, Retry or Finish.
 
-The diagrams below show the same thing in more detail. For the code behind it, see [How the Code Works](how-the-code-works.md) and the [Glossary](glossary.md).
+The diagrams below show the same thing in more detail. For the code behind it, see [How the Code Works](how-the-code-works.md) and the [Glossary](../9-questions-and-words.md).
 
 ---
 
 > Mermaid diagrams: they render in GitHub, VS Code (Markdown Preview Mermaid Support), and Obsidian.
-> Source of truth: `code/scripts/*.gd`. Updated for the v18 build, 2026-10-26. The speed model is explained in [Game Speed](game-speed.md).
+> Source of truth: `code/scripts/*.gd`. Updated for the v20 build, 2026-10-26. The speed model is explained in [Game speed](../6-game-speed.md).
 
 ---
 
@@ -251,7 +251,7 @@ Run all-rules check: `godot --headless --path code -s res://tests/project_setup_
 
 ## 9. Status & planned work
 
-**Done (v19):** full flow menu → setup → ready → moving 3-2-1 countdown → L01 → summary; formation-based prompts; contact-ends-run; game speed 1–10 (scenery, stride, GET READY warning); up to 50 reps per movement; local session history file; tutorial; controller check with a Sensitivity setting and a delay test; 86 Godot test scripts green.
+**Done (v20):** full flow menu → setup → ready → moving 3-2-1 countdown → L01 → summary; formation-based prompts; contact-ends-run; game speed 1–10 (scenery, stride, GET READY warning); up to 50 reps per movement; local session history file; tutorial; controller check with a Sensitivity setting and a delay test; 86 Godot test scripts green.
 
 **Open / to plan**
 1. **Docs drift:** BRD, PRD and the originality docs still say misses are neutral. Update them to "contact ends the run" (no code change).

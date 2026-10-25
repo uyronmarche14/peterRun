@@ -1,6 +1,6 @@
 # How the Code Works
 
-For a developer opening the project for the first time. Read [How the Game Works](how-the-game-works.md) first for the flow and rules, then use this page to find your way around the code.
+For a developer opening the project for the first time. Read [How the Game Works](../5-how-the-game-works.md) first for the flow and rules, then use this page to find your way around the code.
 
 ## Ground rules (from `code/AGENTS.md`)
 

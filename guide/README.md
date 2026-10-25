@@ -1,46 +1,45 @@
-# PETER RUN — Guide
+# 🏃 PETER RUN — Guide
 
-*"One step at a time." · "Bawat hakbang ng buhay."*
+> 💡 **PETER RUN** is a calm, supervised walking game for rehabilitation. A person does one leg movement at a time to guide **Peter** down a Filipino street. This guide explains the game in plain words. You do not need to know anything about code.
 
-PETER RUN is a calm, supervised rehabilitation game for Windows. A person does four leg movements to guide Peter along a Filipino street, and the therapist reviews what was done afterwards. This folder explains the game, how it works, and how the code is built.
+## 🧭 Start here
 
-## Start here
+| I want to… | Read this |
+| --- | --- |
+| Understand what the game is for | [1 · What is PETER RUN?](1-what-is-peter-run.md) |
+| Play it for the first time | [2 · How to play](2-how-to-play.md) |
+| Run a session as a therapist or guardian | [3 · Setting up and running a session](3-setting-up-a-session.md) |
+| See the whole journey of a session | [4 · How a session flows](4-how-a-session-flows.md) |
+| Understand the rules inside the game | [5 · How the game works](5-how-the-game-works.md) |
+| Change how fast the game feels | [6 · Game speed](6-game-speed.md) |
+| Use a controller, or fix a button that misbehaves | [7 · Controls, sensitivity and delay](7-controls-sensitivity-and-delay.md) |
+| See how all the parts connect (no code) | [8 · How everything connects](8-how-everything-connects.md) |
+| Look up a question or a word | [9 · Questions and words](9-questions-and-words.md) |
+| Present the game to someone in 5 minutes | [Demo script](demo-script.md) |
 
-| I am… | Read this first | Then |
-| --- | --- | --- |
-| **A patient / player** | [How to Play](users/how-to-play.md) | [Controls](users/controls.md), [FAQ](users/faq.md) |
-| **A therapist / supervisor** | [Therapist Guide](users/therapist-guide.md) | [How to Play](users/how-to-play.md), [Controls](users/controls.md) |
-| **Presenting or demoing the game** | [Game Overview](explainers/game-overview.md) | [Demo Script](explainers/demo-script.md), [Glossary](explainers/glossary.md) |
-| **A new developer** | [How the Game Works](explainers/how-the-game-works.md) | [How the Code Works](explainers/how-the-code-works.md), [Glossary](explainers/glossary.md) |
+## ⚡ The game in five lines
 
-## Contents
+1. Peter stands near the bottom of the screen. The street comes toward him.
+2. The screen shows **one** instruction at a time: move left, move right, jump or slide.
+3. The player does that movement. If it is right, it counts as one **repetition**.
+4. There are **no lives, no score and no chase**. The player's job is to finish the repetitions the therapist chose.
+5. At the end, the therapist and the player look at the results together.
 
-### For users — `users/`
-- [How to Play](users/how-to-play.md) — the four movements, the obstacles, what the screen says.
-- [Therapist Guide](users/therapist-guide.md) — setting up a session, running it, reading the review.
-- [Controls](users/controls.md) — keyboard, gamepad, the MOVE controller, and the controller check.
-- [FAQ](users/faq.md) — short answers to common questions.
+> ⚠️ **Not a medical device.** PETER RUN is a supervised practice aid. It does not diagnose or treat. The therapist decides what is safe.
 
-### For explainers — `explainers/`
-- [Game Overview](explainers/game-overview.md) — what the game is and why it is designed this way.
-- [How the Game Works](explainers/how-the-game-works.md) — one run in plain words, plus diagrams of the flow and rules.
-- [Game Speed](explainers/game-speed.md) — what the 1–10 speed changes, and what it never changes.
-- [Controller Delay](explainers/controller-latency.md) — where the delay between a movement and the game reaction comes from.
-- [How the Code Works](explainers/how-the-code-works.md) — project map and how a keypress travels through the code.
-- [Guided Code Tour](explainers/code-tour.md) — a stop-by-stop walk through the code with presenter notes, check questions and exercises.
-- [Glossary](explainers/glossary.md) — the words used across the game, docs and code.
-- [Demo Script](explainers/demo-script.md) — a 5-minute guided walkthrough.
+## 🔒 Rules that never change
 
-## Other documentation in this repository
+| Rule | In plain words |
+| --- | --- |
+| Calm timing | The player always has **2 seconds** to respond. |
+| One thing at a time | Only one instruction is on screen. |
+| Left is left | Left and Right always mean the real left and right. |
+| Touching an obstacle ends the run | Nothing is lost. Everything done so far is kept. |
+| No punishment | No lives, no score loss, no shaming messages. |
+| Therapist in control | Pause or stop at any time. Nothing starts by itself. |
 
-These are the detailed source documents. This guide summarises them and does not replace them.
+## 🛠️ For developers (optional)
 
-- `Peter_Run_BRD.md`, `Peter_Run_PRD.md` — product intent.
-- `Peter_Run_Visual_Production/` — art specs and asset notes.
-- `Peter_Run_Project_Kit/docs/` — build queue, status and test strategy.
-- `code/README.md`, `code/AGENTS.md` — Godot project setup and rules.
-- `code/plans/PR-16-Collision-Run-End-Logic.md` — why contact ends a run.
+The technical pages live in the [`developers`](developers/) folder: [How the code works](developers/how-the-code-works.md), a [guided code tour](developers/code-tour.md), [detailed diagrams](developers/detailed-diagrams.md) and [controller delay](developers/controller-delay.md).
 
-> **Accuracy note:** this guide was updated from the code at the v18 build (October 2026). The BRD and PRD now say that obstacle contact ends the run, and this guide follows the game. Game speed changes the GET READY warning, which still needs clinical sign-off.
-
-> **Not a medical device.** PETER RUN is a supervised practice tool. It does not diagnose, treat, or replace a therapist's judgement.
+> 📌 **About this guide.** It follows the current build (v20). The older BRD and PRD documents now say the same thing about obstacle contact. Two things still need a clinician's approval before patient use: the shorter **GET READY** warning at fast game speeds, and the **High** sensitivity setting.

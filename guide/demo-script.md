@@ -13,7 +13,7 @@ A walkthrough for showing PETER RUN to a therapist, teacher, panel or stakeholde
 **Click:** Tutorial. **Say:** "Patients can practice each movement first." Press `A`, `D`, `W`, `S` and show the response. Skip back to the menu.
 
 ### 3. Setup (45 s)
-**Click:** Start Session. **Say:** "The therapist is in control." Show the **− / +** repetition buttons and the single route. **Say:** "Left and Right stay literal." Set 2 repetitions each. Click **Review session**.
+**Click:** Start Session. **Say:** "The therapist is in control." Show the **− / +** repetition buttons, the **game speed** (it opens on 6, the standard) and the single route. **Say:** "Left and Right stay literal." Set 2 repetitions each. Click **Review session**.
 
 ### 4. Ready screen (20 s)
 **Say:** "Nothing starts until the therapist presses Start." Briefly show **Test controls** and **Edit session**, then click **Start Session**. Point out the 3-2-1-Go! countdown: "A moment to settle before anything is asked of the patient."
@@ -43,4 +43,4 @@ A walkthrough for showing PETER RUN to a therapist, teacher, panel or stakeholde
 | Does it speed up? | Only by the game speed the player chooses (1–10); the 2-second response time never changes. |
 | How does the wearable connect? | It sends keyboard keys (A/D/W/S/P) over HID. The game never reads raw sensor data. |
 | Is it a medical device? | No. It is a supervised practice aid. |
-| Where do I see how it works? | [How the Game Works](how-the-game-works.md). |
+| Where do I see how it works? | [How the Game Works](5-how-the-game-works.md). |

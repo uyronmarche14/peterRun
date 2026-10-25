@@ -2,7 +2,7 @@
 
 A step-by-step walk through the PETER RUN code, built to be **led by a presenter** or **followed alone**. Each stop names a file, what to look at, what to say, and a check question. Line numbers are from branch `v8` (2026-10-17) and may drift; the function names are the stable anchors.
 
-> Read [How the Game Works](how-the-game-works.md) first if the game itself is new to you. Terms are in the [Glossary](glossary.md). A condensed reference is in [How the Code Works](how-the-code-works.md).
+> Read [How the Game Works](../5-how-the-game-works.md) first if the game itself is new to you. Terms are in the [Glossary](../9-questions-and-words.md). A condensed reference is in [How the Code Works](how-the-code-works.md).
 
 ## Tour plan
 
@@ -12,7 +12,7 @@ A step-by-step walk through the PETER RUN code, built to be **led by a presenter
 | **Standard** | 0–7 | 50 min | New developers, reviewers |
 | **Deep dive** | 0–9 + exercises | 90 min+ | Anyone about to change the code |
 
-**Setup:** open `code/` in Godot 4 and an editor with the repo. Keep [the diagrams](how-the-game-works.md) on a second screen. Run the game once (F5) so everyone has seen it.
+**Setup:** open `code/` in Godot 4 and an editor with the repo. Keep [the diagrams](detailed-diagrams.md) on a second screen. Run the game once (F5) so everyone has seen it.
 
 ## The map in one picture
 

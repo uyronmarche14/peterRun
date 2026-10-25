@@ -144,6 +144,9 @@ func _process(delta: float) -> void:
 			sprite_delta = maxf(0.0, delta - anticipation_before)
 		else:
 			sprite_delta = minf(sprite_delta, anticipation_before)
+	# Peter's stride keeps pace with the scenery; action clips keep their prescribed timing.
+	if character_sprite.animation == &"walk_forward":
+		sprite_delta *= Settings.visual_pace
 	if not (Settings.reduced_motion and character_sprite.animation in [&"idle_ready", &"walk_forward", &"rest"]):
 		character_sprite.advance(sprite_delta)
 	_update_action_pose()

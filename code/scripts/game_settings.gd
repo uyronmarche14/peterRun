@@ -6,8 +6,8 @@ const CALM_PACE := 0.85
 const STANDARD_PACE := 1.0
 const LIVELY_PACE := 1.15
 # The review rating (1 = faster ... 10 = slower) maps onto this scenery-only range.
-const MIN_PACE := 0.50
-const MAX_PACE := 1.80
+const MIN_PACE := 0.40
+const MAX_PACE := 2.20
 
 static var visual_pace := STANDARD_PACE
 static var reduced_motion := false
@@ -67,5 +67,5 @@ static func rating_for_pace(pace: float) -> int:
 # Faster speeds keep it small and far for longer, then it rushes the last stretch;
 # slower speeds let it grow earlier and drift in. Prompt timing is not touched.
 static func approach_fraction(fraction: float) -> float:
-	var exponent := maxf(0.3, 1.0 + (visual_pace - STANDARD_PACE) * 0.6)
+	var exponent := maxf(0.3, 1.0 + (visual_pace - STANDARD_PACE) * 0.8)
 	return pow(clampf(fraction, 0.0, 1.0), exponent)

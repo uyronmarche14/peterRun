@@ -812,6 +812,7 @@ func sync_audio_settings() -> void:
 	var audible := AudioSettings.enabled and AudioSettings.volume > 0.0 and not is_gameplay_paused and not is_session_ended
 	var gain := linear_to_db(maxf(AudioSettings.volume / 100.0, 0.0001))
 	gameplay_ambience.volume_db = -80.0 if not audible else gain - 11.0
+	gameplay_ambience.pitch_scale = 1.0 + (GameSettings.visual_pace - 1.0) * 0.2
 	for cue in [prompt_cue, action_cue, jump_cue, slide_cue, success_cue]:
 		cue.volume_db = -80.0 if not audible else gain - 6.0
 		cue.stream_paused = not audible

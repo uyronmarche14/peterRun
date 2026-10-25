@@ -340,7 +340,7 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 				_show_formation_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
 				_update_formation_guidance("GET READY", Color(1.0, 0.855, 0.51, 1.0))
 				world_motion.call("set_prompt_formation", _active_formation_props, _get_formation_lanes())
-				world_motion.call("begin_prompt_approach", 1, level_definition.warning_seconds, level_definition.response_seconds)
+				world_motion.call("begin_prompt_approach", 1, GameSettings.warning_seconds_for_pace(GameSettings.visual_pace), level_definition.response_seconds)
 			else:
 				_show_prompt(action_name, "GET READY", Color(1.0, 0.855, 0.51, 1.0))
 				var companion_lanes: Array[int] = []
@@ -354,8 +354,8 @@ func _on_prompt_state_changed(state: int, action_name: StringName, resolution: i
 				if not companion_lanes.is_empty() and _secondary_move_prop != null:
 					companion_nodes.append(_secondary_move_prop)
 				world_motion.call("set_prompt_companions", companion_nodes, companion_lanes)
-				world_motion.call("begin_prompt_approach", prompt_director.prompt_lane_index, level_definition.warning_seconds, level_definition.response_seconds)
-			warning_timer.start(level_definition.warning_seconds)
+				world_motion.call("begin_prompt_approach", prompt_director.prompt_lane_index, GameSettings.warning_seconds_for_pace(GameSettings.visual_pace), level_definition.response_seconds)
+			warning_timer.start(GameSettings.warning_seconds_for_pace(GameSettings.visual_pace))
 		PromptDirectorModel.State.ACTIVE:
 			warning_timer.stop()
 			if not _active_formation.is_empty():

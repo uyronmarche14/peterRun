@@ -33,7 +33,7 @@ Nothing starts until you press Start.
 
 ## During the session
 
-- The patient sees one prompt at a time. Each takes about **5 seconds** (about 2½ s to get ready, 2 s to respond, under 1 s to settle).
+- The patient sees one prompt at a time. Each takes about **5 seconds** (about 2½ s to get ready (shorter at game speed 1, longer at 10; the 2 s to respond never changes), 2 s to respond, under 1 s to settle).
 - **Response time never changes.** The only thing that varies the load is how many repetitions you set. The player can choose faster or slower scenery for the next run on the review screen.
 - **Pause** (`P` or the on-screen button) freezes the game at once. From the pause screen you can resume, **End Level**, or **End Session**. Ending asks for confirmation and carries **no penalty**.
 - The patient's repetitions count only when they do the **correct** movement in the **correct lane**. Wrong or missing responses are recorded as *neutral misses*. They are not scored against the patient, and the next obstacle is made easier.

@@ -81,3 +81,16 @@ static func _depth_at(progress: float) -> float:
 # Maps time through the approach (0..1) to the road projection fraction.
 static func approach_fraction(fraction: float) -> float:
 	return RoadProjection.fraction_from_depth(_depth_at(clampf(fraction, 0.0, 1.0)))
+
+
+const WARNING_SECONDS_STANDARD := 2.5
+const WARNING_SECONDS_FASTEST := 1.5
+const WARNING_SECONDS_SLOWEST := 4.0
+
+
+# How long the GET READY warning lasts at a pace. Only the warning changes: the 2.0 s
+# response window and the 0.75 s settle stay as prescribed. Standard pace is exactly 2.5 s.
+static func warning_seconds_for_pace(pace: float) -> float:
+	if pace >= STANDARD_PACE:
+		return lerpf(WARNING_SECONDS_STANDARD, WARNING_SECONDS_FASTEST, clampf((pace - STANDARD_PACE) / (MAX_PACE - STANDARD_PACE), 0.0, 1.0))
+	return lerpf(WARNING_SECONDS_STANDARD, WARNING_SECONDS_SLOWEST, clampf((STANDARD_PACE - pace) / (STANDARD_PACE - MIN_PACE), 0.0, 1.0))

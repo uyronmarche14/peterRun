@@ -132,7 +132,7 @@ The player presses `W` while a **JUMP** prompt is active.
 
 | Timer | Duration (default) | On timeout |
 | --- | --- | --- |
-| `warning_timer` | 2.5 s | `prompt_director.open_response_window()` |
+| `warning_timer` | 2.5 s at standard speed (1.5–4.0 s by game speed, `GameSettings.warning_seconds_for_pace`) | `prompt_director.open_response_window()` |
 | `response_timer` | 2.0 s | judge the pending response, or `expire_active_prompt()` |
 | `resolve_timer` | 0.75 s | back to `IDLE`, schedule the next prompt |
 

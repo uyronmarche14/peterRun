@@ -4,7 +4,7 @@
 
 1. The therapist sets the plan: how many repetitions of each movement.
 2. Peter stands near the bottom of the screen on one of three lanes. The street moves toward him.
-3. The game shows **one** instruction and obstacles that match it. First *GET READY* (about 2½ s), then *MOVE NOW* (about 2 s).
+3. The game shows **one** instruction and obstacles that match it. First *GET READY* (about 2½ s at standard speed; 1½ s at game speed 1 up to 4 s at speed 10), then *MOVE NOW* (about 2 s).
 4. The player does the movement. If it is the right movement and Peter ends in the right lane, it counts as a repetition.
 5. If not, it is a *neutral miss*: no penalty, and the next obstacle is easier. If Peter is left in a lane with an obstacle, the run ends and everything done is kept.
 6. After a short settle (under 1 s), the next instruction comes. This repeats until every repetition target is met, or the therapist ends the session.
@@ -30,7 +30,7 @@ flowchart LR
     R --> T
 ```
 
-**Rules that never change:** fixed speed (difficulty = repetition count) · one prompt at a time · Left/Right are literal · **obstacle contact ends the run** · no lives, score loss, chase or shaming.
+**Rules that never change:** fixed response window of 2.0 s (difficulty = repetition count; game speed only changes the GET READY warning and the scenery) · one prompt at a time · Left/Right are literal · **obstacle contact ends the run** · no lives, score loss, chase or shaming.
 
 ---
 

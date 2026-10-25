@@ -37,7 +37,7 @@ Each kind of obstacle looks different so you can tell them apart at a glance.
 | You see | It means |
 | --- | --- |
 | **NEXT ACTION** | Nothing is happening yet. Get comfortable. |
-| **GET READY** (yellow) | The next movement is shown. Look at it and prepare. You have about 2½ seconds. |
+| **GET READY** (yellow) | The next movement is shown. Look at it and prepare. You have about 2½ seconds at standard speed; less at game speed 1 and more at speed 10. |
 | **MOVE NOW** (green) | Do the movement now. You have about 2 seconds. |
 | **Nice step!** | You did the right movement. It counts toward your target. |
 | **Path is clear.** | You were already in a safe lane. Nothing needed doing. |

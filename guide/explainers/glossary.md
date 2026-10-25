@@ -29,4 +29,4 @@ Terms used in the game, the docs and the code. Code names are in `monospace`.
 | **Session config** | The plan: affected side, route and repetition targets (`SessionConfig`). |
 | **Session result** | What actually happened: completed reps, neutral misses, route seed and RPE (`SessionResult`). |
 | **2.5D** | A 2D game made to look like forward travel using layered sprites, perspective and parallax. There are no 3D scenes. |
-| **Warning / response / resolved time** | The three phases of a prompt: 2.5 s to get ready, 2.0 s to respond, 0.75 s to settle (defaults). |
+| **Warning / response / resolved time** | The three phases of a prompt: about 2.5 s to get ready (1.5 s at game speed 1 to 4.0 s at speed 10), 2.0 s to respond, 0.75 s to settle. |

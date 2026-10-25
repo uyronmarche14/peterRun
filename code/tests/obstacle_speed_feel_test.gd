@@ -42,13 +42,10 @@ func _run() -> void:
 		motion._prompt_elapsed = 1.0
 		_expect(is_equal_approx(motion.get_prompt_remaining_seconds(), 3.5), "Pace %.2f: remaining prompt seconds ignore the speed" % pace)
 
-	_expect(travel[Settings.MAX_PACE] > travel[Settings.MIN_PACE] * 1.8, "Speed 1 covers at least 1.8x the ground of speed 10 in the same time (%.0f vs %.0f)" % [travel[Settings.MAX_PACE], travel[Settings.MIN_PACE]])
-	_expect(travel[Settings.MAX_PACE] >= travel[Settings.STANDARD_PACE] and travel[Settings.STANDARD_PACE] > travel[Settings.MIN_PACE], "Faster speeds cover more ground, in order")
 
-	Settings.set_visual_pace(Settings.MIN_PACE)
-	motion.begin_prompt_approach(1, 2.5, 2.0)
-	_expect(motion.prompt_anchor.modulate.a < 0.05, "A prop that starts nearer fades in instead of popping in")
 
+	_expect(is_equal_approx(travel[Settings.MAX_PACE], travel[Settings.MIN_PACE]) and is_equal_approx(travel[Settings.MIN_PACE], travel[Settings.STANDARD_PACE]), "Every speed starts the obstacle at the same far point and covers the same ground (%.1f / %.1f / %.1f)" % [travel[Settings.MIN_PACE], travel[Settings.STANDARD_PACE], travel[Settings.MAX_PACE]])
+	_expect(travel[Settings.MIN_PACE] > 85.0, "The obstacle starts far up the road at every speed, never in front of Peter")
 	Settings.set_visual_pace(original)
 	level.free()
 	if failures.is_empty():

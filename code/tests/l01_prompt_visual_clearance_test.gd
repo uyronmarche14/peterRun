@@ -43,7 +43,7 @@ func _run() -> void:
 			motion.call("begin_prompt_approach", lane, 2.5, 2.0)
 			for step in 21:
 				var fraction := float(step) / 20.0
-				motion.set("_prompt_elapsed", fraction * 4.5)
+				motion.set("_prompt_elapsed", _time_for_projection(fraction) * 4.5)
 				motion.call("_apply_prompt_projection")
 				_expect_curb_clearance(prop, lane, fraction, anchor.position.y)
 				var banana_bounds := banana_left_bounds if lane == 0 else banana_right_bounds
@@ -64,7 +64,7 @@ func _run() -> void:
 	motion.call("begin_prompt_approach", 1, 2.5, 2.0)
 	for step in 21:
 		var fraction := float(step) / 20.0
-		motion.set("_prompt_elapsed", fraction * 4.5)
+		motion.set("_prompt_elapsed", _time_for_projection(fraction) * 4.5)
 		motion.call("_apply_prompt_projection")
 		_expect_curb_clearance(formation[0], 0, fraction, anchor.position.y)
 		_expect_curb_clearance(formation[2], 2, fraction, anchor.position.y)
@@ -160,3 +160,14 @@ func _expect_no_street_life_overlap(bounds: Rect2, lane: int, fraction: float, a
 func _expect(condition: bool, message: String) -> void:
 	if not condition:
 		failures.append(message)
+
+
+# The clearances are about road geometry at a projection fraction, whatever pace the
+# obstacle travels at, so convert a projection fraction back to the approach time.
+func _time_for_projection(projection_fraction: float) -> float:
+	var depth := RoadProjection.depth_curve(projection_fraction)
+	var knot_depth := RoadProjection.MID_DEPTH
+	var knot_time := GameSettings.APPROACH_KNOT_PROGRESS
+	if depth <= knot_depth:
+		return knot_time * depth / knot_depth
+	return knot_time + (1.0 - knot_time) * (depth - knot_depth) / (1.0 - knot_depth)

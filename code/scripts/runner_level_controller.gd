@@ -142,6 +142,7 @@ func _ready() -> void:
 func _start_run() -> void:
 	_start_gameplay_audio()
 	player.set_walking(true)
+
 	_schedule_next_prompt()
 
 

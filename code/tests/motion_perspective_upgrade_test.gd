@@ -89,10 +89,6 @@ func _test_runtime_approach_and_removed_side_cones() -> void:
 	var motion := level.get_node(^"WorldMotion")
 	motion.set_process(false)
 	var anchor := level.get_node(^"LevelWorld/PromptWorldAnchor") as Node2D
-	# Only the fastest speed (1) starts the obstacle at the horizon; slower speeds start it nearer.
-	var settings_script: GDScript = load("res://scripts/game_settings.gd")
-	var saved_pace: float = settings_script.get("visual_pace")
-	settings_script.call("set_visual_pace", settings_script.get("MAX_PACE"))
 	motion.call("begin_prompt_approach", 2, 2.5, 2.0)
 	var small_scale := anchor.scale.x
 	var small_alpha := anchor.modulate.a
@@ -102,7 +98,6 @@ func _test_runtime_approach_and_removed_side_cones() -> void:
 	var large_scale := anchor.scale.x
 	_expect(small_scale < medium_scale and medium_scale < large_scale, "Runtime obstacle grows continuously from small to medium to large")
 	_expect(large_scale / maxf(small_scale, 0.001) >= 5.5, "Runtime approach has a strong foreground depth ratio")
-	settings_script.call("set_visual_pace", saved_pace)
 	_expect(small_alpha < anchor.modulate.a, "Distant obstacle fades gently into full foreground clarity")
 	level.free()
 

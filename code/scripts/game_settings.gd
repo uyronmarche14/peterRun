@@ -63,17 +63,12 @@ static func rating_for_pace(pace: float) -> int:
 	return clampi(roundi(1.0 + step * 9.0), 1, 10)
 
 
-# An obstacle travels at one steady pace from its start to contact, and contact always
-# lands on time (progress 1 at the end of the approach). A faster speed starts the
-# obstacle farther away, so it covers more ground in the same time; a slower speed
-# starts it nearer. Prompt timing is not touched.
-const SLOWEST_START_DEPTH := 0.6
+# An obstacle always starts far up the road and travels at one steady pace to contact,
+# at every speed setting. Contact lands on time (progress 1 at the end of the approach)
+# because prompt timing is fixed, so the speed setting does not change the obstacle's
+# journey; it changes the road, Peter's stride and the ambience.
 # Depth is eased in two straight pieces, so size and ground speed both stay even.
 const APPROACH_KNOT_PROGRESS := 0.4
-
-
-static func approach_start_depth() -> float:
-	return clampf((MAX_PACE - visual_pace) / (MAX_PACE - MIN_PACE), 0.0, 1.0) * SLOWEST_START_DEPTH
 
 
 static func _depth_at(progress: float) -> float:
@@ -83,15 +78,6 @@ static func _depth_at(progress: float) -> float:
 	return knot_depth + (1.0 - knot_depth) * (progress - APPROACH_KNOT_PROGRESS) / (1.0 - APPROACH_KNOT_PROGRESS)
 
 
-static func _progress_at_depth(depth: float) -> float:
-	var knot_depth := RoadProjection.MID_DEPTH
-	if depth <= knot_depth:
-		return APPROACH_KNOT_PROGRESS * depth / knot_depth
-	return APPROACH_KNOT_PROGRESS + (1.0 - APPROACH_KNOT_PROGRESS) * (depth - knot_depth) / (1.0 - knot_depth)
-
-
 # Maps time through the approach (0..1) to the road projection fraction.
 static func approach_fraction(fraction: float) -> float:
-	var start_progress := _progress_at_depth(approach_start_depth())
-	var progress := lerpf(start_progress, 1.0, clampf(fraction, 0.0, 1.0))
-	return RoadProjection.fraction_from_depth(_depth_at(progress))
+	return RoadProjection.fraction_from_depth(_depth_at(clampf(fraction, 0.0, 1.0)))

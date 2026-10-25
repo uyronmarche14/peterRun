@@ -157,6 +157,27 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 8
 script = ExtResource("12_stepper")
 
+[node name="SpeedField" type="VBoxContainer" parent="Panel/Margin/Content/Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="SpeedLabel" type="Label" parent="Panel/Margin/Content/Fields/SpeedField"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.36, 0.42, 0.42, 1)
+theme_override_font_sizes/font_size = 8
+text = "Game speed (1 fast, 10 slow)"
+
+[node name="SpeedSpinBox" type="SpinBox" parent="Panel/Margin/Content/Fields/SpeedField"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+min_value = 1.0
+max_value = 10.0
+value = 6.0
+script = ExtResource("12_stepper")
+
 [node name="SummaryChip" type="PanelContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
 size_flags_horizontal = 4

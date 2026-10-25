@@ -8,6 +8,7 @@ const READY_SCENE_PATH := "res://scenes/ready.tscn"
 const RUNNER_LEVEL_PATH := "res://scenes/levels/runner_level.tscn"
 const SESSION_SETUP_STORE_PATH := "res://scripts/session_setup_store.gd"
 const SessionConfigModel = preload("res://scripts/session_config.gd")
+const GameSettings = preload("res://scripts/game_settings.gd")
 
 var failures: PackedStringArray = []
 
@@ -58,6 +59,17 @@ func _test_setup_persists_supervised_session_config(store_script: GDScript) -> v
 	var repetition_stepper := setup.get_node("%TargetRepetitionsSpinBox") as SpinBox
 	_expect(repetition_stepper.min_value == 1, "Target repetitions can be lowered to one per action")
 	_expect(repetition_stepper.max_value == 50, "Target repetitions allow up to 50 per movement")
+	var speed_stepper := setup.get_node_or_null(^"%SpeedSpinBox") as SpinBox
+	_expect(speed_stepper != null and speed_stepper.min_value == 1 and speed_stepper.max_value == 10, "Setup offers a 1 to 10 game speed selector")
+	if speed_stepper != null:
+		var start_pace: float = GameSettings.visual_pace
+		speed_stepper.value = speed_stepper.value
+		_expect(is_equal_approx(GameSettings.visual_pace, start_pace), "Opening setup does not change the speed by itself")
+		speed_stepper.value = 1
+		_expect(is_equal_approx(GameSettings.visual_pace, GameSettings.pace_for_rating(1)), "Speed 1 in setup sets the faster pace")
+		speed_stepper.value = 10
+		_expect(is_equal_approx(GameSettings.visual_pace, GameSettings.pace_for_rating(10)), "Speed 10 in setup sets the slower pace")
+		GameSettings.set_visual_pace(GameSettings.STANDARD_PACE)
 	if setup.has_method("set_target_repetitions"):
 		setup.call("set_target_repetitions", 1)
 		_expect_label(setup, ^"%SessionSummary", "4 total  ·  1 per movement", "Setup shows a four-movement minimum session")

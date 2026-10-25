@@ -4,6 +4,7 @@ extends Control
 const SessionConfigModel = preload("res://scripts/session_config.gd")
 const SessionSetupStoreModel = preload("res://scripts/session_setup_store.gd")
 const LevelCatalog = preload("res://data/levels/catalog.tres")
+const Settings = preload("res://scripts/game_settings.gd")
 
 const CONTROLLER_CHECK_SCENE_PATH := "res://scenes/controller_check.tscn"
 const MAIN_MENU_SCENE_PATH := "res://scenes/main.tscn"
@@ -15,6 +16,7 @@ const MAX_TARGET_REPETITIONS := 50
 @onready var level_option: OptionButton = %LevelOption
 @onready var level_label: Label = %LevelLabel
 @onready var target_repetitions_spin_box: SpinBox = %TargetRepetitionsSpinBox
+@onready var speed_spin_box: SpinBox = %SpeedSpinBox
 @onready var session_summary: Label = %SessionSummary
 @onready var continue_button: Button = %ContinueButton
 @onready var back_button: Button = %BackButton
@@ -91,6 +93,11 @@ func _configure_controls() -> void:
 	target_repetitions_spin_box.max_value = MAX_TARGET_REPETITIONS
 	target_repetitions_spin_box.step = 1
 	set_target_repetitions(current_config.get_target(&"jump"))
+	speed_spin_box.min_value = 1
+	speed_spin_box.max_value = 10
+	speed_spin_box.step = 1
+	speed_spin_box.set_value_no_signal(Settings.rating_for_pace(Settings.visual_pace))
+	speed_spin_box.value_changed.connect(_on_speed_changed)
 	_refresh_level_label()
 	level_option.item_selected.connect(_on_level_selected)
 	target_repetitions_spin_box.value_changed.connect(_on_target_repetitions_changed)
@@ -121,3 +128,7 @@ func _on_level_selected(_index: int) -> void:
 
 func _on_target_repetitions_changed(_value: float) -> void:
 	_update_summary()
+
+
+func _on_speed_changed(value: float) -> void:
+	Settings.set_visual_pace(Settings.pace_for_rating(int(value)))

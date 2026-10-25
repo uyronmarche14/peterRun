@@ -55,3 +55,9 @@ static func set_countdown_seconds(value: int) -> void:
 
 static func is_preset_pace() -> bool:
 	return is_equal_approx(visual_pace, CALM_PACE) or is_equal_approx(visual_pace, STANDARD_PACE) or is_equal_approx(visual_pace, LIVELY_PACE)
+
+
+# Nearest 1-10 speed number for the current pace (shown in Setup; 1 = fastest).
+static func rating_for_pace(pace: float) -> int:
+	var step := clampf((MAX_PACE - pace) / (MAX_PACE - MIN_PACE), 0.0, 1.0)
+	return clampi(roundi(1.0 + step * 9.0), 1, 10)

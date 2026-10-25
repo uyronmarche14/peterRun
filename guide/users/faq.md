@@ -4,7 +4,7 @@
 No. There are no lives, health, score or leaderboard. The goal is to complete the planned repetitions at a calm pace.
 
 **Does the game speed up?**
-Never. Pace is fixed. Difficulty comes only from how many repetitions the therapist sets. The one thing you can change is how fast the road and scenery scroll (see "game speed" below); the time you have to respond never changes.
+The response time never changes (2 seconds). Difficulty comes from how many repetitions the therapist sets. You can choose a game speed from 1 to 10: it changes the scenery and how long the GET READY warning lasts, nothing else (see "game speed" below).
 
 **What happens if I touch an obstacle?**
 The run ends and the review opens. Everything you completed is saved. It is not a penalty; it is a clear stopping point to review with your therapist.
@@ -22,7 +22,7 @@ So controls stay predictable. The game no longer asks for an affected side.
 Yes. Press `P` to pause, then choose **End Level** or **End Session**. You will be asked to confirm. There is no penalty.
 
 **What is the 1–10 game speed choice?**
-At the end of a run you choose a number from 1 to 10 for the next run's scenery speed: **1 = faster, 10 = slower**. You must choose one before using **Retry**, but you can **Finish without choosing**. It changes how fast the road and scenery move only; the response time does not change.
+You choose a number from 1 to 10 in Session Setup, and again at the end of a run for the next run: **1 = faster, 10 = slower**. It changes the road and scenery, Peter's stride, and how long the GET READY warning lasts (1.5 s at 1, 2.5 s at standard, 4.0 s at 10). The 2-second response time does not change. You must choose one before using **Retry**, but you can **Finish without choosing**. See [Game Speed](../explainers/game-speed.md).
 
 **How many repetitions can be set?**
 1 to 15 for each of the four movements (4–60 total). The default is 10 each.

@@ -24,6 +24,8 @@ PETER RUN is a calm, supervised rehabilitation game for Windows. A person does f
 ### For explainers — `explainers/`
 - [Game Overview](explainers/game-overview.md) — what the game is and why it is designed this way.
 - [How the Game Works](explainers/how-the-game-works.md) — one run in plain words, plus diagrams of the flow and rules.
+- [Game Speed](explainers/game-speed.md) — what the 1–10 speed changes, and what it never changes.
+- [Controller Delay](explainers/controller-latency.md) — where the delay between a movement and the game reaction comes from.
 - [How the Code Works](explainers/how-the-code-works.md) — project map and how a keypress travels through the code.
 - [Guided Code Tour](explainers/code-tour.md) — a stop-by-stop walk through the code with presenter notes, check questions and exercises.
 - [Glossary](explainers/glossary.md) — the words used across the game, docs and code.
@@ -39,6 +41,6 @@ These are the detailed source documents. This guide summarises them and does not
 - `code/README.md`, `code/AGENTS.md` — Godot project setup and rules.
 - `code/plans/PR-16-Collision-Run-End-Logic.md` — why contact ends a run.
 
-> **Accuracy note:** this guide was written from the code on branch `v8` (October 2026). The older BRD and PRD still describe obstacle misses as neutral in places; the game now ends the run on obstacle contact, and this guide follows the game.
+> **Accuracy note:** this guide was updated from the code at the v18 build (October 2026). The BRD and PRD now say that obstacle contact ends the run, and this guide follows the game. Game speed changes the GET READY warning, which still needs clinical sign-off.
 
 > **Not a medical device.** PETER RUN is a supervised practice tool. It does not diagnose, treat, or replace a therapist's judgement.

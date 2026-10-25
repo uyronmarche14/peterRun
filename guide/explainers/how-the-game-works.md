@@ -8,14 +8,14 @@
 4. The player does the movement. If it is the right movement and Peter ends in the right lane, it counts as a repetition.
 5. If not, it is a *neutral miss*: no penalty, and the next obstacle is easier. If Peter is left in a lane with an obstacle, the run ends and everything done is kept.
 6. After a short settle (under 1 s), the next instruction comes. This repeats until every repetition target is met, or the therapist ends the session.
-7. The player chooses the scenery speed for the next run (1 = faster, 10 = slower), then the therapist chooses Rest, Retry or Finish.
+7. The player chooses the game speed for the next run (1 = faster, 10 = slower; also set in Setup), then the therapist chooses Rest, Retry or Finish.
 
 The diagrams below show the same thing in more detail. For the code behind it, see [How the Code Works](how-the-code-works.md) and the [Glossary](glossary.md).
 
 ---
 
 > Mermaid diagrams: they render in GitHub, VS Code (Markdown Preview Mermaid Support), and Obsidian.
-> Source of truth: `code/scripts/*.gd`. Verified against the code on branch `v8`, 2026-10-17.
+> Source of truth: `code/scripts/*.gd`. Updated for the v18 build, 2026-10-26. The speed model is explained in [Game Speed](game-speed.md).
 
 ---
 
@@ -251,7 +251,7 @@ Run all-rules check: `godot --headless --path code -s res://tests/project_setup_
 
 ## 9. Status & planned work
 
-**Done (v8):** full flow menu → setup → ready → L01 → summary; formation-based prompts; contact-ends-run; layered L01 street; tutorial; controller check; 71 Godot tests green (per last commit).
+**Done (v18):** full flow menu → setup → ready → 3-2-1 countdown → L01 → summary; formation-based prompts; contact-ends-run; game speed 1–10 (scenery, stride, GET READY warning); up to 50 reps per movement; local session history file; tutorial; controller check; 85 Godot test scripts green.
 
 **Open / to plan**
 1. **Docs drift:** BRD, PRD and the originality docs still say misses are neutral. Update them to "contact ends the run" (no code change).

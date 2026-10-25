@@ -27,7 +27,7 @@ A walkthrough for showing PETER RUN to a therapist, teacher, panel or stakeholde
 3. (Optional) Stay in an obstacle lane. **Say:** "If Peter reaches an obstacle the run ends, and every completed repetition is kept. No lives, no score loss."
 
 ### 6. Review (45 s)
-**Show:** completed vs planned counts and the 1-10 game-speed choice. **Say:** "The player picks how fast the scenery moves next time: 1 faster, 10 slower. Response time never changes. The therapist can Rest, Retry, or Finish. Nothing starts automatically." Pick a number and show that **Retry** is now enabled.
+**Show:** completed vs planned counts and the 1-10 game-speed choice. **Say:** "The player picks the game speed for next time: 1 faster, 10 slower. It changes the scenery and the length of GET READY; the 2-second response time never changes. The therapist can Rest, Retry, or Finish. Nothing starts automatically." Pick a number and show that **Retry** is now enabled.
 
 ### 7. Close (30 s)
 **Say:** "Under the hood it is Godot 4 with a 2.5D illusion. The game only listens to five named actions, so a keyboard, a gamepad or our wearable controller all work the same way." Mention what is next: final artwork, validating the wearable, more routes.
@@ -40,7 +40,7 @@ A walkthrough for showing PETER RUN to a therapist, teacher, panel or stakeholde
 | --- | --- |
 | Is there a score? | No. Calm over fast: no lives, score or chase. |
 | Why does touching an obstacle end the run? | A clear stopping point to review. Everything completed is kept. |
-| Does it speed up? | Never. Difficulty is only the number of repetitions. |
+| Does it speed up? | Only by the game speed the player chooses (1–10); the 2-second response time never changes. |
 | How does the wearable connect? | It sends keyboard keys (A/D/W/S/P) over HID. The game never reads raw sensor data. |
 | Is it a medical device? | No. It is a supervised practice aid. |
 | Where do I see how it works? | [How the Game Works](how-the-game-works.md). |

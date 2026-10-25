@@ -16,7 +16,7 @@ Choose **Start Session**. The *Set up this session* screen has:
 | --- | --- |
 | **Route** | Currently **Barangay Morning**. |
 | **Repetitions per movement** | Use the **−** / **+** buttons. 1 to 50 for each of Move Left, Move Right, Jump and Slide. Default is 10 each (so 40 total). Range is 4–200 total. |
-| **Game speed** | A 1–10 stepper next to the repetitions. 1 = faster scenery, 10 = slower. It also starts from the last speed chosen on the review screen. Prompt timing does not change. |
+| **Game speed** | A 1–10 stepper next to the repetitions. 1 = faster, 10 = slower. It also starts from the last speed chosen on the review screen. It changes the scenery and the GET READY warning (1.5 s / 2.5 s / 4.0 s); the 2 s response window never changes. See [Game Speed](../explainers/game-speed.md). |
 | **Test controls / Practice movements** | Optional extras before starting. |
 
 Press **Review session** to continue.
@@ -34,7 +34,7 @@ Nothing starts until you press Start.
 ## During the session
 
 - The patient sees one prompt at a time. Each takes about **5 seconds** (about 2½ s to get ready (shorter at game speed 1, longer at 10; the 2 s to respond never changes), 2 s to respond, under 1 s to settle).
-- **Response time never changes.** The only thing that varies the load is how many repetitions you set. The player can choose faster or slower scenery for the next run on the review screen.
+- **The 2-second response window never changes.** The load is set by how many repetitions you set (1–50 per movement) and by the game speed, which shortens or lengthens only the GET READY warning. A 1.5 s warning at speed 1 needs your approval before patient use.
 - **Pause** (`P` or the on-screen button) freezes the game at once. From the pause screen you can resume, **End Level**, or **End Session**. Ending asks for confirmation and carries **no penalty**.
 - The patient's repetitions count only when they do the **correct** movement in the **correct lane**. Wrong or missing responses are recorded as *neutral misses*. They are not scored against the patient, and the next obstacle is made easier.
 
@@ -53,7 +53,7 @@ Contact ending the run is intentional. There are no lives, health, score loss or
 The *Session review* screen shows:
 
 - **Completed / planned** for each movement (for example, *Jump: 8 / 10*).
-- **Game speed (1–10)**: chosen at the end of a run. 1 = faster scenery, 10 = slower; it applies to the next run (Retry).
+- **Game speed (1–10)**: chosen at the end of a run. 1 = faster, 10 = slower; it applies to the next run (Retry) and changes the scenery and the GET READY warning.
 
 Then choose together:
 

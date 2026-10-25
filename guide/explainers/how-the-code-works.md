@@ -51,6 +51,7 @@ Scenes switch with `get_tree().change_scene_to_file(...)`. Data crosses scenes t
 
 - `session_setup_store.gd` → holds the current `SessionConfig` (set in Setup, read by the runner).
 - `session_review_store.gd` → holds the finished `SessionConfig`, `SessionResult`, end reason and the user's decision (set when the run ends, read by the summary).
+- `session_history_store.gd` → appends one counts-only line (time, route, end reason, reps done and planned, speed choice) to `user://session_history.json` when the review screen is left by Retry or Finish; can export a CSV and clear the history. No screen shows it yet.
 
 ## How a screen connects to code and assets
 

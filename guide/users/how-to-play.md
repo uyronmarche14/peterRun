@@ -1,6 +1,6 @@
 # How to Play
 
-PETER RUN is a slow, steady street walk. You do **one movement at a time** to guide Peter past what is on the road. The pace never speeds up and there is no score. Take your time.
+PETER RUN is a slow, steady street walk. You do **one movement at a time** to guide Peter past what is on the road. The response time never speeds up and there is no score. Take your time.
 
 ## The idea in one minute
 
@@ -61,7 +61,7 @@ When a run begins, a large **3 → 2 → 1 → Go!** countdown appears (a 5-seco
 
 - The level is complete when you have done **all the planned repetitions**. A message says so.
 - You can also stop early at any time with **End Level** or **End Session**. You are asked to confirm, and **there is no penalty for ending early.**
-- At the end you choose the game speed for the next run, from **1 (faster) to 10 (slower)**. It only changes how fast the road scrolls. It is fine to finish without choosing.
+- At the end you choose the game speed for the next run, from **1 (faster) to 10 (slower)**. It changes the road, Peter's stride and how long GET READY lasts, never the 2 seconds you have to move. It is fine to finish without choosing.
 
 ## Tips
 

@@ -23,7 +23,7 @@ Terms used in the game, the docs and the code. Code names are in `monospace`.
 | **Recovery formation** | An easier formation chosen after a neutral miss. |
 | **Repetition (rep)** | One correct response. Targets are set per action, 1–50 each. |
 | **Resolution** | The outcome of a prompt: `SUCCESS`, `NEUTRAL_MISS`, or `SAFE_CLEAR`. |
-| **RPE / game-speed choice** | The 1-10 number chosen on the review screen. It is stored as `rpe` and now sets the scenery speed of the next run (1 = faster, 10 = slower). |
+| **RPE / game-speed choice** | The 1-10 number chosen in Setup or on the review screen. It is stored as `rpe` on the result and sets the pace for the next run (1 = faster, 10 = slower). See [Game Speed](game-speed.md). |
 | **Safe clear** | The player was already in a safe lane when time ran out, so nothing was needed. It is not counted as a repetition. |
 | **Session** | One supervised play-through, from Setup to Review. |
 | **Session config** | The plan: affected side, route and repetition targets (`SessionConfig`). |

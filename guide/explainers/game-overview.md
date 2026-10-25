@@ -18,7 +18,7 @@ Rehabilitation exercise is repetitive. PETER RUN turns a set of repetitions into
 
 ## Design principles
 
-1. **Calm over fast.** The time to respond is fixed. Difficulty is only the number of repetitions. (The player can only change how fast the scenery scrolls.)
+1. **Calm over fast.** The response window is fixed at 2 seconds. Difficulty is the number of repetitions. The game speed (1–10) only changes the scenery and how long the GET READY warning lasts.
 2. **Clear, not punishing.** There are no lives, health, score loss, chase or shaming. If Peter reaches an obstacle the run ends and all completed work is saved.
 3. **Therapist in control.** Setup, pause and ending the session are always available and carry no penalty. The game does not make clinical decisions.
 4. **One thing at a time.** One prompt on screen, each with an icon, a word and a distinct prop shape.
@@ -41,6 +41,7 @@ A run lasts as long as the planned repetitions take: roughly 5 seconds per promp
 - One playable route: **Barangay Morning**, with a layered, travelling street and living background.
 - Authored obstacle **formations** that vary the lanes and movements.
 - Session review with completed vs planned counts and a 1–10 game-speed choice (1 = faster, 10 = slower) for the next run.
+- Game speed also set in Session Setup; a 3 / 5 second or off start countdown; up to 50 repetitions per movement; a local session history file (counts only).
 - Pause, end-level and end-session at any time.
 
 ## What it is not
